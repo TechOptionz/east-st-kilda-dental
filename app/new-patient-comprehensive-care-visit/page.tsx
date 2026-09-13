@@ -1,24 +1,22 @@
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 import Link from 'next/link'
 import BreadcrumbBar from '@/components/BreadcrumbBar'
 import type { Crumb } from '@/components/Breadcrumb'
 import CallbackForm from '@/components/CallbackForm'
 import CarouselNav from '@/components/CarouselNav'
 import JsonLd from '@/components/JsonLd'
+import Ico, { type IconName } from '@/components/LineIcon'
 import Photo from '@/components/Photo'
 import ReviewMarquee from '@/components/ReviewMarquee'
+import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
 import {
   SCHEMA_ID,
   SITE_URL,
   areasServed,
   business,
-  clinicianId,
   clinicians,
   comprehensiveCareVisit,
-  openingHours,
-  socialProfiles,
   telHref,
 } from '@/lib/business'
 
@@ -45,47 +43,9 @@ export const metadata: Metadata = withSocial({
 const directAnswer =
   `A New Patient Comprehensive Care Visit at ${business.name} is a 60–75 minute first appointment designed to assess your teeth, gums and overall oral health, discuss any concerns, and give you a clear prioritised care plan.`
 
-/**
- * The line icons used across this page — the pillars, the "leave knowing"
- * list, the reassurance chips, the two booking cards and the alternate paths
- * at the foot.
- *
- * Kept as one map rather than eighteen inline <svg> blocks so the sections
- * below stay readable, and so every mark is drawn on the same 24px grid at the
- * same 1.5 stroke. Colour and size come from CSS — each path uses
- * currentColor, so a badge only has to set `color`.
- */
-const icons: Record<string, ReactNode> = {
-  clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></>,
-  list: <><path d="M9 5.5h7.5a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 18V7a1.5 1.5 0 0 1 1.5-1.5H9Z" /><path d="M9 4.5h4v2H9zM9.5 11h5M9.5 14.5h3.5" /></>,
-  person: <><circle cx="12" cy="8.5" r="3.2" /><path d="M5.8 19.2a6.6 6.6 0 0 1 12.4 0" /></>,
-  heart: <path d="M12 19s-6.5-3.9-6.5-8.3A3.7 3.7 0 0 1 12 8.4a3.7 3.7 0 0 1 6.5 2.3C18.5 15.1 12 19 12 19Z" />,
-  tooth: <path d="M8.2 4.6C6 4.6 5 6.3 5 8.4c0 3 1.3 4.2 1.8 7 .3 1.9.7 3.6 1.8 3.6 1.4 0 1.2-3.4 3.4-3.4s2 3.4 3.4 3.4c1.1 0 1.5-1.7 1.8-3.6.5-2.8 1.8-4 1.8-7 0-2.1-1-3.8-3.2-3.8-1.6 0-2.3.8-3.8.8s-2.2-.8-3.8-.8Z" />,
-  alert: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.8v5M12 15.8h.01" /></>,
-  hourglass: <><path d="M7 4.5h10M7 19.5h10" /><path d="M8 4.5c0 4 4 4.6 4 7.5 0 2.9-4 3.5-4 7.5M16 4.5c0 4-4 4.6-4 7.5 0 2.9 4 3.5 4 7.5" /></>,
-  options: <><path d="M5 8h9M5 16h6" /><circle cx="17" cy="8" r="2.2" /><circle cx="14" cy="16" r="2.2" /></>,
-  steps: <><path d="M4.5 18.5h4v-4h4v-4h4v-4" /><path d="M4.5 18.5v-2" /></>,
-  shield: <><path d="M12 4.2 18 6.4v4.9c0 3.6-2.4 6.6-6 7.6-3.6-1-6-4-6-7.6V6.4Z" /><path d="M9.4 11.9 11.3 14l3.4-3.7" /></>,
-  cloud: <path d="M7.6 17.5h8.9a3.4 3.4 0 0 0 .4-6.8 5 5 0 0 0-9.6-1.1 3.5 3.5 0 0 0 .3 7Z" />,
-  feather: <><path d="M18.5 5.5c-6 0-9.6 3.2-10.6 7.1L6 18.5" /><path d="M8 15.5h4.4c3.2 0 6.1-2.6 6.1-6" /></>,
-  hand: <><path d="M9.5 12V6.6a1.4 1.4 0 0 1 2.8 0V12" /><path d="M12.3 11V5.6a1.4 1.4 0 0 1 2.8 0V12" /><path d="M15.1 11.8V8.4a1.4 1.4 0 0 1 2.8 0v6.1c0 3-2.2 5-5.2 5s-4-1.2-5-2.8l-1.9-3a1.4 1.4 0 0 1 2.3-1.6l1.2 1.5" /></>,
-  calendar: <><rect x="4.5" y="5.8" width="15" height="13.7" rx="2" /><path d="M4.5 10h15M9 4.2v3M15 4.2v3" /></>,
-  phone: <path d="M8.4 4.8 10 8.1l-1.7 1.6a11 11 0 0 0 5 5l1.6-1.7 3.3 1.6v3a1.6 1.6 0 0 1-1.8 1.6C10.6 18.6 5.4 13.4 4.8 6.6A1.6 1.6 0 0 1 6.4 4.8Z" />,
-  siren: <><path d="M6 17.5a6 6 0 0 1 12 0Z" /><path d="M4.5 20h15M12 5.5V3.5M6.6 7.3 5.2 5.9M17.4 7.3l1.4-1.4" /></>,
-  sparkle: <path d="M12 4.5 13.6 9l4.5 1.6-4.5 1.6L12 16.7l-1.6-4.5L5.9 10.6 10.4 9Z" />,
-  search: <><circle cx="10.8" cy="10.8" r="5.8" /><path d="m15.2 15.2 4.3 4.3" /></>,
-  chat: <><path d="M5 5.5h9.5A1.5 1.5 0 0 1 16 7v5.5a1.5 1.5 0 0 1-1.5 1.5H9.8L6.5 16.8V14H5a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 5 5.5Z" /><path d="M16 9h3a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 1-1.5 1.5h-1.5v2.7l-3.3-2.7H11" /></>,
-}
-
-const Ico = ({ name }: { name: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    {icons[name]}
-  </svg>
-)
-
 // The four things a first-time patient actually arrives worried about, in the
 // order they arrive in.
-const pillars = [
+const pillars: { icon: IconName; title: string; body: string }[] = [
   {
     icon: 'clock',
     title: "You won't be rushed",
@@ -111,7 +71,7 @@ const pillars = [
 // Who the visit is for, in the words people use when they search for it. Each
 // is a door in: the title is the situation, the line under it is what we do
 // about it.
-const whoFor = [
+const whoFor: { icon: IconName; title: string; body: string }[] = [
   { icon: 'search', title: 'Looking for a new dentist', body: "New to the area, or ready for a practice that takes the time to get to know you." },
   { icon: 'hourglass', title: "Haven't been in years", body: "No lectures and no judgement. We simply start with where your teeth are today." },
   { icon: 'tooth', title: 'Concerned about your teeth or gums', body: "Sensitivity, bleeding gums, a chipped tooth, or something that just doesn't feel right." },
@@ -124,7 +84,7 @@ const whoFor = [
 // label is split so the first line carries the point and the second qualifies
 // it — see .know-list in globals.css. "Urgent, can wait, optional" is the
 // distinction the rest of the page promises, so all three are named here.
-const leaveKnowing = [
+const leaveKnowing: { icon: IconName; lead: string; rest: string }[] = [
   { icon: 'tooth', lead: 'A clear picture', rest: 'of your oral health' },
   { icon: 'alert', lead: 'What needs', rest: 'attention now' },
   { icon: 'hourglass', lead: 'What can wait', rest: '(without worry)' },
@@ -184,7 +144,7 @@ const costFaq = faq.find((f) => f.q.startsWith('How much'))!
     sentence is about who carries out the assessment. */
 const dentists = clinicians.filter((c) => c.jobTitle.includes('Dentist'))
 
-const chips = [
+const chips: { icon: IconName; label: string }[] = [
   { icon: 'shield', label: 'No judgement, ever' },
   { icon: 'cloud', label: 'Happy gas available' },
   { icon: 'feather', label: 'Calm, unhurried pacing' },
@@ -197,7 +157,7 @@ const teamCrop: Record<string, string> = { 'michelle-callaghan': '40% 95%' }
 
 // The three other doors out of this page, gathered into one row at the foot
 // rather than left as asides inside the sections above.
-const otherPaths = [
+const otherPaths: { icon: IconName; kicker: string; label: string; href: string }[] = [
   { icon: 'siren', kicker: 'Need urgent care?', label: 'Emergency dentistry', href: '/emergency-dentist' },
   { icon: 'calendar', kicker: 'Already a patient?', label: 'Check-ups & cleans', href: '/services/check-ups' },
   { icon: 'sparkle', kicker: 'Feeling anxious?', label: 'Gentle dentistry', href: '/nervous-patients' },
@@ -237,28 +197,7 @@ const pageSchema = {
       breadcrumb: { '@id': `${PAGE_URL}#breadcrumb` },
       inLanguage: 'en-AU',
     },
-    {
-      '@type': 'Dentist',
-      '@id': SCHEMA_ID.practice,
-      name: business.name,
-      url: business.url,
-      image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
-      telephone: business.telephone,
-      email: business.email,
-      currenciesAccepted: business.currenciesAccepted,
-      address: { '@type': 'PostalAddress', ...business.address },
-      geo: { '@type': 'GeoCoordinates', ...business.geo },
-      hasMap: business.hasMap,
-      openingHoursSpecification: openingHours.map((h) => ({
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [...h.days],
-        opens: h.opens,
-        closes: h.closes,
-      })),
-      areaServed: areasServed.map((name) => ({ '@type': 'City', name })),
-      sameAs: socialProfiles,
-      employee: clinicians.map((c) => ({ '@id': clinicianId(c.slug) })),
-    },
+    practiceNode(),
     {
       '@type': 'Service',
       '@id': `${PAGE_URL}#service`,
@@ -269,23 +208,8 @@ const pageSchema = {
       provider: { '@id': SCHEMA_ID.practice },
       areaServed: areasServed.map((name) => ({ '@type': 'City', name })),
     },
-    ...clinicians.map((c) => ({
-      '@type': 'Person',
-      '@id': clinicianId(c.slug),
-      name: c.name,
-      jobTitle: c.jobTitle,
-      url: clinicianId(c.slug),
-      worksFor: { '@id': SCHEMA_ID.practice },
-    })),
-    {
-      '@type': 'FAQPage',
-      '@id': `${PAGE_URL}#faq`,
-      mainEntity: faq.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    },
+    ...clinicians.map(personNode),
+    faqPageNode(`${PAGE_URL}#faq`, faq),
   ],
 }
 

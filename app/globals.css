@@ -4757,11 +4757,12 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 }
 
 /* ═══════════════════════════════════════════════════════
-   /new-patient-comprehensive-care-visit
+   /new-patient-comprehensive-care-visit  (and /nervous-patients)
    Built to docs/New Patient Comprehensive.jpeg. Every rule below is prefixed
-   .npv — the class on that page's <main> — so the shared pieces this page
-   reuses (.pillars, .chips, .booking-cols, .offer-card-v2) keep their own
-   look everywhere else. The responsive tail is at the foot of this block
+   .npv — the class on the <main> of both landing pages — so the shared pieces
+   they reuse (.pillars, .chips, .booking-cols, .offer-card-v2) keep their own
+   look everywhere else. /nervous-patients adds .gentle alongside .npv for the
+   handful of rules only it needs; those sit at the end of this block. The responsive tail is at the foot of this block
    rather than in the site-wide mobile passes above, because these selectors
    outrank those and would otherwise survive into a phone layout.
 ═══════════════════════════════════════════════════════ */
@@ -5038,6 +5039,37 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* ── Trusted locally ─────────────────────────────────── */
 .npv-trust{padding:56px 0;}
 .npv-trust p{text-align:center;max-width:44em;margin:0 auto;font-size:15px;color:var(--ink-faint);}
+
+/* ── Inline links inside the landing-page cards and copy ── */
+.npv :is(.npv-who,.pillar,.npv-cost-card) p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.npv :is(.npv-who,.pillar,.npv-cost-card) p a:hover{color:var(--clay-deep);}
+
+/* ── /nervous-patients only ──────────────────────────── */
+/* The summary paragraph under the hero intro: the same copy measure, set a
+   step quieter and ruled off so it reads as the plain statement beneath the
+   warm one. */
+.gentle .hero-fit>p.hero-summary{
+  margin-top:16px;padding-left:16px;
+  border-left:3px solid var(--clay);
+  font-size:15.5px;line-height:1.65;color:var(--ink-soft);
+}
+.gentle .gentle-team-head p{max-width:44em;margin:14px auto 0;font-size:16.5px;color:var(--ink-soft);}
+.gentle .gentle-team-head p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.gentle .gentle-team-head p a:hover{color:var(--clay-deep);}
+.gentle .nervous-grid .chips-ico{gap:10px;}
+/* "A genuinely different way of working with fear" on ONE line. Same technique
+   as .welcome-fit: the heading box is the query container, so 1cqw is a
+   hundredth of .sec-head's ~736px measure. Scaled from .welcome-fit's measured
+   line (56 characters at 20.39em in the same Cormorant 500 h2), this 47
+   character line runs about 17.1em, so 5.4cqw leaves roughly 7% in hand —
+   about 40px at full width. Below 480px that would fall under 24px, smaller
+   than a heading should read, so it wraps there instead. Any reword needs the
+   5.4cqw remeasured. */
+.gentle .approach-fit{container-type:inline-size;}
+.gentle .approach-fit h2{font-size:min(46px,5.4cqw);white-space:nowrap;}
+@media(max-width:480px){
+  .gentle .approach-fit h2{white-space:normal;font-size:clamp(26px,7vw,32px);}
+}
 
 /* ── Responsive tail ─────────────────────────────────── */
 @media(max-width:900px){
