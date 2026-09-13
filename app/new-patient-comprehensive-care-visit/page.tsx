@@ -339,7 +339,7 @@ export default function OfferPage() {
           <Photo
             tall
             className="reveal"
-            src="/assets/unused/comprehensive-care-visit.webp"
+            src="/assets/comprehensive-care-visit/comprehensive-care-3.webp"
             alt="A patient and a team member going through her chart together at the practice desk"
             objectPosition="center 35%"
             sizes="(max-width: 860px) 100vw, 46vw"

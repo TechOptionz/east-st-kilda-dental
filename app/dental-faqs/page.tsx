@@ -285,7 +285,7 @@ export default function DentalFaqsPage() {
             tall
             className="reveal"
             priority
-            src="/assets/unused/see-our-fees-1.webp"
+            src="/assets/dental-faqs/dental-faqs-hero.webp"
             alt="A dentist at East St Kilda Dental explaining brushing technique on a dental model to a seated patient"
             objectPosition="center 42%"
             sizes="(max-width: 860px) 100vw, 48vw"

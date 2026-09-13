@@ -103,8 +103,8 @@ const homeServices = [
     href: '/services/check-ups',
     title: 'Check-ups & cleans',
     blurb: 'Gentle, thorough preventive care to keep small things small.',
-    src: '/assets/services/checkup-hero.webp',
-    alt: 'A gentle dentist examining a young patient wearing protective glasses in the treatment chair',
+    src: '/assets/services/check-ups-hero.webp',
+    alt: "A dentist checking a smiling young boy's teeth as he hugs a toy bunny in the chair, his X-rays on the screen behind",
   },
   {
     href: '/emergency-dentist',
@@ -444,7 +444,7 @@ export default function Home() {
           <Photo
             tall
             className="reveal"
-            src="/assets/unused/south-yarra.webp"
+            src="/assets/home/nervous-patients-band.webp"
             alt="A relaxed patient smiling warmly in the dental chair"
           />
           <div className="reveal">

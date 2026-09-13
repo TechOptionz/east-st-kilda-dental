@@ -88,7 +88,7 @@ export default function ServicesPage() {
           <Photo
             tall
             className="reveal"
-            src="/assets/unused/comfort-is-part.webp"
+            src="/assets/services/services-hero.webp"
             alt="A dentist speaking with a smiling patient in the treatment room"
             sizes="(max-width: 860px) 100vw, 48vw"
           />
