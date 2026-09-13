@@ -857,9 +857,7 @@ export default function Home() {
       </section>
 
       {/* GET IN TOUCH */}
-      {/* compactMobile — the phone layout holds this form in a narrow column;
-          see the prop's note in components/GetInTouch.tsx. */}
-      <GetInTouch variant="default" id="contact" compactMobile />
+      <GetInTouch variant="default" id="contact" />
     </main>
   )
 }

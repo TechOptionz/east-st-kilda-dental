@@ -3282,8 +3282,8 @@ body{overflow-x:hidden;max-width:100%;}
 .gt-form input::placeholder,.gt-form textarea::placeholder{color:rgba(255,255,255,.45);}
 .gt-form input:focus,.gt-form textarea:focus{outline:none;border-color:var(--clay-soft);background:rgba(255,255,255,.13);}
 .gt-form textarea{min-height:118px;resize:vertical;}
-/* Native dropdown, dressed as a field of this panel. Rendered only where
-   GetInTouch is given compactMobile, at phone width — see the component. The
+/* Native dropdown, dressed as a field of this panel. Rendered at phone width
+   only — see the component. The
    arrow is a background image because a <select>'s own is not stylable, and
    the options are painted by the OS, so they get explicit colours rather than
    inheriting the cream-on-green of the panel. */
@@ -4655,10 +4655,13 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      The opening hours come off: the "Finding us" card directly above already
      carries them, and so does the footer. The "caring for families…" line goes
      with them — it is the block's quietest sentence and the width it frees is
-     worth more here. Home only; every other page carrying this section keeps
-     both, and keeps its field headings. */
-  .home .gt-hours,
-  .home .gt-area{display:none;}
+     worth more here.
+
+     Scoped to .getintouch rather than .home: the section is shared furniture,
+     and every page carrying it gets this phone layout, not only the home page.
+     The footer carries the hours and the address on every page. */
+  .getintouch .gt-hours,
+  .getintouch .gt-area{display:none;}
   /* The panel becomes a two-track grid so the phone and the email can share a
      row; everything else spans both tracks and reads as it did.
 
@@ -4669,37 +4672,37 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      and dropping it is what leaves room for the other two side by side. */
   /* The email track is the wider of the two: 30 unbreakable characters against
      a 14-character phone number. */
-  .home .gt-info{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);column-gap:10px;align-content:start;}
-  .home .gt-info>*{grid-column:1/-1;}
-  .home .gt-info>.gt-detail:nth-of-type(2){grid-column:1;}
-  .home .gt-info>.gt-detail:nth-of-type(3){display:none;}
-  .home .gt-info>.gt-detail:nth-of-type(4){grid-column:2;}
+  .getintouch .gt-info{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);column-gap:10px;align-content:start;}
+  .getintouch .gt-info>*{grid-column:1/-1;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(2){grid-column:1;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(3){display:none;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(4){grid-column:2;}
   /* The panel is four short blocks now, not eight — the shared phone padding
      and the 28px under the intro were measured for a column that also carried
      an address, the hours and a closing note. */
-  .home .gt-info{padding:24px 20px 22px;}
-  .home .gt-info h2{margin:8px 0 10px;}
-  .home .gt-sub{margin-bottom:14px;}
-  .home .gt-detail{font-size:13.5px;align-items:center;gap:5px;margin-bottom:2px;}
+  .getintouch .gt-info{padding:24px 20px 22px;}
+  .getintouch .gt-info h2{margin:8px 0 10px;}
+  .getintouch .gt-sub{margin-bottom:14px;}
+  .getintouch .gt-detail{font-size:13.5px;align-items:center;gap:5px;margin-bottom:2px;}
   /* Everything the icon was taking: the lane narrows from 18px to 12 and the
      gap from 12px to 5, which is most of what lets the address sit on one
      line beside it. */
-  .home .gt-detail .ic{width:12px;font-size:12px;}
-  .home .gt-detail>*:last-child{min-width:0;}
+  .getintouch .gt-detail .ic{width:12px;font-size:12px;}
+  .getintouch .gt-detail>*:last-child{min-width:0;}
   /* The address is 30 characters that cannot break anywhere useful, so it is
      set a step down and held to one line rather than split across two. Sized
      off the viewport, not in px: at 11px it fits a 390px screen exactly, and
      anything narrower needs it to come down with the screen. */
-  .home .gt-info>.gt-detail:nth-of-type(4){font-size:min(11px,2.85vw);}
+  .getintouch .gt-info>.gt-detail:nth-of-type(4){font-size:min(11px,2.85vw);}
   /* Below 375px even that is not enough room, so the smallest phones get the
      address over two lines rather than a line that runs past its track. */
   @media(min-width:375px){
-    .home .gt-info>.gt-detail:nth-of-type(4) a{white-space:nowrap;}
+    .getintouch .gt-info>.gt-detail:nth-of-type(4) a{white-space:nowrap;}
   }
   /* The field headings come off: every control below either carries a
      placeholder or is a dropdown whose closed state names itself. They stay in
      the DOM, visually hidden, so each input keeps its accessible name. */
-  .home .gt-label{
+  .getintouch .gt-label{
     position:absolute;
     width:1px;height:1px;
     padding:0;margin:-1px;
@@ -4711,16 +4714,16 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      rule stacks these below 480px, which is the right call for a form carrying
      visible headings and 15.5px fields; here the headings are gone and the
      fields are a step smaller, so the pairs fit. */
-  .home .gt-row2{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-  .home .gt-field{margin-bottom:12px;}
-  .home .gt-form input[type=text],
-  .home .gt-form input[type=email],
-  .home .gt-form input[type=tel],
-  .home .gt-form textarea{padding:12px 13px;font-size:13.5px;border-radius:10px;}
-  .home .gt-form textarea{min-height:92px;}
-  .home .gt-select{padding:12px 30px 12px 13px;font-size:13.5px;border-radius:10px;background-position:right 10px center;}
-  .home .gt-btn{padding:16px 18px;font-size:13px;letter-spacing:.08em;margin-top:18px;}
-  .home .gt-finehint{font-size:12px;line-height:1.55;margin-top:14px;}
+  .getintouch .gt-row2{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .getintouch .gt-field{margin-bottom:12px;}
+  .getintouch .gt-form input[type=text],
+  .getintouch .gt-form input[type=email],
+  .getintouch .gt-form input[type=tel],
+  .getintouch .gt-form textarea{padding:12px 13px;font-size:13.5px;border-radius:10px;}
+  .getintouch .gt-form textarea{min-height:92px;}
+  .getintouch .gt-select{padding:12px 30px 12px 13px;font-size:13.5px;border-radius:10px;background-position:right 10px center;}
+  .getintouch .gt-btn{padding:16px 18px;font-size:13px;letter-spacing:.08em;margin-top:18px;}
+  .getintouch .gt-finehint{font-size:12px;line-height:1.55;margin-top:14px;}
 
   /* ── Education ──────────────────────────────────────────
      The reference's community row: the cards run off the screen edge and are
