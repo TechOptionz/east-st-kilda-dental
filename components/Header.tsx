@@ -1,4 +1,4 @@
-'use client'
+  'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -38,6 +38,17 @@ export default function Header() {
         <nav className={`mainmenu${menuOpen ? ' open' : ''}`} aria-label="Main">
           <ul>
             {/* <li><Link href="/" className="menu-link" onClick={close}>Home</Link></li> */}
+
+            {/* New Patients */}
+            <li className={`has-dd${openDrop === 'newpatients' ? ' open' : ''}`}>
+              <button className="menu-link" onClick={() => toggleDrop('newpatients')} aria-expanded={openDrop === 'newpatients'}>
+                New Patients
+              </button>
+              <div className="dd">
+                <Link href="/new-patient-comprehensive-care-visit" onClick={close}>The New Patient Comprehensive Care Visit</Link>
+                <Link href="/#faq" onClick={close}>FAQ</Link>
+              </div>
+            </li>
 
             {/* Services mega-menu */}
             <li className={`has-dd has-mega${openDrop === 'services' ? ' open' : ''}`}>
@@ -98,21 +109,9 @@ export default function Header() {
               </div>
             </li>
 
-            {/* New Patients */}
-            <li className={`has-dd${openDrop === 'newpatients' ? ' open' : ''}`}>
-              <button className="menu-link" onClick={() => toggleDrop('newpatients')} aria-expanded={openDrop === 'newpatients'}>
-                New Patients
-              </button>
-              <div className="dd">
-                <Link href="/new-patient-comprehensive-care-visit" onClick={close}>The New Patient Comprehensive Care Visit</Link>
-                <Link href="/#faq" onClick={close}>FAQ</Link>
-              </div>
-            </li>
-
             <li className="nav-extra"><Link href="/nervous-patients" className="menu-link" onClick={close}>Gentle Dentistry</Link></li>
-            <li className="nav-extra"><Link href="/learn" className="menu-link" onClick={close}>Dental Education</Link></li>
 
-            {/* About */}
+                        {/* About */}
             <li className={`has-dd${openDrop === 'about' ? ' open' : ''}`}>
               <button className="menu-link" onClick={() => toggleDrop('about')} aria-expanded={openDrop === 'about'}>
                 About
@@ -125,6 +124,9 @@ export default function Header() {
                 <Link href="/our-work" onClick={close}>Smile Gallery</Link>
               </div>
             </li>
+            
+            <li className="nav-extra"><Link href="/learn" className="menu-link" onClick={close}>Dental Education</Link></li>
+
 
             {/* Costs & Support */}
             <li className={`has-dd${openDrop === 'costs' ? ' open' : ''}`}>
