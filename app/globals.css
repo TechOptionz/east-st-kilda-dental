@@ -5206,6 +5206,141 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .faqs .faqs-photo .ph{aspect-ratio:4/3;}
 }
 
+/* ── /emergency-dentist ──────────────────────────────────
+   <main> carries .npv (answer card, step cards) and .emg for the rest. */
+.emg .emg-subline{
+  margin-top:10px;
+  font-family:var(--display);font-style:italic;font-weight:500;
+  font-size:clamp(24px,5.2cqw,34px);line-height:1.2;color:var(--clay-deep);
+}
+.emg .hero-fit>p.emg-subline{margin-top:10px;font-size:clamp(24px,5.2cqw,34px);line-height:1.2;}
+
+/* Is this a dental emergency? */
+.emg .emg-table-wrap{max-width:900px;margin:0 auto;overflow-x:auto;border-radius:var(--radius-card);border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow-card);}
+.emg .emg-table{width:100%;border-collapse:collapse;font-size:15.5px;line-height:1.45;}
+.emg .emg-table thead th{
+  text-align:left;padding:14px 20px;background:var(--sage-tint);
+  font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);
+}
+.emg .emg-table tbody th,.emg .emg-table td{padding:16px 20px;border-top:1px solid var(--line-soft);vertical-align:middle;text-align:left;}
+.emg .emg-table tbody th{font-weight:500;color:var(--ink);width:58%;border-left:5px solid transparent;}
+.emg .emg-table td{font-weight:700;color:var(--ink);}
+.emg .emg-level{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:10px;vertical-align:middle;}
+.emg .emg-row-routine th{border-left-color:var(--sage);}
+.emg .emg-row-routine .emg-level{background:var(--sage);}
+.emg .emg-row-prompt th{border-left-color:var(--clay);}
+.emg .emg-row-prompt .emg-level{background:var(--clay);}
+.emg .emg-row-urgent th{border-left-color:var(--clay-deep);}
+.emg .emg-row-urgent .emg-level{background:var(--clay-deep);}
+.emg .emg-row-hospital{background:#FBEDE4;}
+.emg .emg-row-hospital th{border-left-color:#9A3323;}
+.emg .emg-row-hospital td{color:#9A3323;}
+.emg .emg-row-hospital .emg-level{background:#9A3323;}
+
+.emg .emg-note{text-align:center;margin:24px auto 0;max-width:44em;font-size:16px;color:var(--ink-soft);}
+.emg .emg-note a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-note a:hover{color:var(--clay-deep);}
+.emg .emg-prompt-list{max-width:760px;margin:0 auto;}
+
+/* First aid cards: answers now carry their links inline. */
+.emg .emg-aid p{margin:0 0 10px;}
+.emg .emg-aid p:last-child{margin-bottom:0;}
+.emg .emg-aid p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-aid p a:hover{color:var(--clay-deep);}
+
+/* 000 box */
+.emg .emg-hospital{
+  max-width:820px;margin:0 auto;
+  background:#FBEDE4;border:1px solid var(--clay);border-left:5px solid var(--clay-deep);
+  border-radius:14px;padding:30px 32px;
+}
+.emg .emg-hospital h2{margin:0 0 12px;font-size:clamp(22px,2.6vw,26px);line-height:1.25;color:var(--clay-deep);}
+.emg .emg-hospital p{margin:0 0 14px;}
+.emg .emg-hospital ul{margin:0;padding-left:20px;line-height:1.9;}
+
+/* Emergency appointment steps — .npv-who cards, numbered. */
+.emg .emg-steps{counter-reset:none;}
+.emg .emg-step-n{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:2px;}
+.emg .emg-steps li{background:var(--paper);}
+
+/* Gentle reassurance */
+.emg .emg-gentle{text-align:center;max-width:48em;margin-inline:auto;}
+.emg .emg-gentle p{font-size:18px;margin-top:14px;}
+.emg .emg-gentle p.emg-gentle-sub{font-size:16px;margin-top:16px;color:var(--ink-soft);}
+.emg .emg-gentle a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-gentle a.btn{color:#fff;text-decoration:none;}
+.emg .emg-gentle-cta{margin-top:24px;}
+
+/* FAQ: the site's .faq accordion. The H3 inside each <summary> takes the
+   summary's own type rather than the heading scale, so the row reads exactly
+   like the accordions on the other pages. */
+.emg .emg-faq h3{margin:0;font:inherit;color:inherit;letter-spacing:inherit;}
+.emg .emg-faq-answer p{padding:0;margin:0 0 12px;max-width:46em;}
+.emg .emg-faq-answer p:last-child{margin-bottom:22px;}
+.emg .emg-faq-answer a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-faq-answer a:hover{color:var(--clay-deep);}
+
+/* One-line headings and note.
+   The two H2s — "What happens at an emergency dental appointment?" (48
+   characters) and "We'll get you comfortable, then sort the cause" (46) — use
+   the .welcome-fit technique: the heading's box is the query container, and
+   scaled from that heading's measured 20.39em for 56 characters in the same
+   Cormorant h2, these run about 17.5em and 16.8em. The cqw values leave ~7% in
+   hand, which lands both near 40px at full width. Below 600px one line would
+   fall under about 22px, so they wrap there instead. Any reword needs the cqw
+   remeasured. */
+.emg .emg-fit{container-type:inline-size;}
+.emg .emg-fit h2{white-space:nowrap;}
+.emg #appointment .emg-fit h2{font-size:min(46px,5.3cqw);}
+.emg .emg-gentle.emg-fit h2{font-size:min(46px,5.55cqw);}
+/* The urgency-guide line, in Hanken Grotesk at roughly 52em: the 44em measure
+   every other .emg-note keeps is lifted, and the size eases down with the
+   viewport so it holds one line to 760px, then wraps. */
+.emg .emg-note.emg-note-line{max-width:none;white-space:nowrap;font-size:min(16px,1.75vw);}
+@media(max-width:760px){
+  .emg .emg-note.emg-note-line{white-space:normal;font-size:15px;max-width:44em;}
+}
+@media(max-width:600px){
+  .emg .emg-fit h2{white-space:normal;}
+  .emg #appointment .emg-fit h2,.emg .emg-gentle.emg-fit h2{font-size:clamp(26px,7vw,32px);}
+}
+
+/* Funding: one quiet line, not a band. */
+.emg .sec.emg-funding-sec{padding-block:56px 0;}
+.emg .emg-funding{
+  max-width:820px;margin:0 auto;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;
+  background:var(--sage-tint);border-radius:var(--radius-card);padding:20px 24px;
+}
+.emg .emg-funding-ico{width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--clay-deep);display:grid;place-items:center;}
+.emg .emg-funding-ico svg{width:21px;height:21px;}
+.emg .emg-funding h2{margin:0 0 4px;font-size:clamp(20px,2.2vw,24px);line-height:1.25;}
+.emg .emg-funding p{margin:0;font-size:15.5px;color:var(--ink-soft);}
+.emg .emg-funding a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+
+.emg .sec.emg-area-sec{padding-block:40px;}
+
+/* Review & sources */
+.emg .emg-review-sec{padding-block:0 56px;}
+.emg .emg-review{max-width:820px;margin:0 auto;padding-top:24px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-faint);}
+.emg .emg-review-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;font-weight:600;color:var(--ink-soft);}
+.emg .emg-review-meta a{color:var(--sage-deep);}
+.emg .emg-sources{display:flex;flex-wrap:wrap;gap:4px 10px;}
+.emg .emg-sources>span{font-weight:600;}
+.emg .emg-sources ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}
+.emg .emg-sources a{color:var(--sage-deep);text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-review-note{margin:12px 0 0;font-size:13px;}
+
+@media(max-width:600px){
+  .emg .emg-table{font-size:14.5px;}
+  .emg .emg-table tbody th,.emg .emg-table td{padding:14px 14px;}
+  .emg .emg-table thead th{padding:12px 14px;}
+  .emg .emg-hospital{padding:22px 20px;}
+  .emg .sec.emg-funding-sec{padding-top:40px;}
+  .emg .emg-funding{grid-template-columns:minmax(0,1fr);padding:18px;}
+  .emg .emg-funding-ico{display:none;}
+}
+
 /* ── Responsive tail ─────────────────────────────────── */
 @media(max-width:900px){
   .npv .npv-who{grid-template-columns:repeat(2,minmax(0,1fr));}
