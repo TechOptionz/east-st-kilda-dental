@@ -46,7 +46,7 @@ export default function Header() {
               </button>
               <div className="dd">
                 <Link href="/new-patient-comprehensive-care-visit" onClick={close}>The New Patient Comprehensive Care Visit</Link>
-                <Link href="/#faq" onClick={close}>FAQ</Link>
+                <Link href="/dental-faqs" onClick={close}>Dental FAQs</Link>
               </div>
             </li>
 

@@ -35,6 +35,7 @@ const STATIC_PATHS = [
   '/online-booking',
   '/new-patient-comprehensive-care-visit',
   '/contact',
+  '/dental-faqs',
   '/emergency-dentist',
   '/fees',
   '/learn',

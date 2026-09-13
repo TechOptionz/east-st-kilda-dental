@@ -51,6 +51,7 @@ export default function Footer() {
               <li><Link href="/nervous-patients">Nervous patients</Link></li>
               <li><Link href="/services/dental-implants">Implants</Link></li>
               <li><Link href="/services/smile-design">Cosmetic</Link></li>
+              <li><Link href="/dental-faqs">Dental FAQs</Link></li>
               <li><Link href="/services">All services</Link></li>
               <li><Link href="/using-your-super">Using your super</Link></li>
             </ul>
