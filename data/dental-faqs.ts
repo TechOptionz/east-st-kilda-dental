@@ -1,4 +1,5 @@
 import { business, fullAddress } from '@/lib/business'
+import { CONTENT_UPDATED } from '@/lib/content-dates'
 
 /**
  * The dental FAQ library behind /dental-faqs.
@@ -33,8 +34,9 @@ export interface DentalFaqCategory {
   faqs: DentalFaq[]
 }
 
-/** When the answers were last updated. Shown on the page and used as dateModified. */
-export const FAQ_LAST_UPDATED = { label: 'September 2026', iso: '2026-09-13' }
+/** When the answers were last updated. Shown on the page, used as dateModified,
+    and published as the sitemap's lastmod — set in lib/content-dates.ts. */
+export const FAQ_LAST_UPDATED = CONTENT_UPDATED['/dental-faqs']
 
 /**
  * The clinician who has reviewed these answers, by their slug in

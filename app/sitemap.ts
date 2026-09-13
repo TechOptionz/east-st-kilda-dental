@@ -4,6 +4,7 @@ import { services } from '@/data/services'
 import { publishedArticles } from '@/data/articles'
 import { populatedTopics } from '@/data/topics'
 import { suburbs, suburbPath } from '@/data/suburbs'
+import { CONTENT_UPDATED } from '@/lib/content-dates'
 
 /**
  * Every indexable route, as an absolute production URL.
@@ -60,8 +61,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...suburbs.map((s) => suburbPath(s.slug)),
   ]
 
-  // No lastModified: we have no real per-page modification date, and stamping
-  // every URL with the build time would tell Google the whole site changed on
-  // every deploy.
-  return paths.map((path) => ({ url: `${SITE_URL}${path}` }))
+  // lastModified only where a page has a real content date (lib/content-dates.ts).
+  // Stamping every URL with the build time would tell Google the whole site
+  // changed on every deploy.
+  return paths.map((path) => ({
+    url: `${SITE_URL}${path}`,
+    ...(CONTENT_UPDATED[path] ? { lastModified: CONTENT_UPDATED[path].iso } : {}),
+  }))
 }

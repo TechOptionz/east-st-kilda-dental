@@ -9,6 +9,7 @@ import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
 import StickyCallBar from '@/components/StickyCallBar'
 import { faqPlainText } from '@/data/dental-faqs'
+import { CONTENT_UPDATED } from '@/lib/content-dates'
 import { personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
 import {
@@ -46,8 +47,8 @@ export const metadata: Metadata = withSocial({
  */
 const REVIEW: { reviewer: string | null; label: string; iso: string } = {
   reviewer: null,
-  label: 'September 2026',
-  iso: '2026-09-13',
+  // The date lives in lib/content-dates.ts, shared with the sitemap's lastmod.
+  ...CONTENT_UPDATED['/emergency-dentist'],
 }
 const reviewer = REVIEW.reviewer ? clinicians.find((c) => c.slug === REVIEW.reviewer) : undefined
 

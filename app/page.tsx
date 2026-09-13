@@ -21,10 +21,12 @@ export const metadata = withSocial({
   alternates: { canonical: `${SITE_URL}/` },
 })
 
-// The five questions in the "Things you might be wondering" section. Both the
-// visible <details> list and the FAQPage node below are rendered from this one
-// array, so the markup can never drift from the words on the page — a hard
-// requirement for FAQ rich results.
+// The five questions in the "Things you might be wondering" section.
+//
+// That section is commented out further down, so this page publishes no
+// FAQPage node: FAQ structured data may only describe questions a reader can
+// see on the page. If the section comes back, restore a FAQPage node built
+// from this array alongside it. The full question library is /dental-faqs.
 const faqs = [
   {
     q: "It's been years since I went. Will you judge me?",
@@ -152,7 +154,7 @@ const summarySentence =
   `Gentle, thorough dental care for individuals and families, from regular check-ups to emergencies and comprehensive dental care.`
 
 // One connected JSON-LD @graph for the home page: the practice, the four named
-// clinicians, the FAQ, and the website. Every fact comes from lib/business.ts.
+// clinicians and the website. Every fact comes from lib/business.ts.
 //
 // No Review or aggregateRating markup here, deliberately, per the AHPRA
 // advertising guidance.
@@ -189,15 +191,6 @@ const homeSchema = {
       jobTitle: c.jobTitle,
       worksFor: { '@id': SCHEMA_ID.practice },
     })),
-    {
-      '@type': 'FAQPage',
-      '@id': SCHEMA_ID.faq,
-      mainEntity: faqs.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    },
     {
       '@type': 'WebSite',
       '@id': SCHEMA_ID.website,
