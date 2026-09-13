@@ -1,19 +1,49 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import BreadcrumbBar from '@/components/BreadcrumbBar'
+import type { Crumb } from '@/components/Breadcrumb'
 import CallbackForm from '@/components/CallbackForm'
 import CarouselNav from '@/components/CarouselNav'
+import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { withSocial } from '@/lib/seo'
-import { business, SITE_URL, clinicians, telHref } from '@/lib/business'
+import {
+  SCHEMA_ID,
+  SITE_URL,
+  areasServed,
+  business,
+  clinicianId,
+  clinicians,
+  comprehensiveCareVisit,
+  openingHours,
+  socialProfiles,
+  telHref,
+} from '@/lib/business'
+
+const PAGE_URL = `${SITE_URL}/new-patient-comprehensive-care-visit`
+
+const TITLE = 'New Patient Dentist Visit St Kilda East | East St Kilda Dental'
+const DESCRIPTION =
+  'Book a thorough 60–75 minute new patient dental visit in St Kilda East. Understand what needs attention, what can wait and your options, without pressure or judgement.'
 
 export const metadata: Metadata = withSocial({
-  title: 'New Patient Comprehensive Care Visit | East St Kilda Dental',
-  description:
-    'New to East St Kilda Dental? The New Patient Comprehensive Care Visit is a thorough, gentle 60–75 minute appointment. Everything included. Book online.',
-  alternates: { canonical: `${SITE_URL}/new-patient-comprehensive-care-visit` },
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: PAGE_URL },
 })
+
+/**
+ * The one-sentence definition of the visit, set directly under the hero.
+ *
+ * Written to be quoted whole by a featured snippet or an AI answer, so it
+ * names the practice, the length and the outcome in a single sentence. The
+ * Service node in the schema below uses the same string as its description,
+ * so the markup and the page can never describe the visit differently.
+ */
+const directAnswer =
+  `A New Patient Comprehensive Care Visit at ${business.name} is a 60–75 minute first appointment designed to assess your teeth, gums and overall oral health, discuss any concerns, and give you a clear prioritised care plan.`
 
 /**
  * The line icons used across this page — the pillars, the "leave knowing"
@@ -43,6 +73,8 @@ const icons: Record<string, ReactNode> = {
   phone: <path d="M8.4 4.8 10 8.1l-1.7 1.6a11 11 0 0 0 5 5l1.6-1.7 3.3 1.6v3a1.6 1.6 0 0 1-1.8 1.6C10.6 18.6 5.4 13.4 4.8 6.6A1.6 1.6 0 0 1 6.4 4.8Z" />,
   siren: <><path d="M6 17.5a6 6 0 0 1 12 0Z" /><path d="M4.5 20h15M12 5.5V3.5M6.6 7.3 5.2 5.9M17.4 7.3l1.4-1.4" /></>,
   sparkle: <path d="M12 4.5 13.6 9l4.5 1.6-4.5 1.6L12 16.7l-1.6-4.5L5.9 10.6 10.4 9Z" />,
+  search: <><circle cx="10.8" cy="10.8" r="5.8" /><path d="m15.2 15.2 4.3 4.3" /></>,
+  chat: <><path d="M5 5.5h9.5A1.5 1.5 0 0 1 16 7v5.5a1.5 1.5 0 0 1-1.5 1.5H9.8L6.5 16.8V14H5a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 5 5.5Z" /><path d="M16 9h3a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 1-1.5 1.5h-1.5v2.7l-3.3-2.7H11" /></>,
 }
 
 const Ico = ({ name }: { name: string }) => (
@@ -76,16 +108,81 @@ const pillars = [
   },
 ]
 
+// Who the visit is for, in the words people use when they search for it. Each
+// is a door in: the title is the situation, the line under it is what we do
+// about it.
+const whoFor = [
+  { icon: 'search', title: 'Looking for a new dentist', body: "New to the area, or ready for a practice that takes the time to get to know you." },
+  { icon: 'hourglass', title: "Haven't been in years", body: "No lectures and no judgement. We simply start with where your teeth are today." },
+  { icon: 'tooth', title: 'Concerned about your teeth or gums', body: "Sensitivity, bleeding gums, a chipped tooth, or something that just doesn't feel right." },
+  { icon: 'chat', title: 'Want a second opinion', body: "Been given a treatment plan elsewhere? We'll take an independent look and explain your options." },
+  { icon: 'feather', title: 'Nervous about the dentist', body: 'We go at your pace, explain each step before we do it, and you can stop at any time.' },
+  { icon: 'list', title: 'Want a thorough baseline', body: 'A complete picture of your oral health today, to measure every future check-up against.' },
+]
+
 // What the visit leaves you holding, rather than what happens during it. Each
 // label is split so the first line carries the point and the second qualifies
-// it — see .know-list in globals.css.
+// it — see .know-list in globals.css. "Urgent, can wait, optional" is the
+// distinction the rest of the page promises, so all three are named here.
 const leaveKnowing = [
   { icon: 'tooth', lead: 'A clear picture', rest: 'of your oral health' },
   { icon: 'alert', lead: 'What needs', rest: 'attention now' },
   { icon: 'hourglass', lead: 'What can wait', rest: '(without worry)' },
+  { icon: 'sparkle', lead: 'What is optional', rest: 'and entirely your choice' },
   { icon: 'options', lead: 'Which options', rest: 'are available' },
   { icon: 'steps', lead: 'Your prioritised next steps', rest: 'and costs where relevant' },
 ]
+
+/**
+ * New patient questions, phrased the way people type them into a search box.
+ *
+ * One source for the visible accordion AND the FAQPage schema, so the
+ * question a reader sees and the question an engine matches are the same
+ * string. Answers are kept to roughly 40–80 words: long enough to stand alone
+ * when quoted, short enough to be quoted whole.
+ *
+ * No dollar figure is given for the visit. The fees page does not publish one
+ * either; if the practice decides to, it belongs in the cost answer here and on
+ * /fees on the same day.
+ */
+const faq = [
+  {
+    q: 'What happens at a new patient dental appointment?',
+    a: "Your dentist starts by talking with you about your dental history, any pain or concerns, and what you'd like for your teeth. Next comes a thorough examination of your teeth, gums and mouth, with X-rays and a clean where clinically appropriate. We finish by explaining what we found, what needs attention, what can wait and what your options are, and give you a clear, prioritised care plan.",
+  },
+  {
+    q: 'How long does a first dental visit take?',
+    a: 'Allow 60 to 75 minutes. That is longer than a standard check-up on purpose: it gives your dentist time to assess your teeth and gums properly, answer your questions and talk a plan through with you, rather than rushing through a quick examination. If you would like breaks along the way, just let us know.',
+  },
+  {
+    q: 'Does a new patient visit include X-rays?',
+    a: "Usually, yes. Most new patients need diagnostic X-rays so your dentist can see between the teeth, below the gumline and into the bone, where problems often begin without any symptoms. We only take the X-rays that are clinically necessary for you. If you've had X-rays taken recently at another practice, mention it when you book.",
+  },
+  {
+    q: 'Does a new patient visit include a clean?',
+    a: "A professional clean is included where it is clinically appropriate, and for most new patients that means a scale and clean on the day. If there is a lot of build-up or your gums need more care, your dentist may recommend completing the clean over a separate appointment so it can be done thoroughly and comfortably. We'll always explain why.",
+  },
+  {
+    q: "What if I haven't been to the dentist in years?",
+    a: "You're very welcome, and you won't be judged. Many of our patients come to us after avoiding the dentist for a long time. We start with where you are today, go at your pace and explain everything as we go. If you're anxious, tell us when you book: happy gas is available and you can stop at any time.",
+  },
+  {
+    q: 'How much does a new patient dental visit cost?',
+    a: "The New Patient Comprehensive Care Visit is one flat price with everything included, and we'll confirm it with you before you book. If you have eligible extras cover, we can process your claim on the day through HICAPS. Your out-of-pocket amount depends on your fund and level of cover. Any further treatment comes with a written estimate first.",
+  },
+  {
+    q: 'Can I use my health fund for a new patient visit?',
+    a: "Yes. We welcome patients from all major Australian health funds. Bring your health fund card and we can process eligible claims on the spot through HICAPS. Your rebate depends on your fund, policy and level of extras cover, so it's worth checking with your fund beforehand. Payment plans are also available for any larger treatment you choose to go ahead with.",
+  },
+]
+
+/** The cost question gets its own H2 as well as a place in the FAQ. Both read
+    this one entry, so the two answers cannot drift apart. */
+const costFaq = faq.find((f) => f.q.startsWith('How much'))!
+
+/** The dentists a new patient may see — the hygienist is left out because the
+    sentence is about who carries out the assessment. */
+const dentists = clinicians.filter((c) => c.jobTitle.includes('Dentist'))
 
 const chips = [
   { icon: 'shield', label: 'No judgement, ever' },
@@ -106,17 +203,106 @@ const otherPaths = [
   { icon: 'sparkle', kicker: 'Feeling anxious?', label: 'Gentle dentistry', href: '/nervous-patients' },
 ]
 
+const breadcrumbTrail: Crumb[] = [
+  { name: 'Home', href: '/' },
+  { name: 'New Patient Comprehensive Care Visit' },
+]
+
+/**
+ * Structured data for this page: the page itself, the practice, the visit as a
+ * Service, the clinicians, and the FAQ.
+ *
+ * The Dentist node reuses SCHEMA_ID.practice, so it is the same entity the home
+ * page declares rather than a second practice — restated here with its core
+ * facts so this page stands on its own for a crawler that lands on it first.
+ * Every fact comes from lib/business.ts. The Person nodes likewise share their
+ * @id with the team page, which carries their full bios.
+ *
+ * The BreadcrumbList is emitted by <BreadcrumbBar> from the same trail it
+ * renders, and the WebPage node points at it by @id.
+ *
+ * No Review or aggregateRating, per AHPRA advertising guidance.
+ */
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${PAGE_URL}#webpage`,
+      url: PAGE_URL,
+      name: TITLE,
+      description: DESCRIPTION,
+      isPartOf: { '@id': SCHEMA_ID.website },
+      about: { '@id': `${PAGE_URL}#service` },
+      breadcrumb: { '@id': `${PAGE_URL}#breadcrumb` },
+      inLanguage: 'en-AU',
+    },
+    {
+      '@type': 'Dentist',
+      '@id': SCHEMA_ID.practice,
+      name: business.name,
+      url: business.url,
+      image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
+      telephone: business.telephone,
+      email: business.email,
+      currenciesAccepted: business.currenciesAccepted,
+      address: { '@type': 'PostalAddress', ...business.address },
+      geo: { '@type': 'GeoCoordinates', ...business.geo },
+      hasMap: business.hasMap,
+      openingHoursSpecification: openingHours.map((h) => ({
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [...h.days],
+        opens: h.opens,
+        closes: h.closes,
+      })),
+      areaServed: areasServed.map((name) => ({ '@type': 'City', name })),
+      sameAs: socialProfiles,
+      employee: clinicians.map((c) => ({ '@id': clinicianId(c.slug) })),
+    },
+    {
+      '@type': 'Service',
+      '@id': `${PAGE_URL}#service`,
+      name: comprehensiveCareVisit.name.replace(/^The /, ''),
+      serviceType: 'New patient dental examination',
+      description: directAnswer,
+      url: PAGE_URL,
+      provider: { '@id': SCHEMA_ID.practice },
+      areaServed: areasServed.map((name) => ({ '@type': 'City', name })),
+    },
+    ...clinicians.map((c) => ({
+      '@type': 'Person',
+      '@id': clinicianId(c.slug),
+      name: c.name,
+      jobTitle: c.jobTitle,
+      url: clinicianId(c.slug),
+      worksFor: { '@id': SCHEMA_ID.practice },
+    })),
+    {
+      '@type': 'FAQPage',
+      '@id': `${PAGE_URL}#faq`,
+      mainEntity: faq.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
+  ],
+}
+
 export default function OfferPage() {
   return (
     /* .npv scopes every rule this page adds to globals.css. Nothing below is
        shared, so no other page can be moved by them. */
     <main className="npv">
+      <JsonLd data={pageSchema} />
+      <BreadcrumbBar trail={breadcrumbTrail} id={`${PAGE_URL}#breadcrumb`} />
+
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="hero-v2">
         <div className="container hero-v2-grid">
           <div className="reveal hero-fit">
             <div className="eyebrow">New Patient Comprehensive Care Visit</div>
-            <h1>More than a <em>check-up</em></h1>
+            <h1>What if you could leave the dentist feeling <em>relieved</em> instead of worried?</h1>
             <p>Most first dental visits are built around finding problems. Ours is designed to help you understand what matters, what can wait, what your options are, and what you actually want to do next.</p>
             <p>You&apos;ll have 60&ndash;75 minutes with your dentist for a thorough assessment, discussion and personalised plan — so you leave knowing where your teeth stand and what makes sense from here.</p>
             <div className="hero-cta">
@@ -137,6 +323,39 @@ export default function OfferPage() {
             alt="A smiling clinician demonstrating brushing on a dental model for a seated patient"
             sizes="(max-width: 860px) 100vw, 48vw"
           />
+        </div>
+      </section>
+
+      {/* ── THE DIRECT ANSWER ─────────────────────────────
+          Straight under the hero, before any persuasion: what the visit is, in
+          one sentence a search engine or AI answer can lift whole. */}
+      <section className="sec npv-answer">
+        <div className="container reveal">
+          <div className="npv-answer-card">
+            <h2>What is a New Patient Comprehensive Care Visit?</h2>
+            <p>{directAnswer}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHO IS THIS VISIT FOR ─────────────────────────── */}
+      <section className="sec alt">
+        <div className="container">
+          <div className="sec-head center reveal">
+            <div className="eyebrow">Is this visit right for you?</div>
+            <h2>Who is <em>this visit</em> for?</h2>
+          </div>
+          <ul className="npv-who reveal">
+            {whoFor.map(({ icon, title, body }) => (
+              <li key={title}>
+                <span className="npv-who-ico"><Ico name={icon} /></span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -177,7 +396,7 @@ export default function OfferPage() {
         <div className="container know-grid">
           <div className="reveal">
             <div className="eyebrow">A clearer, brighter path forward</div>
-            <h2>What you&apos;ll <em>leave knowing</em></h2>
+            <h2>What you&apos;ll know <em>after your first visit</em></h2>
             <p className="know-lead">
               You&apos;ll walk out with a clear understanding of your oral health and a plan that makes sense for you.
             </p>
@@ -210,10 +429,13 @@ export default function OfferPage() {
           <div className="offer-card-v2">
             <div className="body">
               <div className="eyebrow">Comprehensive, personalised care</div>
-              <h2>Your first visit <em>may include</em></h2>
+              {/* One of the page's location-bearing H2s. Keep the suburb to
+                  this heading and the direct answer — not every heading. */}
+              <h2>What to expect at your first dental visit <em>in St Kilda East</em></h2>
               {/* "May include", not "includes": what actually happens on the
                   day is a clinical judgement, and this list is written to say
                   so. Do not tighten it back into a promise. */}
+              <p className="offer-lead">Your first visit may include:</p>
               <ul className="offer-includes">
                 <li>Comprehensive dental examination</li>
                 <li>Necessary diagnostic X-rays</li>
@@ -229,17 +451,32 @@ export default function OfferPage() {
               <p className="offer-nopressure">No pressure to commit to treatment on the day.</p>
               <div className="offer-actions">
                 <Link href="/online-booking" className="btn">Book your new patient visit</Link>
-                <Link href="/fees" className="offer-actions-link">Fees and health fund information &rarr;</Link>
+                <Link href="#cost" className="offer-actions-link">What does it cost? &rarr;</Link>
               </div>
-              <p style={{ fontSize: '12px', marginTop: '16px', color: 'var(--ink-faint)' }}>
-                If you have eligible extras cover, we can process your claim on the day through HICAPS. Your out-of-pocket amount depends on your fund and level of cover.
-              </p>
             </div>
             <Photo
               src="/assets/comprehensive-care-visit/comprehensive-care-2.webp"
               alt="A dentist and patient reviewing a dental X-ray together on screen during a consultation"
               sizes="(max-width: 820px) 100vw, 50vw"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ── COST AND HEALTH FUNDS ─────────────────────────
+          The cost question as its own heading, answered in the first
+          sentence, then the door to the full fees page. The answer is the
+          FAQ's entry, read from the same array. */}
+      <section className="sec npv-cost" id="cost">
+        <div className="container">
+          <div className="npv-cost-card reveal">
+            <div className="eyebrow">Fees &amp; health funds</div>
+            <h2>{costFaq.q}</h2>
+            <p>{costFaq.a}</p>
+            <div className="offer-actions">
+              <Link href="/fees" className="btn btn-ghost">Fees &amp; payment options</Link>
+              <Link href="/fees#funds" className="offer-actions-link">Health funds and HICAPS &rarr;</Link>
+            </div>
           </div>
         </div>
       </section>
@@ -304,6 +541,18 @@ export default function OfferPage() {
           <div className="sec-head center reveal">
             <div className="eyebrow">Experienced, friendly, local</div>
             <h2>You&apos;ll be looked after by a team that explains things properly.</h2>
+            {/* Names the dentists as linked entities, each pointing at the
+                anchor that carries their Person node on the team page. */}
+            <p className="npv-clinicians">
+              Your visit may be with{' '}
+              {dentists.map((d, i) => (
+                <span key={d.slug}>
+                  {i > 0 && (i === dentists.length - 1 ? ' or ' : ', ')}
+                  <Link href={`/about/our-team#${d.slug}`}>{d.name}</Link>
+                </span>
+              ))}
+              . Each takes the time to explain what they see and talk you through your options before anything goes ahead.
+            </p>
           </div>
           {/* .team-member, not a class of this page's own: that is the home
               page's card, so the frame, its 3:4 crop, the 20px gap under it and
@@ -346,6 +595,26 @@ export default function OfferPage() {
           <CarouselNav targetId="npv-team" count={clinicians.length} itemSelector=".team-member" className="team-nav" />
           <div className="team-row-cta reveal">
             <Link href="/about/our-team" className="btn">Meet the team</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ────────────────────────────────────────────
+          Before the booking section, so the last doubts are answered just
+          ahead of the ask. Same array as the FAQPage schema above. */}
+      <section className="sec npv-faq" id="faq">
+        <div className="container">
+          <div className="sec-head center reveal">
+            <div className="eyebrow">Quick answers</div>
+            <h2>New patient <em>questions</em></h2>
+          </div>
+          <div className="faq reveal">
+            {faq.map((item, i) => (
+              <details key={item.q} open={i === 0}>
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>

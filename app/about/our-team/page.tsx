@@ -194,7 +194,9 @@ export default function AboutTeamPage() {
                 forehead. Raising the height for the whole row fixes that
                 without leaving one card taller than the two beside it. */}
             {clinicians.map((member, i) => (
-              <div key={i} className="svc">
+              // id matches the fragment in clinicianId(), so a link to
+              // /about/our-team#<slug> lands on the card its Person node names.
+              <div key={i} id={member.slug} className="svc" style={{ scrollMarginTop: '110px' }}>
                 <Photo
                   src={'image' in member ? (member.image as string) : undefined}
                   hint={`Warm, real photo of ${member.name}. Never stock.`}

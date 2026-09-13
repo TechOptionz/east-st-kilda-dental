@@ -2203,19 +2203,20 @@ body{overflow-x:hidden;max-width:100%;}
   color:var(--sage);margin:16px 0 0;
 }
 .hero-v2 .lead{font-size:20px;margin:24px 0 30px;max-width:30em;color:var(--ink-soft);}
-/* A hero headline set on ONE line at every width. Same technique as .pqfit and
-   .fundfit: the copy column becomes a query container, so 1cqw is a hundredth
-   of the column's own width — which is what the headline has to fit inside,
-   and is narrower than the container because .hero-v2-grid splits it 1.05/.95
-   with a 54px gap. Measured in Cormorant at 600 with "check-up" italic, "More
-   than a check-up" runs 8.12em, so 11.7cqw leaves about 5% in hand. At the
-   74px cap it would need 601px against a 541px column, i.e. it wrapped before
-   this rule existed. Any reword needs the 11.7cqw remeasured.
+/* The hero headline on the new patient page. The copy column is a query
+   container, so 1cqw is a hundredth of the column's own width — narrower than
+   the container because .hero-v2-grid splits it 1.05/.95 with a 54px gap.
+
+   "What if you could leave the dentist feeling relieved instead of worried?"
+   is far too long for one line, so unlike the old "More than a check-up" it is
+   allowed to wrap: no nowrap (that is what pushed it across the photograph),
+   sized off the column so it settles at about three balanced lines beside the
+   image, and overflow-wrap as a backstop so no word can ever break out of it.
 
    The body paragraphs carry their own rhythm here because the .lead that used
    to space them off the headline is gone. */
-.hero-fit{container-type:inline-size;}
-.hero-fit h1{font-size:min(74px,11.7cqw);white-space:nowrap;}
+.hero-fit{container-type:inline-size;min-width:0;}
+.hero-fit h1{font-size:clamp(34px,9.2cqw,54px);line-height:1.1;text-wrap:balance;overflow-wrap:break-word;max-width:100%;}
 .hero-fit>p{margin-top:20px;font-size:17px;line-height:1.7;max-width:34em;}
 .hero-fit .hero-cta{margin-top:30px;}
 
@@ -4840,6 +4841,65 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .npv .offer-actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px;margin-top:20px;}
 .npv .offer-actions-link{font-size:14.5px;font-weight:600;color:var(--sage-deep);text-decoration:underline;text-underline-offset:3px;}
 .npv .offer-actions-link:hover{color:var(--clay-deep);}
+/* The H2 is a full sentence with the suburb in it, set in half the card —
+   the section size would run it to four lines. */
+.npv .offer-card-v2 h2{font-size:clamp(28px,2.9vw,38px);line-height:1.15;}
+.npv .offer-lead{margin:0;font-size:15.5px;font-weight:600;color:var(--ink-soft);}
+.npv .offer-lead+.offer-includes{margin-top:14px;}
+
+/* ── The direct answer ───────────────────────────────────
+   Directly under the hero, whose gradient ends in the same cream, so no top
+   padding: the card reads as the hero's footnote rather than a new band. */
+.npv .sec.npv-answer{padding-top:0;}
+.npv .npv-answer-card{
+  max-width:880px;margin:0 auto;
+  background:var(--paper);
+  border:1px solid var(--line);border-left:4px solid var(--clay);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card);
+  padding:28px 34px;
+}
+.npv .npv-answer-card h2{margin:0 0 10px;font-size:clamp(22px,2.4vw,28px);line-height:1.2;color:var(--sage-deep);}
+.npv .npv-answer-card p{margin:0;font-size:18px;line-height:1.65;color:var(--ink);}
+
+/* ── Who is this visit for ───────────────────────────────
+   Six situations, three across. The section is .alt (white), so the tiles
+   take the cream ground to stand off it. */
+.npv .npv-who{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
+}
+.npv .npv-who li{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;
+  background:var(--cream);border:1px solid var(--line-soft);
+  border-radius:var(--radius-card);padding:20px 22px;
+}
+.npv .npv-who-ico{
+  width:40px;height:40px;flex:none;border-radius:50%;
+  background:var(--sage-tint);color:var(--clay-deep);
+  display:grid;place-items:center;
+}
+.npv .npv-who-ico svg{width:20px;height:20px;}
+.npv .npv-who h3{margin:2px 0 6px;font-size:18px;line-height:1.25;}
+.npv .npv-who p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-soft);}
+
+/* ── Cost and health funds ───────────────────────────── */
+.npv .npv-cost-card{max-width:46em;margin:0 auto;text-align:center;}
+.npv .npv-cost-card h2{font-size:clamp(28px,3.2vw,40px);line-height:1.15;}
+.npv .npv-cost-card p{margin:16px auto 0;font-size:17.5px;line-height:1.7;max-width:40em;}
+.npv .npv-cost-card .offer-actions{justify-content:center;margin-top:24px;}
+
+/* ── Clinicians sentence under the team heading ──────────
+   .npv-team .sec-head has no max-width (see below), so the line needs its
+   own measure. */
+.npv .npv-clinicians{max-width:44em;margin:14px auto 0;font-size:16.5px;color:var(--ink-soft);}
+.npv .npv-clinicians a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.npv .npv-clinicians a:hover{color:var(--clay-deep);}
+
+/* ── FAQ ─────────────────────────────────────────────────
+   --cream-2, so it separates from the plain booking section that follows. */
+.npv-faq{background:var(--cream-2);}
+
 /* ── Reassurance chips ───────────────────────────────── */
 .npv .chips-ico .chip{display:inline-flex;align-items:center;gap:9px;}
 .npv .chips-ico .chip svg{width:17px;height:17px;flex:none;color:var(--clay-soft);}
@@ -4981,6 +5041,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 
 /* ── Responsive tail ─────────────────────────────────── */
 @media(max-width:900px){
+  .npv .npv-who{grid-template-columns:repeat(2,minmax(0,1fr));}
   .npv .know-grid{grid-template-columns:1fr;gap:34px;}
   .npv .know-grid .ph.tall{min-height:300px;}
   .npv .altpaths{grid-template-columns:1fr;gap:16px;}
@@ -4996,6 +5057,10 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .npv .pillars-ico .pillar-ico{width:36px;height:36px;}
   .npv .pillars-ico .pillar h3{font-size:18px;}
   .npv .know-list{grid-template-columns:1fr;gap:12px;}
+  .npv .npv-who{grid-template-columns:1fr;gap:12px;}
+  .npv .npv-who li{padding:18px 18px;}
+  .npv .npv-answer-card{padding:22px 20px;}
+  .npv .npv-answer-card p{font-size:16.5px;}
   .npv .book-card{padding:24px 20px;}
   .npv .booking-cols .book-card .form{grid-template-columns:1fr;}
   .npv .booking-cols .book-card .form input.full{grid-column:1/-1;}
