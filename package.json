@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "images": "node scripts/optimize-images.mjs",
-    "share-image": "node scripts/make-share-image.mjs"
+    "share-image": "node scripts/make-share-image.mjs",
+    "team-cards": "node scripts/make-team-cards.mjs"
   },
   "dependencies": {
     "next": "15.5.18",

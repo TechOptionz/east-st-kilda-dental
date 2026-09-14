@@ -63,7 +63,7 @@ const clinicians = [
   {
     slug: 'michelle-callaghan',
     name: 'Michelle Callaghan',
-    role: 'Hygienist',
+    role: 'Dental Hygienist',
     bio: 'Michelle looks after gum health and preventive care with a light, reassuring touch.',
     image: '/assets/team/michelle-callaghan-headshot.webp',
     card: '/assets/team/michelle-callaghan-card.webp',
@@ -71,9 +71,10 @@ const clinicians = [
   {
     slug: 'beverly-spector',
     name: 'Beverly Spector',
-    role: 'Hygienist',
+    role: 'Dental Hygienist',
     bio: 'Beverly helps keep your teeth and gums healthy with gentle, attentive cleans.',
     image: '/assets/team/beverly-spector.webp',
+    card: '/assets/team/beverly-spector-card.webp',
   },
 ]
 
@@ -82,25 +83,25 @@ const practiceTeam = [
     name: 'Daniel Loh',
     role: 'Practice Manager',
     bio: 'Daniel keeps the practice running smoothly and looks after your experience from first call to follow-up.',
-    image: '/assets/team/daniel-loh2.webp',
+    card: '/assets/team/daniel-loh-card.webp',
   },
   {
     name: 'Michelle Mirjam',
     role: 'Dental Assistant & Receptionist',
     bio: 'Michelle welcomes you at reception and supports your care chairside.',
-    image: '/assets/team/michelle-mirjam.webp',
+    card: '/assets/team/michelle-mirjam-card.webp',
   },
   {
     name: "Indiana O'Connor",
     role: 'Dental Assistant & Receptionist',
     bio: 'Indiana helps every visit run smoothly, from the front desk to the chair.',
-    image: '/assets/team/indiana-oconnor.webp',
+    card: '/assets/team/indiana-oconnor-card.webp',
   },
   {
     name: 'Maddy Coventry',
     role: 'Dental Assistant & Receptionist',
     bio: "Maddy is one of the friendly faces who'll greet you and assist during your visit.",
-    image: '/assets/team/maddy-coventry.webp',
+    card: '/assets/team/maddy-coventry-card.webp',
   },
 ]
 
@@ -155,6 +156,29 @@ const teamSchema = {
   ],
 }
 
+/**
+ * One team member as their branded profile card, shown whole (1086x1448).
+ *
+ * The card image already carries the name, title and contact details, so no
+ * text sits beside it; the name and role stay in the DOM as a visually hidden
+ * heading for the outline and screen readers. The five clinician cards were
+ * supplied designed; the rest come from scripts/make-team-cards.mjs.
+ */
+function ProfileCard({ id, name, role, card }: { id?: string; name: string; role: string; card: string }) {
+  return (
+    <div id={id} style={{ scrollMarginTop: '110px', alignSelf: 'start' }}>
+      <h4 className="sr-only">{name}, {role}</h4>
+      <Photo
+        src={card}
+        alt={`${name}, ${role} at East St Kilda Dental`}
+        sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
+        objectFit="contain"
+        style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
+      />
+    </div>
+  )
+}
+
 export default function AboutTeamPage() {
   return (
     <main>
@@ -192,42 +216,10 @@ export default function AboutTeamPage() {
             <h2>Dentists &amp; clinicians</h2>
           </div>
           <div className="team-grid reveal">
-            {/* Clinicians with a branded profile card show that card whole: it
-                already carries the name, title and contact details, so the
-                text block is dropped and the name stays in the DOM as a
-                visually hidden heading for the outline and screen readers.
-                The -headshot crops of the same photos stay as the Person
-                image in the markup, where a clean portrait belongs.
-
-                The rest keep the text card, at 280px rather than the old
-                150px, which letterboxed portraits down to the forehead. */}
-            {clinicians.map((member, i) => 'card' in member ? (
+            {clinicians.map(member => (
               // id matches the fragment in clinicianId(), so a link to
               // /about/our-team#<slug> lands on the card its Person node names.
-              <div key={i} id={member.slug} style={{ scrollMarginTop: '110px', alignSelf: 'start' }}>
-                <h4 className="sr-only">{member.name}, {member.role}</h4>
-                <Photo
-                  src={member.card}
-                  alt={`${member.name}, ${member.role} at East St Kilda Dental`}
-                  sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
-                  objectFit="contain"
-                  style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
-                />
-              </div>
-            ) : (
-              <div key={i} id={member.slug} className="svc" style={{ scrollMarginTop: '110px' }}>
-                <Photo
-                  src={'image' in member ? (member.image as string) : undefined}
-                  hint={`Warm, real photo of ${member.name}. Never stock.`}
-                  alt={`Photo of ${member.name}`}
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  objectPosition="center top"
-                  style={{ height: '280px', marginBottom: '12px' }}
-                />
-                <h4 style={{ marginBottom: '2px' }}>{member.name}</h4>
-                <p style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px', margin: '2px 0 8px' }}>{member.role}</p>
-                <p style={{ fontSize: '15px', margin: 0 }}>{member.bio}</p>
-              </div>
+              <ProfileCard key={member.slug} id={member.slug} {...member} />
             ))}
           </div>
         </div>
@@ -241,20 +233,8 @@ export default function AboutTeamPage() {
             <h2>Our practice team</h2>
           </div>
           <div className="team-grid reveal">
-            {practiceTeam.map((member, i) => (
-              <div key={i} className="svc">
-                <Photo
-                  src={'image' in member ? (member.image as string) : undefined}
-                  hint={`Warm, real photo of ${member.name}. Never stock.`}
-                  alt={`Photo of ${member.name}`}
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  objectPosition="center top"
-                  style={{ height: '150px', marginBottom: '12px' }}
-                />
-                <h4 style={{ marginBottom: '2px' }}>{member.name}</h4>
-                <p style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px', margin: '2px 0 8px' }}>{member.role}</p>
-                <p style={{ fontSize: '15px', margin: 0 }}>{member.bio}</p>
-              </div>
+            {practiceTeam.map(member => (
+              <ProfileCard key={member.name} {...member} />
             ))}
           </div>
 
