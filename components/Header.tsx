@@ -1,6 +1,7 @@
   'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { business, telHref } from '@/lib/business'
 
@@ -32,7 +33,7 @@ export default function Header() {
     <header className="site-header" ref={navRef}>
       <div className="nav">
         <Link href="/" className="logo" aria-label="East St Kilda Dental — home">
-          East St Kilda Dental<small>Gentle care since 1980</small>
+          <Image src="/assets/brand/eskd-logo.png" alt="East St Kilda Dental" width={2033} height={443} priority />
         </Link>
 
         <nav className={`mainmenu${menuOpen ? ' open' : ''}`} aria-label="Main">

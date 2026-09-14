@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { requireSuburb, suburbPath } from '@/data/suburbs'
 import { business, emailHref, localityLine, streetAddress, telHref } from '@/lib/business'
@@ -31,7 +32,9 @@ export default function Footer() {
 
           {/* ── Col 1: Brand + newsletter ─────────────────── */}
           <div>
-            <div className="foot-logo">East St Kilda Dental</div>
+            <Link href="/" className="foot-logo" aria-label="East St Kilda Dental — home">
+              <Image src="/assets/brand/eskd-logo-reversed.png" alt="East St Kilda Dental" width={2033} height={443} />
+            </Link>
             <p style={{ fontSize: '14px' }}>
               Gentle, no-judgement dental care for the St Kilda East community since 1980.
             </p>

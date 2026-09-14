@@ -9,7 +9,8 @@
     "lint": "next lint",
     "images": "node scripts/optimize-images.mjs",
     "share-image": "node scripts/make-share-image.mjs",
-    "team-cards": "node scripts/make-team-cards.mjs"
+    "team-cards": "node scripts/make-team-cards.mjs",
+    "brand-assets": "node scripts/make-brand-assets.mjs"
   },
   "dependencies": {
     "next": "15.5.18",

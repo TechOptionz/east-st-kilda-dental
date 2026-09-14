@@ -167,6 +167,7 @@ const homeSchema = {
       name: business.name,
       url: business.url,
       image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
+      logo: `${SITE_URL}/assets/brand/eskd-logo.png`,
       telephone: business.telephone,
       email: business.email,
       currenciesAccepted: business.currenciesAccepted,

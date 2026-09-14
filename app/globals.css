@@ -269,8 +269,8 @@ p{margin:0;color:var(--ink-soft);}
 /* ── Header ──────────────────────────────────────────────── */
 header.site-header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 28px 13px max(28px,calc((100vw - var(--container)) / 2 + 28px))}
-.logo{font-family:var(--display);font-weight:600;font-size:22px;color:var(--sage-deep);letter-spacing:-.02em;line-height:1;flex:none;text-decoration:none}
-.logo small{display:block;font-family:var(--body);font-weight:600;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--clay-deep);margin-top:3px}
+.logo{display:block;flex:none;line-height:0;text-decoration:none}
+.logo img{display:block;height:37px;width:auto}
 .mainmenu{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;}
 .mainmenu>ul{display:flex;gap:2px;list-style:none;align-items:center;margin:0;padding:0;}
 .mainmenu>ul>li{position:relative}
@@ -3401,7 +3401,8 @@ body{overflow-x:hidden;max-width:100%;}
 .footer-v2 li{margin-bottom:10px;}
 .footer-v2 a{color:rgba(255,255,255,.86);transition:color .2s;}
 .footer-v2 a:hover{color:var(--clay-soft);}
-.foot-logo{font-family:var(--display);font-size:22px;color:#fff;font-weight:600;margin-bottom:14px;}
+.foot-logo{display:inline-block;margin-bottom:14px;line-height:0;}
+.foot-logo img{display:block;height:38px;width:auto;max-width:100%;}
 .news{display:flex;gap:8px;margin-top:14px;}
 .news input{flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--cream);font-family:var(--body);font-size:14px;}
 .news input::placeholder{color:rgba(255,255,255,.45);}
@@ -3926,8 +3927,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* ── Very small (≤420px) ─────────────────────────────────── */
 @media(max-width:420px){
   .nav{padding:11px 14px;}
-  .logo{font-size:18px;}
-  .logo small{font-size:8px;letter-spacing:.2em;}
+  .logo img{height:30px;}
   .nav-right .btn{padding:10px 14px;font-size:13.5px;}
   .sec{padding:44px 0;}
   .hero-v2{padding:36px 0 44px;}
