@@ -33,35 +33,40 @@ const clinicians = [
     name: 'Dr Anbar Ganatra',
     role: 'Cosmetic & General Dentist',
     bio: 'Anbar leads the practice with a calm, gentle, no-judgement approach, and is known for putting nervous patients at ease.',
-    image: '/assets/team/anbar-ganatra.webp',
+    image: '/assets/team/anbar-ganatra-headshot.webp',
+    card: '/assets/team/anbar-ganatra-card.webp',
   },
   {
     slug: 'edmund-goldman',
     name: 'Dr Edmund Goldman',
     role: 'Dentist',
     bio: 'Edmund has cared for local families on this corner for decades, with a focus on rebuilding and replacing teeth.',
-    image: '/assets/team/edmund-goldman.webp',
+    image: '/assets/team/edmund-goldman-headshot.webp',
+    card: '/assets/team/edmund-goldman-card.webp',
   },
   {
     slug: 'jarrod-dean',
     name: 'Dr Jarrod Dean',
     role: 'Dentist',
     bio: 'Jarrod provides gentle, thorough general and family dentistry across the practice.',
-    image: '/assets/team/jarrod-dean.webp',
+    image: '/assets/team/jarrod-dean-headshot.webp',
+    card: '/assets/team/jarrod-dean-card.webp',
   },
   {
     slug: 'marina-bekheet',
     name: 'Dr Marina Bekheet',
     role: 'General Dentist',
     bio: 'Marina offers warm, careful general dentistry and takes the time to explain every step.',
-    image: '/assets/team/marina-bakheet.webp',
+    image: '/assets/team/marina-bekheet-headshot.webp',
+    card: '/assets/team/marina-bekheet-card.webp',
   },
   {
     slug: 'michelle-callaghan',
     name: 'Michelle Callaghan',
     role: 'Hygienist',
     bio: 'Michelle looks after gum health and preventive care with a light, reassuring touch.',
-    image: '/assets/team/michelle-callaghan.webp',
+    image: '/assets/team/michelle-callaghan-headshot.webp',
+    card: '/assets/team/michelle-callaghan-card.webp',
   },
   {
     slug: 'beverly-spector',
@@ -187,15 +192,29 @@ export default function AboutTeamPage() {
             <h2>Dentists &amp; clinicians</h2>
           </div>
           <div className="team-grid reveal">
-            {/* 280px, not the 150px these cards used to use. At 150 the frame is
-                a ~2.5:1 letterbox, and anbar-ganatra's portrait-orientation
-                source (0.70:1) renders her head about 207px tall at the card's
-                width — taller than the frame itself, so it cropped to her
-                forehead. Raising the height for the whole row fixes that
-                without leaving one card taller than the two beside it. */}
-            {clinicians.map((member, i) => (
+            {/* Clinicians with a branded profile card show that card whole: it
+                already carries the name, title and contact details, so the
+                text block is dropped and the name stays in the DOM as a
+                visually hidden heading for the outline and screen readers.
+                The -headshot crops of the same photos stay as the Person
+                image in the markup, where a clean portrait belongs.
+
+                The rest keep the text card, at 280px rather than the old
+                150px, which letterboxed portraits down to the forehead. */}
+            {clinicians.map((member, i) => 'card' in member ? (
               // id matches the fragment in clinicianId(), so a link to
               // /about/our-team#<slug> lands on the card its Person node names.
+              <div key={i} id={member.slug} style={{ scrollMarginTop: '110px', alignSelf: 'start' }}>
+                <h4 className="sr-only">{member.name}, {member.role}</h4>
+                <Photo
+                  src={member.card}
+                  alt={`${member.name}, ${member.role} at East St Kilda Dental`}
+                  sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
+                  objectFit="contain"
+                  style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
+                />
+              </div>
+            ) : (
               <div key={i} id={member.slug} className="svc" style={{ scrollMarginTop: '110px' }}>
                 <Photo
                   src={'image' in member ? (member.image as string) : undefined}
