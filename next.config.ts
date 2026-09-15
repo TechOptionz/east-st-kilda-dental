@@ -58,6 +58,49 @@ const LEGACY_PATHS: Record<string, string> = {
   // page covers the same ground, so it takes both this URL and the older
   // /first-visit that used to redirect here.
   '/your-first-visit': '/new-patient-comprehensive-care-visit',
+
+  // The WordPress site this one replaced. Every URL in its last Yoast sitemap
+  // (page-sitemap.xml and post-sitemap.xml, December 2025), plus the older
+  // pages still showing up in Google's sitelinks. WordPress served them all
+  // with a trailing slash; Next strips that with its own 308 first, so
+  // /home/about/ reaches this table as /home/about.
+  '/home/about': '/about',
+  '/home/how-we-work': '/nervous-patients', // "Gentle dentist in inner Melbourne"
+  '/home/foreign-languages': '/about/why-were-different', // the languages the team speaks
+  '/home/languages': '/about/why-were-different',
+  '/home/services': '/services',
+  '/home/services/crowns-bridges': '/services/crowns-and-bridges',
+  '/home/services/dental-implant-surgery': '/services/dental-implants',
+  '/home/services/emergencies': '/emergency-dentist',
+  '/home/services/gentle-dentistry': '/nervous-patients',
+  '/home/services/how-we-work': '/nervous-patients',
+  '/home/services/invisalign': '/services/invisalign',
+  '/home/services/teeth-whitening': '/services/teeth-whitening',
+  '/home/services/veneers': '/services/veneers',
+  '/home/services/wisdom-teeth-extraction-surgical-extraction': '/services/extractions-wisdom-teeth',
+  '/home/services-4': '/learn/prevention', // "How should I look after my teeth?"
+  '/home/services-4/faqs': '/dental-faqs',
+  '/contact-us': '/contact',
+  '/gentle-dentistry': '/nervous-patients',
+  '/info-centre': '/learn',
+  '/terms-conditions': '/terms',
+  '/privacy-policy': '/privacy',
+  '/dentist-near-albert-park': '/dentist-albert-park',
+  '/dentist-near-balaclava': '/dentist-balaclava',
+  '/dentist-near-st-kilda-west': '/dentist-st-kilda-west',
+  '/249-clean-up': '/services/cleans-and-hygiene', // a scale-and-clean offer no longer running
+  '/blog': '/learn',
+  '/blog/back-to-the-dentist-st-kilda': '/learn/havent-been-to-the-dentist-in-years',
+  '/blog/dental-cleaning-melbourne-gentle-guide': '/services/cleans-and-hygiene',
+  '/blog/emergency-dentist-melbourne-inner-south': '/emergency-dentist', // "Dental Emergency St Kilda"
+  '/blog/happy-gas-dental-anxiety-st-kilda': '/nervous-patients',
+  '/category/working-with-your-dentist': '/learn',
+  '/working-with-your-dentist/questions': '/dental-faqs',
+  '/working-with-your-dentist/gum-disease-why-its-more-serious-than-you-think': '/learn/bleeding-gums',
+  '/working-with-your-dentist/why-a-6-monthly-dental-cleanup-saves-you-money-and-protects-your-health':
+    '/learn/how-often-should-you-see-the-dentist',
+  '/working-with-your-dentist/why-living-in-st-kilda-means-regular-dental-check-ups-are-more-important-than-ever':
+    '/learn/how-often-should-you-see-the-dentist',
 }
 
 const nextConfig: NextConfig = {
