@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/business'
-import { isProduction } from '@/lib/env'
 
 /**
  * AI answer engines can only cite a site their crawlers are allowed to read.
@@ -35,15 +34,13 @@ const AI_CRAWLERS = [
  */
 const DISALLOW = ['/api/']
 
+/**
+ * The same rules on every deployment, on every branch — nothing is gated on the
+ * environment. Canonical URLs and the sitemap always point at SITE_URL, so a
+ * branch or preview deploy that gets crawled consolidates onto production
+ * rather than competing with it.
+ */
 export default function robots(): MetadataRoute.Robots {
-  // Staging and preview deployments stay fully blocked. No sitemap is
-  // advertised either: pointing a crawler at a list of URLs it is disallowed
-  // from fetching is the one way a blocked deployment still leaks into search.
-  if (!isProduction) {
-    return { rules: [{ userAgent: '*', disallow: '/' }] }
-  }
-
-  // On production the only closed path is the contact endpoint below.
   return {
     rules: [
       { userAgent: '*', allow: '/', disallow: DISALLOW },

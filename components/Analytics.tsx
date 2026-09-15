@@ -22,7 +22,7 @@ import { siteEnv } from '@/lib/env'
  *     deployments on purpose, so tags can be tested in Preview mode against a
  *     real staging URL; the container is where staging traffic gets excluded
  *     from GA4 (add "site_env equals production" as a trigger exception), not
- *     here. Nothing on a preview is indexed, so this costs nothing in search.
+ *     here.
  */
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? 'GTM-MQ9RNSZP'
 
