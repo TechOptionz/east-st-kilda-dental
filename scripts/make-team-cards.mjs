@@ -6,7 +6,7 @@
  *
  * Usage:
  *   node scripts/make-team-cards.mjs                 # every card below
- *   node scripts/make-team-cards.mjs daniel-loh      # just one
+ *   node scripts/make-team-cards.mjs maddy-coventry  # just one
  *
  * Renders an HTML template in headless Chrome (for the Google fonts the site
  * uses) and writes public/assets/team/<slug>-card.webp. Set CHROME_PATH if
@@ -39,16 +39,6 @@ const cards = [
     highlights: [['Gentle', 'Attentive'], ['Preventive Care', 'Gum Health']],
     tags: ['Dental Hygienist', 'Gum Health', 'Preventive Care', 'Scale & Clean', 'St Kilda East'],
     cta: 'Book your hygiene appointment today',
-  },
-  {
-    slug: 'daniel-loh',
-    src: '_archive/team/daniel-loh2.webp',
-    crop: { left: 285, top: 0, width: 1095, height: 1008 },
-    name: 'Daniel Loh',
-    role: 'Practice Manager',
-    highlights: [['Welcoming', 'Organised'], ['Patient Experience', 'Bookings']],
-    tags: ['Practice Manager', 'Patient Experience', 'Appointments', 'Enquiries', 'St Kilda East'],
-    cta: 'Book your dental appointment today',
   },
   {
     slug: 'michelle-mirjam',

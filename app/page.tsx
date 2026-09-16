@@ -369,7 +369,7 @@ export default function Home() {
               <Link href="/online-booking" className="btn">Book an appointment</Link>
               <a href={telHref} className="btn btn-ghost ctaband-ghost">Call {business.telephoneDisplay}</a>
             </div>
-            <p style={{ margin: '24px 0 0', fontSize: '15.5px' }}>{fullAddress}</p>
+            <p style={{ margin: '24px auto 0', fontSize: '15.5px' }}>{fullAddress}</p>
           </div>
         </div>
       </section>

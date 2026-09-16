@@ -3,9 +3,9 @@ import Link from 'next/link'
 /**
  * The offers row that sits between the hero stat cards and the services grid.
  *
- * Three identically styled cards inside one bordered, tinted container — that
- * container, the icon tiles and the tinted surface are what keep it from
- * reading as a second services grid a screen-length above the real one.
+ * Three identically styled cards — the icon tiles and the tinted wash are what
+ * keep it from reading as a second services grid a screen-length above the
+ * real one.
  *
  * The CTAs now say "book", so they link where they say: two go straight to
  * /online-booking and the emergency card to the page that carries the phone

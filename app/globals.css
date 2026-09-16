@@ -2783,6 +2783,14 @@ body{overflow-x:hidden;max-width:100%;}
   .offer-includes.tight{grid-template-columns:1fr 1fr;gap:8px 14px;}
   .offer-includes.tight li{font-size:13.5px;padding-left:22px;}
 }
+/* Home only: once the card stacks, the photo leads it instead of closing it.
+   The nervous-patients band directly below opens with its own photo, so a
+   trailing photo here put two pictures back to back with nothing between
+   them. Photo first, copy and button last, keeps a block of text between the
+   two. Other pages using the card keep their photo-last order. */
+@media(max-width:820px){
+  .home .offer-card-v2 .offer-photo{order:-1;border-bottom:1px solid var(--line);}
+}
 
 /* Services grid */
 .svc-grid-v2{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
@@ -4063,12 +4071,6 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
-  background:var(--cream-2);
-  border:1px solid var(--line);
-  border-radius:var(--radius-panel);
-  /* Insets the cards so each one can show all four of its own corners
-     instead of being clipped by the container's curve. */
-  padding:10px;
 }
 /* Lighter surface + accent border + a soft lift, so the cards read as
    raised out of the tinted band rather than merely tinted differently.
@@ -4244,7 +4246,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 
 @media(max-width:639px){
   .offers{padding-top:clamp(36px,8vw,48px);}
-  .offers-row{grid-template-columns:1fr;padding:6px;gap:6px;}
+  .offers-row{grid-template-columns:1fr;gap:6px;}
   .offers-card:last-child{grid-column:1;}
   /* Stacked, the bodies turn the row into a wall of prose the reader
      has to scroll past to reach the services grid. On phones the cards keep

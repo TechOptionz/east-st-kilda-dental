@@ -80,12 +80,6 @@ const clinicians = [
 
 const practiceTeam = [
   {
-    name: 'Daniel Loh',
-    role: 'Practice Manager',
-    bio: 'Daniel keeps the practice running smoothly and looks after your experience from first call to follow-up.',
-    card: '/assets/team/daniel-loh-card.webp',
-  },
-  {
     name: 'Michelle Mirjam',
     role: 'Dental Assistant & Receptionist',
     bio: 'Michelle welcomes you at reception and supports your care chairside.',

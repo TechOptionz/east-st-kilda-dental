@@ -61,7 +61,7 @@ export const business = {
   telephone: '+61395273678',
   /** Human-readable, for visible copy. */
   telephoneDisplay: '(03) 9527 3678',
-  email: 'hello@eaststkildadental.com.au',
+  email: 'reception@eaststkildadental.com.au',
   currenciesAccepted: 'AUD',
   /** The practice has cared for the neighbourhood since around 1980. */
   foundedYear: 1980,
