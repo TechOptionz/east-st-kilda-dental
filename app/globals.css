@@ -2234,16 +2234,29 @@ body{overflow-x:hidden;max-width:100%;}
 .sage-bg .pathlink a{color:var(--clay-soft);}
 .sage-bg .pathlink a:hover{color:#fff;}
 
-/* "Put it off for years? You're exactly who we're best with" on ONE line at
-   every width. Same technique as .pqfit, .fundfit and .hero-fit: the heading
+/* "Put it off for years? You're exactly who we're best with" on ONE line down
+   to 600px. Same technique as .pqfit, .fundfit and .hero-fit: the heading
    box becomes a query container, so 1cqw is a hundredth of its own width —
    which here is .sec-head's 46em measure, not the container. Measured in
    Cormorant at 500 with "best" italic and the h2's -.01em tracking, the line
    runs 20.39em, so 4.67cqw leaves about 5% in hand. At the 42px .sec h2 cap it
    would need 856px against a ~736px box, i.e. it wrapped before this rule.
-   Any reword needs the 4.67cqw remeasured. */
+   Any reword needs the 4.67cqw remeasured.
+
+   Written as `.sec .welcome-fit h2` for the same reason `.sec .oneline-head`
+   is: the small-mobile `.sec h2{font-size:clamp(26px,7vw,36px)}` further down
+   the file matches at the same specificity and would win on source order. It
+   took the font-size and left the nowrap, which set this 56-character line at
+   ~27px — about 550px of unbreakable text on a 390px phone, clipped by
+   body{overflow-x:hidden} into a blank strip the page could still be
+   scrolled sideways into. */
 .welcome-fit{container-type:inline-size;}
-.welcome-fit h2{font-size:min(42px,4.67cqw);white-space:nowrap;}
+.sec .welcome-fit h2{font-size:min(42px,4.67cqw);white-space:nowrap;}
+/* Below 600px, 4.67cqw is ~16px — under the body copy. Wrapping buys a
+   readable size back, exactly as .fundfit and .emg-fit do. */
+@media(max-width:600px){
+  .sec .welcome-fit h2{white-space:normal;font-size:clamp(26px,7vw,34px);}
+}
 .hero-cta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
 .hero-proof-band{background:var(--paper);border-bottom:1px solid var(--line);padding:15px 0;}
 .hero-proof{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:14px;font-weight:600;color:var(--ink-soft);justify-content:center;}
@@ -4901,6 +4914,18 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .npv .npv-clinicians{max-width:44em;margin:14px auto 0;font-size:16.5px;color:var(--ink-soft);}
 .npv .npv-clinicians a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
 .npv .npv-clinicians a:hover{color:var(--clay-deep);}
+
+/* ── Book it now ─────────────────────────────────────────
+   The live widget, set between the white offer card above it and the cream
+   cost band below. --cream-2 is what keeps it a band of its own: on plain
+   cream it would run into .npv-cost as one long surface, and on .alt white it
+   would merge with the offer card. Same ground as .npv-why and .npv-faq, so
+   the page still holds to its three light surfaces. */
+.npv-book{background:var(--cream-2);}
+/* The embed is a white card on that ground, so the line under it takes the
+   quiet treatment the same note has on /online-booking. */
+.npv .npv-book-fallback{text-align:center;margin-top:16px;font-size:14px;color:var(--ink-faint);}
+.npv .npv-book-fallback a{color:var(--clay-deep);font-weight:600;}
 
 /* ── FAQ ─────────────────────────────────────────────────
    --cream-2, so it separates from the plain booking section that follows. */

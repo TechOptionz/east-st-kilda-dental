@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import BookingFrame from '@/components/BookingFrame'
 import BreadcrumbBar from '@/components/BreadcrumbBar'
 import type { Crumb } from '@/components/Breadcrumb'
 import CallbackForm from '@/components/CallbackForm'
@@ -11,6 +12,7 @@ import ReviewMarquee from '@/components/ReviewMarquee'
 import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
 import {
+  BOOKING_URL,
   SCHEMA_ID,
   SITE_URL,
   areasServed,
@@ -384,6 +386,36 @@ export default function OfferPage() {
               sizes="(max-width: 820px) 100vw, 50vw"
             />
           </div>
+        </div>
+      </section>
+
+      {/* ── BOOK IT NOW ───────────────────────────────────
+          The same live widget as /online-booking, sat directly under the
+          card that describes the visit: the reader has just been told what
+          the appointment is and what is in it, which is the point they are
+          most ready to pick a time. The two routes further down the page
+          (online and callback) stay where they are for anyone who scrolls
+          past this without booking.
+
+          --cream-2, so the embed does not read as part of the white offer
+          card above it or the cream cost band below. */}
+      <section className="sec npv-book" id="book">
+        <div className="container">
+          <div className="sec-head center reveal">
+            <div className="eyebrow">Real-time availability</div>
+            <h2>Pick a time that <em>works for you</em></h2>
+          </div>
+          <div className="embed-card reveal">
+            <BookingFrame />
+          </div>
+          {/* The widget is a cross-origin iframe, so if the practice software
+              is blocked or slow there is nothing this page can detect — the
+              fallback link is the only honest recovery. Same line as
+              /online-booking carries. */}
+          <p className="npv-book-fallback reveal">
+            If the booking form doesn&apos;t appear,{' '}
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer">open it in a new tab</a>.
+          </p>
         </div>
       </section>
 
