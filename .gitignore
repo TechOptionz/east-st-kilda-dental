@@ -21,6 +21,9 @@
 # raw photo drop-zone (optimized output goes to public/assets/)
 /photos-raw
 
+# retired assets: kept on disk so team cards can be regenerated, never deployed
+/_archive
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -39,3 +42,5 @@ next-env.d.ts
 .env
 .remember
 SEO_docs
+
+ESKD-Sitemap.pdf

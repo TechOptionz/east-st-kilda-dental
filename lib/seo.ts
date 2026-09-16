@@ -11,7 +11,7 @@ export const SHARE_IMAGE = {
   url: '/assets/social/share-1200x630.jpg',
   width: 1200,
   height: 630,
-  alt: `${business.name} — gentle family and emergency dentist in St Kilda East`,
+  alt: `${business.name} — your local gentle dentist in St Kilda East`,
 } as const
 
 /** Pull a plain URL string out of the several shapes `alternates.canonical` allows. */

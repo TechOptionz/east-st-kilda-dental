@@ -42,7 +42,7 @@ const cards = [
   },
   {
     slug: 'daniel-loh',
-    src: 'public/assets/team/daniel-loh2.webp',
+    src: '_archive/team/daniel-loh2.webp',
     crop: { left: 285, top: 0, width: 1095, height: 1008 },
     name: 'Daniel Loh',
     role: 'Practice Manager',
@@ -52,7 +52,7 @@ const cards = [
   },
   {
     slug: 'michelle-mirjam',
-    src: 'public/assets/team/michelle-mirjam.webp',
+    src: '_archive/team/michelle-mirjam.webp',
     crop: { left: 519, top: 300, width: 3636, height: 3348 },
     name: 'Michelle Mirjam',
     role: 'Dental Assistant & Receptionist',
@@ -62,7 +62,7 @@ const cards = [
   },
   {
     slug: 'indiana-oconnor',
-    src: 'public/assets/team/indiana-oconnor.webp',
+    src: '_archive/team/indiana-oconnor.webp',
     crop: { left: 785, top: 430, width: 3100, height: 2855 },
     name: "Indiana O'Connor",
     role: 'Dental Assistant & Receptionist',
@@ -72,7 +72,7 @@ const cards = [
   },
   {
     slug: 'maddy-coventry',
-    src: 'public/assets/team/maddy-coventry.webp',
+    src: '_archive/team/maddy-coventry.webp',
     crop: { left: 695, top: 57, width: 3900, height: 3591 },
     name: 'Maddy Coventry',
     role: 'Dental Assistant & Receptionist',

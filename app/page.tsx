@@ -100,7 +100,21 @@ const statText = (count: number, decimals = 0, suffix = '') =>
 // The six services in the "Care for every stage of life" grid. Each photo is
 // the same one the service's own page leads with, so the card and the page it
 // opens show the reader the same picture.
-const homeServices = [
+//
+// `phoneHidden` drops a card below 600px, where the grid runs two-up: the last
+// two would sit alone on a third row and push the section past a full screen,
+// so the phone shows the four everyday reasons someone looks for a dentist and
+// leaves implants and cosmetic work to "See all services" underneath. The card
+// is hidden in CSS rather than dropped from the array, so the markup — and the
+// links crawlers follow — stay the same at every width.
+const homeServices: {
+  href: string
+  title: string
+  blurb: string
+  src: string
+  alt: string
+  phoneHidden?: boolean
+}[] = [
   {
     href: '/services/check-ups',
     title: 'Check-ups & cleans',
@@ -135,6 +149,7 @@ const homeServices = [
     blurb: 'Replacing missing teeth so you can eat and smile with ease.',
     src: '/assets/services/single-implant.webp',
     alt: "Close-up of a patient's smile as a dentist matches the shade of a replacement tooth against the front teeth",
+    phoneHidden: true,
   },
   {
     href: '/services/smile-design',
@@ -142,6 +157,7 @@ const homeServices = [
     blurb: "Subtle, natural improvements when you're ready, never pushed.",
     src: '/assets/services/smile-design.webp',
     alt: 'A smiling patient having her teeth examined with a dental mirror during a smile design consultation',
+    phoneHidden: true,
   },
 ]
 
@@ -287,8 +303,12 @@ export default function Home() {
             </p>
           </div>
           <div className="svc-grid-v2">
-            {homeServices.map(({ href, title, blurb, src, alt }) => (
-              <Link href={href} className="svc-item reveal" key={href}>
+            {homeServices.map(({ href, title, blurb, src, alt, phoneHidden }) => (
+              <Link
+                href={href}
+                className={`svc-item reveal${phoneHidden ? ' svc-item-phone-hide' : ''}`}
+                key={href}
+              >
                 <Photo
                   src={src}
                   alt={alt}

@@ -4439,6 +4439,12 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .home .svc-item h4{font-size:15px;line-height:1.25;margin-bottom:5px;}
   .home .svc-item p{font-size:12.5px;line-height:1.5;}
   .home .svc-item-more{font-size:12.5px;padding-top:11px;}
+  /* Implants and cosmetic dentistry — the two cards the phone drops, so the
+     grid closes on an even second row. Flagged per card by `phoneHidden` in
+     the .svc-item map in app/page.tsx, not by :nth-child, so reordering that
+     array can't hide the wrong two. display:none also keeps their lazy photos
+     off the phone's network — the element never intersects the viewport. */
+  .home .svc-item-phone-hide{display:none;}
 
   /* ── CTA band ───────────────────────────────────────────
      The reference gives this the most weight of anything on the page: a full
