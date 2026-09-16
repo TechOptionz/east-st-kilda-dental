@@ -33,7 +33,7 @@ const clinicians = [
     name: 'Dr Anbar Ganatra',
     role: 'Cosmetic & General Dentist',
     bio: 'Anbar leads the practice with a calm, gentle, no-judgement approach, and is known for putting nervous patients at ease.',
-    image: '/assets/team/anbar-ganatra-headshot.webp',
+    image: '/assets/team/anbar-ganatra.webp',
     card: '/assets/team/anbar-ganatra-card.webp',
   },
   {
@@ -41,7 +41,7 @@ const clinicians = [
     name: 'Dr Edmund Goldman',
     role: 'Dentist',
     bio: 'Edmund has cared for local families on this corner for decades, with a focus on rebuilding and replacing teeth.',
-    image: '/assets/team/edmund-goldman-headshot.webp',
+    image: '/assets/team/edmund-goldman.webp',
     card: '/assets/team/edmund-goldman-card.webp',
   },
   {
@@ -49,7 +49,7 @@ const clinicians = [
     name: 'Dr Jarrod Dean',
     role: 'Dentist',
     bio: 'Jarrod provides gentle, thorough general and family dentistry across the practice.',
-    image: '/assets/team/jarrod-dean-headshot.webp',
+    image: '/assets/team/jarrod-dean.webp',
     card: '/assets/team/jarrod-dean-card.webp',
   },
   {
@@ -57,7 +57,7 @@ const clinicians = [
     name: 'Dr Marina Bekheet',
     role: 'General Dentist',
     bio: 'Marina offers warm, careful general dentistry and takes the time to explain every step.',
-    image: '/assets/team/marina-bekheet-headshot.webp',
+    image: '/assets/team/marina-bakheet.webp',
     card: '/assets/team/marina-bekheet-card.webp',
   },
   {
@@ -65,7 +65,7 @@ const clinicians = [
     name: 'Michelle Callaghan',
     role: 'Dental Hygienist',
     bio: 'Michelle looks after gum health and preventive care with a light, reassuring touch.',
-    image: '/assets/team/michelle-callaghan-headshot.webp',
+    image: '/assets/team/michelle-callaghan.webp',
     card: '/assets/team/michelle-callaghan-card.webp',
   },
   {
