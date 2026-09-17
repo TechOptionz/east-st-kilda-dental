@@ -93,7 +93,18 @@ export const healthFunds: HealthFund[] = [
     // Same two-line problem as Teachers Health, in a slightly squarer box.
     logo: { src: '/assets/funds/defence-health.webp', width: 334, height: 151, opticalHeight: 38 },
   },
-  // CBHS artwork is still at /assets/funds/cbhs.webp if it needs to come back.
+  {
+    name: 'CBHS Health',
+    // Heavy "CBHS" caps over a letter-spaced "HEALTH" line, at 2.2:1. The caps
+    // are only about half the box, so it needs a bump like the two-line marks.
+    logo: { src: '/assets/funds/cbhs.webp', width: 708, height: 321, opticalHeight: 38 },
+  },
+  {
+    name: 'Peoplecare',
+    // A wide 4.5:1 wordmark with a small "health insurance" line beneath, so the
+    // main lettering is about two-thirds of the box. A touch over the default.
+    logo: { src: '/assets/funds/peoplecare.webp', width: 640, height: 141, opticalHeight: 32 },
+  },
 ]
 
 /** The closing tile. Always text — it stands for every fund not named above. */

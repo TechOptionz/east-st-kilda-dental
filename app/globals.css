@@ -3088,6 +3088,13 @@ body{overflow-x:hidden;max-width:100%;}
    Scaled from 30px with the taller tile, so the padding around each mark is
    unchanged in proportion. */
 .ins-logos .lg img{height:calc(var(--logo-h,30px) * 1.13);width:auto;max-width:100%;object-fit:contain;}
+/* Desktop: a fixed six to a row (12 funds = two even rows) instead of however
+   many the wrap happens to fit. Tiles are narrower here, so the side padding
+   comes in; the widest marks scale down by width via max-width above. */
+@media(min-width:1024px){
+  .ins-logos{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;}
+  .ins-logos .lg{min-width:0;padding:0 16px;}
+}
 @media(max-width:560px){
   .ins-logos{gap:14px;}
   .ins-logos .lg{height:62px;min-width:112px;padding:0 18px;}
