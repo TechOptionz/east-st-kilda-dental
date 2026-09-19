@@ -45,3 +45,6 @@ SEO_docs
 
 ESKD-Sitemap.pdf
 ESKD-SEO-AEO-Ledger.pdf
+
+# written by npm run check:redirects
+redirect-mapping.csv
