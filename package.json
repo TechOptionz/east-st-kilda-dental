@@ -10,7 +10,8 @@
     "images": "node scripts/optimize-images.mjs",
     "share-image": "node scripts/make-share-image.mjs",
     "team-cards": "node scripts/make-team-cards.mjs",
-    "brand-assets": "node scripts/make-brand-assets.mjs"
+    "brand-assets": "node scripts/make-brand-assets.mjs",
+    "check:redirects": "node scripts/check-redirects.mjs"
   },
   "dependencies": {
     "next": "15.5.18",

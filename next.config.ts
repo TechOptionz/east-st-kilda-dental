@@ -41,6 +41,18 @@ const LEGACY_PATHS: Record<string, string> = {
   '/booking': '/online-booking',
   '/offer': '/new-patient-comprehensive-care-visit',
 
+  // /book was the live booking URL before /online-booking, so it is linked
+  // from outside the site and indexed.
+  '/book': '/online-booking',
+
+  // The first-visit page under the offer's earlier name. It was linked from the
+  // header and the utility bar, and indexed.
+  '/comprehensive-care-visit': '/new-patient-comprehensive-care-visit',
+
+  // A legacy duplicate of /services/check-ups and /services/cleans-and-hygiene
+  // — the same treatment on a third URL. The page is gone from data/services.ts.
+  '/services/check-up-clean': '/services/check-ups',
+
   // /home was a second copy of the home page, kept alive as a redirect route
   // that called next/navigation's redirect() — which issues a 307 Temporary.
   // A temporary redirect tells Google the old URL is coming back, so it stays
@@ -64,6 +76,9 @@ const LEGACY_PATHS: Record<string, string> = {
   // pages still showing up in Google's sitelinks. WordPress served them all
   // with a trailing slash; Next strips that with its own 308 first, so
   // /home/about/ reaches this table as /home/about.
+  // (Its /dentist-near-<suburb> pages are generated from data/suburbs.ts in
+  // LEGACY_REDIRECTS below, so every suburb is covered, not only the ones the
+  // old site happened to have.)
   '/home/about': '/about',
   '/home/how-we-work': '/nervous-patients', // "Gentle dentist in inner Melbourne"
   '/home/foreign-languages': '/about/why-were-different', // the languages the team speaks
@@ -85,9 +100,6 @@ const LEGACY_PATHS: Record<string, string> = {
   '/info-centre': '/learn',
   '/terms-conditions': '/terms',
   '/privacy-policy': '/privacy',
-  '/dentist-near-albert-park': '/dentist-albert-park',
-  '/dentist-near-balaclava': '/dentist-balaclava',
-  '/dentist-near-st-kilda-west': '/dentist-st-kilda-west',
   '/249-clean-up': '/services/cleans-and-hygiene', // a scale-and-clean offer no longer running
   '/blog': '/learn',
   '/blog/back-to-the-dentist-st-kilda': '/learn/havent-been-to-the-dentist-in-years',
@@ -103,71 +115,53 @@ const LEGACY_PATHS: Record<string, string> = {
     '/learn/how-often-should-you-see-the-dentist',
 }
 
+/**
+ * Every legacy path and its destination, in one list: the table above, the old
+ * site's /dentist-near-<suburb> pages, and this site's own retired
+ * /areas/<slug> pages — a second, generated copy of each suburb page that
+ * competed with /dentist-<slug> for the same searches.
+ *
+ * `npm run check:redirects` reads this list back out of the build and tests
+ * every entry against the running site.
+ */
+const LEGACY_REDIRECTS: [source: string, destination: string][] = [
+  ...Object.entries(LEGACY_PATHS),
+  ...suburbs.flatMap((s): [string, string][] => [
+    [`/dentist-near-${s.slug}`, suburbPath(s.slug)],
+    [`/areas/${s.slug}`, suburbPath(s.slug)],
+  ]),
+]
+
 const nextConfig: NextConfig = {
   images: {
     // AVIF first (smaller), WebP fallback; browsers get the best format they support
     formats: ['image/avif', 'image/webp'],
   },
   /**
-   * The suburb landing pages used to live at two URLs: /areas/<slug> (generated
-   * from data/suburbs.ts) and /dentist-<slug> (hand-written). That was duplicate
-   * content competing for the same searches. /dentist-<slug> is now the only
-   * one, so the old /areas/<slug> URLs redirect permanently rather than 404.
+   * Next normally strips a trailing slash itself, with a 308, before the
+   * redirect table is consulted. The WordPress site served every URL with a
+   * trailing slash, so each legacy URL would have cost two hops — a 308 to the
+   * slashless form, then the real redirect. With that turned off, redirects()
+   * below answers both forms directly, and its last rule takes over the
+   * slash-stripping for every other URL.
    */
+  skipTrailingSlashRedirect: true,
   async redirects() {
+    /*
+     * statusCode: 301 rather than permanent: true, which would send a 308.
+     * Google treats the two alike, but 301 is what SEO audits and crawl tools
+     * expect to see for a moved page. Every redirect on this site uses the one
+     * status code; switch the whole table together, or not at all.
+     */
     return [
-      /*
-       * permanent: true is a 308, which is the modern permanent redirect and
-       * what Google treats as equivalent to a 301 for ranking purposes. The
-       * only difference from a 301 is that 308 preserves the request method,
-       * which is irrelevant for page URLs a crawler only ever GETs. Every
-       * redirect on this site uses the one status code; switch the whole table
-       * together, or not at all.
-       */
-      ...Object.entries(LEGACY_PATHS).map(([source, destination]) => ({
+      // A source matches with or without its trailing slash.
+      ...LEGACY_REDIRECTS.map(([source, destination]) => ({
         source,
         destination,
-        permanent: true,
+        statusCode: 301 as const,
       })),
-      ...suburbs.map((s) => ({
-        source: `/areas/${s.slug}`,
-        destination: suburbPath(s.slug),
-        permanent: true,
-      })),
-      /**
-       * The booking page moved from /book to /online-booking. /book was the
-       * live URL, so it is linked from outside the site and indexed; this
-       * keeps those hits landing on the page rather than a 404.
-       */
-      {
-        source: '/book',
-        destination: '/online-booking',
-        permanent: true,
-      },
-      /**
-       * /services/check-up-clean was a legacy duplicate of /services/check-ups
-       * and /services/cleans-and-hygiene — the same treatment on a third URL,
-       * competing with both and linked from nowhere on the site. The page is
-       * gone from data/services.ts; this keeps any existing inbound link or
-       * indexed result landing on the page that replaced it.
-       */
-      {
-        source: '/services/check-up-clean',
-        destination: '/services/check-ups',
-        permanent: true,
-      },
-      /**
-       * The first-visit page moved from /comprehensive-care-visit to
-       * /new-patient-comprehensive-care-visit when the offer was renamed, so
-       * the URL says who the visit is for. The old path was live, linked from
-       * the header and the utility bar, and indexed; this keeps those hits and
-       * any outside link landing on the page rather than a 404.
-       */
-      {
-        source: '/comprehensive-care-visit',
-        destination: '/new-patient-comprehensive-care-visit',
-        permanent: true,
-      },
+      // Any other URL requested with a trailing slash goes to the form without.
+      { source: '/:path+/', destination: '/:path+', statusCode: 301 as const },
     ]
   },
 }
