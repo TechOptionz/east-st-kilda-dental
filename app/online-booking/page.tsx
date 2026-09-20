@@ -17,23 +17,6 @@ export const metadata: Metadata = withSocial({
 export default function BookingPage() {
   return (
     <main>
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="hero-v2">
-        <div className="container reveal" style={{ textAlign: 'center', maxWidth: '760px', marginLeft: 'auto', marginRight: 'auto' }}>
-          <div className="eyebrow">Booking made simple</div>
-          <h1>Book your visit, <em>whenever suits you.</em></h1>
-          <p className="lead" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-            Choose a time online in under a minute, or call our friendly team. New, returning, nervous or in pain, you&apos;re welcome here.
-          </p>
-          <div className="hero-proof" style={{ justifyContent: 'center' }}>
-            <span>One price, first visit all included</span>
-            <span className="proof-dot" />
-            <span>Nervous patients welcome</span>
-            <span className="proof-dot" />
-            <span>Emergencies seen quickly</span>
-          </div>
-        </div>
-      </section>
 
       {/* ── BOOK ONLINE ──────────────────────────────────── */}
       <section className="sec">
