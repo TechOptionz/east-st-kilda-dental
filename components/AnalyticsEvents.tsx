@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { track } from '@/lib/analytics'
+import { takeUnfinishedForms, track } from '@/lib/analytics'
 import { BOOKING_HOST } from '@/lib/business'
 
 /**
@@ -20,6 +20,9 @@ import { BOOKING_HOST } from '@/lib/business'
  *      that contain one. A delegated listener on the document catches clicks on
  *      links that do not exist yet as readily as the ones that do, so a new page
  *      is tracked the moment it ships and nobody has to remember an onClick.
+ *
+ *   3. How long each page is actually looked at, and whether a form that was
+ *      started ever got sent. See EngagementTracking below.
  *
  * A phone call is this practice's conversion — most visitors ring rather than
  * fill in a form — so call_click is the number that matters most here.
@@ -117,10 +120,107 @@ function PageViewTracking() {
   return null
 }
 
+/**
+ * Vercel's dashboard counts property values rather than averaging them, so
+ * time on page is reported as a range. The exact seconds go to GTM too.
+ */
+function timeBucket(seconds: number): string {
+  if (seconds < 10) return '0-10s'
+  if (seconds < 30) return '10-30s'
+  if (seconds < 60) return '30-60s'
+  if (seconds < 180) return '1-3m'
+  if (seconds < 600) return '3-10m'
+  return '10m+'
+}
+
+/**
+ * One page_engagement per page view, plus form_start and form_abandon.
+ *
+ * Only visible time counts: a page left open in a background tab is not being
+ * read. The page view is reported the first time the visitor leaves it — a
+ * route change, or the tab being hidden. Hidden is the last moment a mobile
+ * browser reliably lets a page send anything, so a visitor who switches away
+ * and comes back is counted up to the switch, never twice.
+ *
+ * form_abandon is stricter: it waits for a real exit (route change or
+ * pagehide), because switching to the calendar mid-form and coming back to
+ * finish it is not abandoning it. Where a browser kills the page without a
+ * pagehide, the abandon is lost — form_start against generate_lead remains the
+ * exact completion rate.
+ */
+function EngagementTracking() {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const path = pathname
+    const started = new Set<string>()
+    let visibleMs = 0
+    let visibleSince: number | null = document.visibilityState === 'visible' ? performance.now() : null
+    let reported = false
+
+    function reportEngagement() {
+      if (reported) return
+      reported = true
+      if (visibleSince !== null) visibleMs += performance.now() - visibleSince
+      visibleSince = null
+      const seconds = Math.round(visibleMs / 1000)
+      track('page_engagement', {
+        page_path: path,
+        engaged_seconds: seconds,
+        time_on_page: timeBucket(seconds),
+      })
+    }
+
+    function reportAbandons() {
+      for (const form_name of takeUnfinishedForms()) {
+        track('form_abandon', { form_name, page_path: path })
+      }
+    }
+
+    function onVisibility() {
+      if (document.visibilityState === 'hidden') reportEngagement()
+      else if (!reported) visibleSince = performance.now()
+    }
+
+    function onPageHide() {
+      reportEngagement()
+      reportAbandons()
+    }
+
+    // The first field focused in each form, once per page view.
+    function onFocusIn(e: FocusEvent) {
+      const target = e.target
+      if (!(target instanceof Element)) return
+      const form = target.closest<HTMLFormElement>('form')
+      if (!form) return
+      const form_name = form.dataset.analyticsForm ?? locationOf(form)
+      if (started.has(form_name)) return
+      started.add(form_name)
+      track('form_start', { form_name, page_path: path })
+    }
+
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', onPageHide)
+    document.addEventListener('focusin', onFocusIn)
+
+    // Runs when the route changes: the page being left is reported under its own path.
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', onPageHide)
+      document.removeEventListener('focusin', onFocusIn)
+      reportEngagement()
+      reportAbandons()
+    }
+  }, [pathname])
+
+  return null
+}
+
 export default function AnalyticsEvents() {
   return (
     <>
       <ClickTracking />
+      <EngagementTracking />
       {/* useSearchParams needs a Suspense boundary, or every page opts out of
           static rendering. */}
       <Suspense fallback={null}>

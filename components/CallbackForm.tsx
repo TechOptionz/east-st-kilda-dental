@@ -141,7 +141,7 @@ export default function CallbackForm({
   }
 
   return (
-    <form className={className} onSubmit={handleSubmit}>
+    <form className={className} onSubmit={handleSubmit} data-analytics-form="callback">
       <input
         type="text"
         name="name"

@@ -216,7 +216,7 @@ export default function GetInTouch({
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} data-analytics-form="get-in-touch">
               <div className="gt-row2">
                 <div>
                   <span className="gt-label">I&apos;m a&hellip;</span>
