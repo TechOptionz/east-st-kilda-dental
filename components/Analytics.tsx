@@ -24,7 +24,11 @@ import { siteEnv } from '@/lib/env'
  *     from GA4 (add "site_env equals production" as a trigger exception), not
  *     here.
  */
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? 'GTM-MQ9RNSZP'
+// `||`, not `??`: an env var that exists but is blank (easy to create by copying
+// .env.example into Vercel) must fall back to the live container, not silently
+// strip tagging from production. Set it to "off" to disable GTM on purpose.
+const RAW_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim()
+const GTM_ID = RAW_GTM_ID === 'off' ? '' : RAW_GTM_ID || 'GTM-MQ9RNSZP'
 
 export default function Analytics() {
   if (!GTM_ID) return null
