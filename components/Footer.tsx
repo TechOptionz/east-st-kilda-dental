@@ -33,7 +33,7 @@ export default function Footer() {
           {/* ── Col 1: Brand + newsletter ─────────────────── */}
           <div>
             <Link href="/" className="foot-logo" aria-label="East St Kilda Dental — home">
-              <Image src="/assets/brand/eskd-logo-reversed.png" alt="East St Kilda Dental" width={2033} height={443} />
+              <Image src="/assets/brand/eskd-logo-reversed.png" alt="East St Kilda Dental" width={174} height={38} />
             </Link>
             <p style={{ fontSize: '14px' }}>
               Gentle, no-judgement dental care for the St Kilda East community since 1980.
@@ -47,7 +47,7 @@ export default function Footer() {
 
           {/* ── Col 2: Care ───────────────────────────────── */}
           <div>
-            <h4>Care</h4>
+            <h2>Care</h2>
             <ul>
               <li><Link href="/services/check-ups">Check-ups &amp; cleans</Link></li>
               <li><Link href="/emergency-dentist">Emergency</Link></li>
@@ -62,7 +62,7 @@ export default function Footer() {
 
           {/* ── Col 3: Areas ─────────────────────────────── */}
           <div>
-            <h4>Areas we serve</h4>
+            <h2>Areas we serve</h2>
             <ul>
               <li><Link href="/">St Kilda East</Link></li>
               {FOOTER_SUBURBS.map((s) => (
@@ -74,7 +74,7 @@ export default function Footer() {
 
           {/* ── Col 4: Contact ───────────────────────────── */}
           <div>
-            <h4>Get in touch</h4>
+            <h2>Get in touch</h2>
             <ul>
               <li>
                 {streetAddress}<br />

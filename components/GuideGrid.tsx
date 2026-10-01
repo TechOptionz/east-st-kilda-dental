@@ -56,7 +56,7 @@ export default function GuideGrid({ guides }: { guides: GuideCard[] }) {
             </span>
           </div>
           <div className="guide-card-body">
-            <h4>{guide.title}</h4>
+            <h3>{guide.title}</h3>
             <p className="guide-byline">
               By {guide.author ?? 'East St Kilda Dental'}
               {guide.readTime && ` · ${guide.readTime}`}

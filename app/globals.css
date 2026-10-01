@@ -157,6 +157,14 @@ p{margin:0;color:var(--ink-soft);}
 .reveal.scale-in{transform:scale(0.91) translateY(18px);}
 .reveal.visible{opacity:1;transform:none;}
 
+/* Heroes are on screen at load, so their reveal runs as a CSS animation from
+   first paint rather than waiting for ScrollEffects to hydrate and add
+   .visible. Waiting kept the hero photo — each page's LCP element — at
+   opacity 0 for a second or more after it had downloaded. Only a `to` frame:
+   the start is whatever .reveal (or its from-left / scale-in variant) sets. */
+@keyframes reveal-in{to{opacity:1;transform:none;}}
+.hero-v2 .reveal,.hero-reveal .reveal{animation:reveal-in .95s cubic-bezier(.22,1,.36,1) both;}
+
 /* Eyebrow line draws in — works whether reveal is on a parent or on the eyebrow itself */
 .reveal .eyebrow::before,
 .eyebrow.reveal::before,
@@ -178,6 +186,7 @@ p{margin:0;color:var(--ink-soft);}
 
 @media(prefers-reduced-motion:reduce){
   .reveal,.reveal.from-left,.reveal.from-right,.reveal.scale-in{opacity:1;transform:none;transition:none;}
+  .hero-v2 .reveal,.hero-reveal .reveal{animation:none;}
   .reveal .eyebrow::before,.eyebrow.reveal::before,
   .reveal .eyebrow.center::after,.eyebrow.center.reveal::after{width:34px;transition:none;}
   .scroll-progress{display:none;}
@@ -230,8 +239,8 @@ p{margin:0;color:var(--ink-soft);}
 .btn-teal:hover{background:var(--sage-deep);}
 .btn-alt{background:var(--sage-deep);color:#fff;border:none;}
 .btn-alt:hover{background:var(--sage);}
-.gt-btn{background:var(--clay);color:#fff;border:none;cursor:pointer;}
-.gt-btn:hover{background:var(--clay-deep);}
+.gt-btn{background:var(--clay-deep);color:#fff;border:none;cursor:pointer;}
+.gt-btn:hover{background:var(--sage-deep);}
 .btn-emergency-nav{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--clay);color:var(--clay-deep);background:transparent;border-radius:30px;padding:9px 16px;font-weight:700;font-size:14px;transition:.2s;white-space:nowrap;cursor:pointer;font-family:var(--body);}
 .btn-emergency-nav:hover{background:var(--clay);color:#fff;}
 .ed-dot{width:8px;height:8px;border-radius:50%;background:var(--clay);display:inline-block;animation:edpulse 1.8s infinite;}
@@ -1632,12 +1641,12 @@ footer.site-footer{
   min-height:56px;                   /* comfortably above the 44px tap-target minimum */
   padding:14px 18px calc(14px + env(safe-area-inset-bottom));  /* iOS safe area */
   align-items:center;justify-content:center;gap:10px;
-  background:var(--clay);color:#fff;text-decoration:none;
+  background:var(--clay-deep);color:#fff;text-decoration:none;
   font-family:var(--body);font-weight:700;font-size:16px;letter-spacing:.01em;
   box-shadow:0 -6px 20px rgba(44,42,38,.18);
 }
 .sticky-call svg{width:20px;height:20px;flex:none;}
-.sticky-call:active{background:var(--clay-deep);}
+.sticky-call:active{background:var(--sage-deep);}
 @media(max-width:820px){
   .sticky-call{display:flex;}
   /* Stop the bar covering the last of the content and the footer. Scoped with
@@ -2284,7 +2293,12 @@ body{overflow-x:hidden;max-width:100%;}
   justify-content:flex-end;
   min-height:clamp(560px,80vh,800px);
   overflow:hidden;
-  background:#1E2F27 url('/assets/video/hero-clinic-poster.webp') center/cover no-repeat;
+  background:#1E2F27 url('/assets/video/hero-clinic-poster-1080.webp') center/cover no-repeat;
+}
+/* Phones show only the centre of the frame (see the ≤600px block below), so
+   they get a square centre crop of the poster at a tenth of the weight. */
+@media(max-width:600px){
+  .hero-video{background-image:url('/assets/video/hero-clinic-poster-mobile.webp');}
 }
 .hero-video-media{
   position:absolute;inset:0;z-index:0;
@@ -2354,11 +2368,11 @@ body{overflow-x:hidden;max-width:100%;}
    is the only button that carries a drop shadow of its own at rest — the call
    link beside it stays a quiet outline. Both keep the standard .btn box. */
 .hero-video .btn{
-  background:var(--clay);border-color:var(--clay);
+  background:var(--clay-deep);border-color:var(--clay-deep);
   font-size:17px;padding:18px 40px;
   box-shadow:0 10px 26px rgba(20,33,26,.34);
 }
-.hero-video .btn:hover{background:var(--clay-deep);border-color:var(--clay-deep);box-shadow:0 14px 32px rgba(20,33,26,.42);}
+.hero-video .btn:hover{background:var(--sage-deep);border-color:var(--sage-deep);box-shadow:0 14px 32px rgba(20,33,26,.42);}
 .hero-video .btn-ghost-light{background:rgba(255,255,255,.06);font-size:16px;padding:18px 32px;}
 .hero-video-note{margin:18px 0 0;font-size:15px;}
 .hero-video-note a{color:var(--clay-soft);font-weight:600;}
@@ -2497,7 +2511,9 @@ body{overflow-x:hidden;max-width:100%;}
      strokes, while the label below is semibold sans. At the previous 19/12 the
      two looked the same size — the number needs roughly twice the label, not a
      little more, before the hierarchy reads. */
-  .hero-stat dt{font-size:clamp(16px,5.9vw,23px);}
+  /* At this size the figures count as normal text (4.5:1), which --clay
+     misses on white; desktop sizes are large text and keep --clay. */
+  .hero-stat dt{font-size:clamp(16px,5.9vw,23px);color:var(--clay-deep);}
   /* "45+ years" is now the widest of the three figures and sets the ceiling
      above; "5.0 ★★★★★" is the one with no break opportunity to spare, so the
      stars are cut to .4em and the 2px tracking they carry on the hero's proof
@@ -2708,7 +2724,7 @@ body{overflow-x:hidden;max-width:100%;}
   font-family:var(--display);font-size:23px;font-weight:600;
 }
 .rmq-name{display:block;font-size:16.5px;font-weight:600;color:var(--ink);line-height:1.3;}
-.rmq-when{display:block;font-size:13.5px;color:var(--ink-faint);margin-top:2px;}
+.rmq-when{display:block;font-size:13.5px;color:var(--ink-soft);margin-top:2px;}
 
 @media(max-width:820px){
   .rmq-card{flex-basis:370px;margin-right:22px;padding:32px 28px 28px;}
@@ -2825,7 +2841,7 @@ body{overflow-x:hidden;max-width:100%;}
    all six cards whatever the source file's aspect ratio. */
 .svc-item .ph{border:0;border-radius:0;min-height:0;height:222px;flex:none;}
 .svc-item-body{display:flex;flex-direction:column;flex:1;padding:28px 30px 30px;}
-.svc-item h4{font-size:23px;line-height:1.2;margin-bottom:12px;}
+.svc-item h4,.svc-item h3{font-size:23px;line-height:1.2;margin-bottom:12px;}
 .svc-item p{font-size:15.5px;line-height:1.65;}
 /* margin-top:auto pins the CTA to the card foot, so the three cards in a row
    line their links up however long the blurb above ran. */
@@ -2927,11 +2943,11 @@ body{overflow-x:hidden;max-width:100%;}
    at the same scale across all four regardless of the source file. Per-person
    framing is set with objectPosition in app/page.tsx, never by changing this. */
 .team-member .ph{min-height:0;aspect-ratio:3/4;margin-bottom:20px;border-radius:var(--radius-card);}
-.team-member h4,.team-row-group h4{font-size:22px;line-height:1.25;margin-bottom:5px;}
+.team-member h4,.team-row-group h4,.team-row-group h3{font-size:22px;line-height:1.25;margin-bottom:5px;}
 .team-member span,.team-row-group span{font-size:15px;color:var(--clay-deep);font-weight:600;letter-spacing:.01em;}
 .lang-band{margin-top:30px;background:var(--sage-tint);border-radius:var(--radius-card);padding:22px 26px;font-size:15px;}
 .lang-band b{color:var(--sage-deep);}
-@media(max-width:1024px){.team-grid-v2{gap:26px;}.team-member h4,.team-row-group h4{font-size:20px;}}
+@media(max-width:1024px){.team-grid-v2{gap:26px;}.team-member h4,.team-row-group h4,.team-row-group h3{font-size:20px;}}
 
 /* ── Team: the group shot and the four portraits as one row ──
    Used by the home page and /new-patient-comprehensive-care-visit, which show
@@ -3018,7 +3034,7 @@ body{overflow-x:hidden;max-width:100%;}
   /* Down from the 20px the 1024px step-down leaves, which is what made the
      captions wrap unevenly. At these sizes both the longest name and the
      longest role hold one line. */
-  .team-member h4,.team-row-group h4{font-size:17px;}
+  .team-member h4,.team-row-group h4,.team-row-group h3{font-size:17px;}
   .team-member span,.team-row-group span{font-size:13.5px;}
   /* Dots only, as with the article row: at 62% the next card is already in
      view, so arrows would be telling the reader something they can see.
@@ -3350,8 +3366,8 @@ body{overflow-x:hidden;max-width:100%;}
 /* Full width and unmistakably the panel's conclusion: taller, set larger, and
    carrying a shadow of its own so it lifts off the deep green rather than
    sitting flat in it like another field. */
-.gt-btn{display:block;width:100%;padding:19px 24px;background:var(--clay);color:#fff;border:none;border-radius:40px;font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,box-shadow .2s ease,transform .2s ease;margin-top:24px;text-align:center;box-shadow:0 10px 26px rgba(12,22,17,.34);}
-.gt-btn:hover{background:var(--clay-deep);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
+.gt-btn{display:block;width:100%;padding:19px 24px;background:var(--clay-deep);color:#fff;border:none;border-radius:40px;font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,box-shadow .2s ease,transform .2s ease;margin-top:24px;text-align:center;box-shadow:0 10px 26px rgba(12,22,17,.34);}
+.gt-btn:hover{background:var(--sage-deep);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
 .gt-btn:disabled{opacity:.65;cursor:progress;transform:none;}
 @media(prefers-reduced-motion:reduce){.gt-btn{transition:none;}.gt-btn:hover{transform:none;}}
 /* Confirmation state — replaces the form in place once an enquiry sends.
@@ -3421,7 +3437,7 @@ body{overflow-x:hidden;max-width:100%;}
    higher opacity than it was on --ink and the headings go to pure white. */
 .footer-v2{background:var(--sage-darker);color:rgba(255,255,255,.86);padding:64px 0 30px;font-size:14.5px;}
 .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:40px;}
-.footer-v2 h4{color:#fff;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;}
+.footer-v2 h4,.footer-v2 h2{color:#fff;font-family:var(--body);font-weight:700;font-size:13px;line-height:1.12;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;}
 /* The global `p{color:var(--ink-soft)}` rule wins over the inherited footer
    colour, which left the brand blurb as dark ink on the deep green. */
 .footer-v2 p{color:rgba(255,255,255,.86);line-height:1.6;}
@@ -3460,6 +3476,9 @@ body{overflow-x:hidden;max-width:100%;}
 /* h3 as well as h4: cards whose heading is a real question use h3 so the page
    keeps a clean outline under the section's h2. */
 .svc h4,.svc h3{font-size:21px;margin-bottom:8px;}
+/* The home page's gallery and article cards were h4s; as h3s they keep the h4
+   leading so the cards look exactly as before. */
+.edu-grid>.svc h3{line-height:1.12;}
 .svc p{font-size:15px;}
 /* Contextual "Related:" line under a first-aid card — quiet, informational,
    descriptive anchors that pass relevance to the treatment page behind it. */
@@ -3651,21 +3670,21 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .guide-card-body{display:flex;flex-direction:column;flex:1;padding:20px 0 0;}
 /* Clamped to three lines so a long question does not knock the row out of
    alignment with the cards beside it. */
-.guide-card-body h4{
+.guide-card-body h4,.guide-card-body h3{
   font-family:var(--display);font-size:21px;line-height:1.32;color:var(--ink);margin:0;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
   transition:color .2s ease;
 }
-.guide-card:hover .guide-card-body h4{color:var(--clay-deep);}
+.guide-card:hover .guide-card-body h4,.guide-card:hover .guide-card-body h3{color:var(--clay-deep);}
 .guide-byline{font-size:14px;color:var(--ink-faint);margin:10px 0 0;}
 @media(max-width:600px){
-  .guide-card-body h4{font-size:17px;}
+  .guide-card-body h4,.guide-card-body h3{font-size:17px;}
   .guide-byline{font-size:13px;}
   .guide-tag{top:10px;left:10px;padding:6px 11px;font-size:10.5px;}
   .guide-cover-title{padding:16px 12px;font-size:15px;}
   .guide-cover-title span{-webkit-line-clamp:4;}
 }
-.sage-bg .guide-card-body h4{color:var(--cream);}
+.sage-bg .guide-card-body h4,.sage-bg .guide-card-body h3{color:var(--cream);}
 .sage-bg .guide-byline{color:rgba(255,255,255,.7);}
 
 .article-card-soon{opacity:.55;pointer-events:none;}
@@ -3700,7 +3719,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .breadcrumb li+li::before{content:'/';margin:0 9px;color:var(--ink-faint);opacity:.55;}
 .breadcrumb a{color:var(--ink-soft);text-decoration:none;}
 .breadcrumb a:hover{color:var(--sage-deep);text-decoration:underline;}
-.breadcrumb li[aria-current="page"]{color:var(--ink-faint);}
+.breadcrumb li[aria-current="page"]{color:var(--ink);}
 
 .post-back{display:inline-flex;align-items:center;gap:6px;color:var(--sage-deep);font-weight:600;font-size:14px;text-decoration:none;margin-bottom:22px;}
 .post-back:hover{color:var(--clay-deep);}
@@ -4445,7 +4464,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .home .svc-grid-v2{grid-template-columns:1fr 1fr;gap:12px;}
   .home .svc-item .ph{height:118px;}
   .home .svc-item-body{padding:13px 13px 15px;}
-  .home .svc-item h4{font-size:15px;line-height:1.25;margin-bottom:5px;}
+  .home .svc-item h4,.home .svc-item h3{font-size:15px;line-height:1.25;margin-bottom:5px;}
   .home .svc-item p{font-size:12.5px;line-height:1.5;}
   .home .svc-item-more{font-size:12.5px;padding-top:11px;}
   /* Implants and cosmetic dentistry — the two cards the phone drops, so the
@@ -4777,7 +4796,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   /* .ph carries a 240px floor that beat the 140px height set on these frames in
      app/page.tsx; at 74% of the screen that made the picture most of the card. */
   .home .edu-grid .ph{min-height:0;}
-  .home .edu-grid>.svc h4{font-size:16px;line-height:1.25;margin:6px 0;}
+  .home .edu-grid>.svc h4,.home .edu-grid>.svc h3{font-size:16px;line-height:1.25;margin:6px 0;}
   .home .edu-grid>.svc p{font-size:13px;line-height:1.5;}
   /* Dots only under this row — the reference gives the community carousel no
      arrows, and at 74% of the screen the next card is already in view. */

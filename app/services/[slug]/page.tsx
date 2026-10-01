@@ -200,7 +200,7 @@ export default async function ServicePage({ params }: Props) {
       </div>
 
       {/* ── 1. HERO ──────────────────────────────────────── */}
-      <section className={s.hero} id="top">
+      <section className={`${s.hero} hero-reveal`} id="top">
         <div className={s.heroBlobClay} aria-hidden="true" />
         <div className={s.heroBlobSage} aria-hidden="true" />
         <div className={`${s.inner} ${s.innerWide} ${s.heroGrid}`}>
@@ -208,25 +208,25 @@ export default async function ServicePage({ params }: Props) {
             <p className={`${s.kicker} reveal`}>{service.eyebrow}</p>
             {/* Several services lead with the italic phrase and have no h1pre,
                 so the line break only goes in when there's a line above it. */}
-            <h1 className={`${s.h1} reveal`} style={{ transitionDelay: '.08s' }}>
+            <h1 className={`${s.h1} reveal`} style={{ transitionDelay: '.08s', animationDelay: '.08s' }}>
               {service.h1pre && <>{service.h1pre} <br /></>}
               <em>{service.h1em}</em>
             </h1>
-            <p className={`${s.heroLead} reveal`} style={{ transitionDelay: '.16s' }}>
+            <p className={`${s.heroLead} reveal`} style={{ transitionDelay: '.16s', animationDelay: '.16s' }}>
               {service.heroLead}
             </p>
-            <div className={`${s.heroCta} reveal`} style={{ transitionDelay: '.24s' }}>
+            <div className={`${s.heroCta} reveal`} style={{ transitionDelay: '.24s', animationDelay: '.24s' }}>
               <Link href="/online-booking" className={s.btnSolid}>Book your visit</Link>
               <a href={telHref} className={s.btnOutline}>Call {business.telephoneDisplay}</a>
             </div>
-            <div className={`${s.heroProof} reveal`} style={{ transitionDelay: '.3s' }}>
+            <div className={`${s.heroProof} reveal`} style={{ transitionDelay: '.3s', animationDelay: '.3s' }}>
               <span>Gentle, no-judgement care</span>
               <span className={s.proofDot} aria-hidden="true" />
               <span>40+ years local</span>
             </div>
           </div>
 
-          <div className={`${s.heroMedia} reveal`} style={{ transitionDelay: '.12s' }}>
+          <div className={`${s.heroMedia} reveal`} style={{ transitionDelay: '.12s', animationDelay: '.12s' }}>
             <div className={s.heroFrame}>
               <Photo
                 priority

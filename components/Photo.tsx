@@ -46,6 +46,9 @@ export default function Photo({
           fill
           sizes={sizes}
           priority={priority}
+          // next/image's priority preloads the image but leaves the <img> itself
+          // at default fetch priority; the hero is the LCP, so say so outright.
+          fetchPriority={priority ? 'high' : undefined}
           style={{
             objectFit,
             objectPosition,

@@ -33,7 +33,10 @@ export default function Header() {
     <header className="site-header" ref={navRef}>
       <div className="nav">
         <Link href="/" className="logo" aria-label="East St Kilda Dental — home">
-          <Image src="/assets/brand/eskd-logo.png" alt="East St Kilda Dental" width={2033} height={443} priority />
+          {/* Sized to its 37px display height, so next/image offers 256w (1x) and
+              384w (2x) files instead of 2048w/3840w. Eager but not priority:
+              a high-priority preload here competed with each page's LCP image. */}
+          <Image src="/assets/brand/eskd-logo.png" alt="East St Kilda Dental" width={170} height={37} loading="eager" />
         </Link>
 
         <nav className={`mainmenu${menuOpen ? ' open' : ''}`} aria-label="Main">

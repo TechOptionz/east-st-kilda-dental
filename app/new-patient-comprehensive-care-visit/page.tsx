@@ -526,7 +526,7 @@ export default function OfferPage() {
                 objectPosition="center 60%"
                 sizes="(max-width: 900px) 100vw, 34vw"
               />
-              <h4>Our team</h4>
+              <h3>Our team</h3>
               <span>Caring for St Kilda East since 1980</span>
             </div>
             {/* display:contents above 600px, so these four stay direct grid

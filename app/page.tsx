@@ -226,8 +226,11 @@ export default function Home() {
        this class, so neither the desktop layout nor any other page moves. */
     <main className="home">
       {/* The hero poster is a CSS background, so it isn't discoverable until the
-          stylesheet parses. Preloading it keeps it the LCP candidate. */}
-      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster.webp" fetchPriority="high" />
+          stylesheet parses. Preloading it keeps it the LCP candidate. One
+          preload per breakpoint, matching the background-image swap in
+          globals.css, so each device fetches only the poster it paints. */}
+      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster-mobile.webp" media="(max-width: 600px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster-1080.webp" media="(min-width: 601px)" fetchPriority="high" />
       <JsonLd data={homeSchema} />
 
       {/* HERO — full-bleed video frame, with the proof points along its foot */}
@@ -315,7 +318,7 @@ export default function Home() {
                   sizes="(max-width: 820px) 100vw, 33vw"
                 />
                 <div className="svc-item-body">
-                  <h4 style={{ fontWeight: 600 }}>{title}</h4>
+                  <h3 style={{ fontWeight: 600 }}>{title}</h3>
                   <p>{blurb}</p>
                   {/* The arrow is drawn by .svc-item-more::after, so it can
                       slide on hover without the label moving with it. */}
@@ -497,7 +500,7 @@ export default function Home() {
                 objectPosition="center 60%"
                 sizes="(max-width: 900px) 100vw, 34vw"
               />
-              <h4>Our team</h4>
+              <h3>Our team</h3>
               <span>Caring for St Kilda East since 1980</span>
             </div>
             {/* display:contents above 600px, so these four stay direct grid
@@ -662,19 +665,19 @@ export default function Home() {
           <div className="edu-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-1.webp" alt="Before and after of a gentle smile refresh at East St Kilda Dental" hint="Before / after (understated)" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Gentle smile refresh</h4>
+              <h3>Gentle smile refresh</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-2.webp" alt="Before and after of a damaged tooth restored with a crown" hint="Real smile, real patient" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Restoring a damaged tooth</h4>
+              <h3>Restoring a damaged tooth</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-3.webp" alt="Before and after of a missing tooth replaced with a single implant" hint="Subtle, natural result" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Replacing a missing tooth</h4>
+              <h3>Replacing a missing tooth</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-4.webp" alt="A once-nervous patient smiling comfortably after treatment" hint="Everyday result" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>A nervous patient's journey</h4>
+              <h3>A nervous patient's journey</h3>
             </div>
           </div>
           <div style={{ textAlign: 'center', marginTop: '32px' }} className="reveal">
@@ -712,7 +715,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Nervous patients
               </span>
-              <h4>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h4>
+              <h3>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h3>
               <p>A calm, step-by-step walk-through for an easier return.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
@@ -733,7 +736,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Gum health
               </span>
-              <h4>Why are my gums bleeding?</h4>
+              <h3>Why are my gums bleeding?</h3>
               <p>What bleeding gums are trying to tell you, and when to act.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
@@ -754,7 +757,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Prevention
               </span>
-              <h4>How Often Should You Really See the Dentist?</h4>
+              <h3>How Often Should You Really See the Dentist?</h3>
               <p>What actually determines your ideal check-up schedule.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
