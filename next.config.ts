@@ -132,6 +132,10 @@ const LEGACY_REDIRECTS: [source: string, destination: string][] = [
   ]),
 ]
 
+/** The preferred domain. The www host redirects here. */
+const CANONICAL_ORIGIN = 'https://eaststkildadental.com.au'
+const WWW_HOST = { type: 'host' as const, value: 'www.eaststkildadental.com.au' }
+
 const nextConfig: NextConfig = {
   images: {
     // AVIF first (smaller), WebP fallback; browsers get the best format they support
@@ -154,6 +158,22 @@ const nextConfig: NextConfig = {
      * status code; switch the whole table together, or not at all.
      */
     return [
+      /*
+       * www → non-www. Every request on the www host goes straight to its
+       * final URL on the bare domain in one hop: a legacy path to its current
+       * page, a trailing-slash URL to the slashless form, anything else to the
+       * same path. Query strings carry over untouched. These come first and
+       * only match the www host, so the bare-domain rules below are unchanged.
+       */
+      ...LEGACY_REDIRECTS.map(([source, destination]) => ({
+        source,
+        has: [WWW_HOST],
+        destination: `${CANONICAL_ORIGIN}${destination}`,
+        statusCode: 301 as const,
+      })),
+      { source: '/:path+/', has: [WWW_HOST], destination: `${CANONICAL_ORIGIN}/:path+`, statusCode: 301 as const },
+      { source: '/:path*', has: [WWW_HOST], destination: `${CANONICAL_ORIGIN}/:path*`, statusCode: 301 as const },
+
       // A source matches with or without its trailing slash.
       ...LEGACY_REDIRECTS.map(([source, destination]) => ({
         source,

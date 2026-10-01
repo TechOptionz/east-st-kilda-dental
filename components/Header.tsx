@@ -118,6 +118,7 @@ export default function Header() {
                 About
               </button>
               <div className="dd">
+                <Link href="/about" onClick={close}>About Us</Link>
                 <Link href="/areas-we-serve" onClick={close}>Areas We Serve</Link>
                 <Link href="/about/our-story" onClick={close}>Our Story</Link>
                 <Link href="/about/why-were-different" onClick={close}>Why We&apos;re Different</Link>
