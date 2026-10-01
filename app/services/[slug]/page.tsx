@@ -5,6 +5,7 @@ import Breadcrumb, { servicesChildTrail } from '@/components/Breadcrumb'
 import GetInTouch from '@/components/GetInTouch'
 import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
+import ServicePractitioners from '@/components/ServicePractitioners'
 import ServiceEducation from '@/components/ServiceEducation'
 import { services, getService, relatedSub, type ServiceData } from '@/data/services'
 import { withSocial } from '@/lib/seo'
@@ -420,6 +421,10 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* ── 6b. YOUR DENTIST ─────────────────────────────
+          Only on the treatments a published practitioner profile lists. */}
+      <ServicePractitioners serviceSlug={service.slug} />
 
       {/* ── 7. CTA BAND ──────────────────────────────────── */}
       <section className={s.ctaSection}>

@@ -4,6 +4,7 @@ import { services } from '@/data/services'
 import { publishedArticles } from '@/data/articles'
 import { populatedTopics } from '@/data/topics'
 import { suburbs, suburbPath } from '@/data/suburbs'
+import { publishedPractitioners } from '@/data/practitioners'
 
 /**
  * /llms.txt — a plain-Markdown map of the site for AI answer engines
@@ -64,7 +65,10 @@ export function GET() {
       'Guide topics',
       populatedTopics.map((t) => ({ title: t.label, path: `/learn/${t.slug}`, description: t.intro })),
     ),
-    ...section('About the practice', pagesIn('about')),
+    ...section('About the practice', [
+      ...pagesIn('about'),
+      ...publishedPractitioners.map((p) => ({ title: p.name, path: `/about/${p.slug}`, description: p.meta.description })),
+    ]),
     ...section('Indexes', pagesIn('hub')),
     // "Optional" is the llms.txt convention for links a reader can skip.
     ...section('Optional', pagesIn('legal')),

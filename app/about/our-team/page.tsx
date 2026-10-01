@@ -3,6 +3,7 @@ import Link from 'next/link'
 import GetInTouch from '@/components/GetInTouch'
 import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
+import { practitionerPath } from '@/data/practitioners'
 import { withSocial } from '@/lib/seo'
 import {
   SCHEMA_ID,
@@ -144,7 +145,9 @@ const teamSchema = {
       jobTitle: clinicianJobTitle(c.slug) ?? c.role,
       description: c.bio,
       image: `${SITE_URL}${c.image}`,
-      url: clinicianId(c.slug),
+      // A clinician with a published profile page is described there; until
+      // then the card on this page is their URL.
+      url: practitionerPath(c.slug) ? `${SITE_URL}${practitionerPath(c.slug)}` : clinicianId(c.slug),
       worksFor: { '@id': SCHEMA_ID.practice },
     })),
   ],
@@ -158,17 +161,37 @@ const teamSchema = {
  * heading for the outline and screen readers. The five clinician cards were
  * supplied designed; the rest come from scripts/make-team-cards.mjs.
  */
-function ProfileCard({ id, name, role, card }: { id?: string; name: string; role: string; card: string }) {
+function ProfileCard({ id, slug, name, role, card }: { id?: string; slug?: string; name: string; role: string; card: string }) {
+  const photo = (
+    <Photo
+      src={card}
+      alt={`${name}, ${role} at East St Kilda Dental`}
+      sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
+      objectFit="contain"
+      style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
+    />
+  )
+  // A clinician with a published profile page: the whole card links to it, and
+  // a visible text link under it carries their name as the anchor text.
+  const profile = practitionerPath(slug)
+
   return (
     <div id={id} style={{ scrollMarginTop: '110px', alignSelf: 'start' }}>
       <h4 className="sr-only">{name}, {role}</h4>
-      <Photo
-        src={card}
-        alt={`${name}, ${role} at East St Kilda Dental`}
-        sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
-        objectFit="contain"
-        style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
-      />
+      {profile ? (
+        <>
+          <Link href={profile} style={{ display: 'block' }} tabIndex={-1} aria-hidden="true">
+            {photo}
+          </Link>
+          <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '15px' }}>
+            <Link href={profile} style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+              {name}&apos;s profile &rarr;
+            </Link>
+          </p>
+        </>
+      ) : (
+        photo
+      )}
     </div>
   )
 }

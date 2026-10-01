@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import BreadcrumbBar from '@/components/BreadcrumbBar'
+import { practitionerPath } from '@/data/practitioners'
 import { areasChildTrail } from '@/components/Breadcrumb'
 import GetInTouch from '@/components/GetInTouch'
 import HealthFundLogos from '@/components/HealthFundLogos'
@@ -352,7 +353,8 @@ export default function SuburbPage({ slug }: { slug: string }) {
                 <div className={styles.avatar}>
                   <Image src={m.image} alt={`${m.name}, ${m.role} at ${business.name}`} width={96} height={96} />
                 </div>
-                <h3>{m.name}</h3>
+                {/* A dentist with a published profile page links to it. */}
+                <h3>{practitionerPath(m.name) ? <Link className="name-link" href={practitionerPath(m.name)!}>{m.name}</Link> : m.name}</h3>
                 <p>{m.role}</p>
               </div>
             ))}

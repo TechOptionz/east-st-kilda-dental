@@ -32,8 +32,22 @@ export const learnHubTrail: Crumb[] = [HOME, { name: LEARN_SECTION.name }]
  */
 export const learnChildTrail = (name: string): Crumb[] => [HOME, LEARN_SECTION, { name }]
 
-/** Home → Dental Education → article. Pass the article's visible H1. */
-export const learnArticleTrail = learnChildTrail
+/**
+ * Home → Dental Education → topic → article. Pass the article's visible H1 and
+ * its primary topic; an article with no live topic page sits directly under
+ * the section instead, so the trail never links to a URL that 404s.
+ */
+export const learnArticleTrail = (name: string, topic?: { slug: string; label: string }): Crumb[] =>
+  topic
+    ? [HOME, LEARN_SECTION, { name: topic.label, href: `/learn/${topic.slug}` }, { name }]
+    : learnChildTrail(name)
+
+/** The About hub and the team page, defined once for the practitioner trail. */
+export const ABOUT_SECTION = { name: 'About', href: '/about' }
+export const TEAM_SECTION = { name: 'Our Team', href: '/about/our-team' }
+
+/** Home → About → Our Team → this practitioner. Pass their full name. */
+export const practitionerTrail = (name: string): Crumb[] => [HOME, ABOUT_SECTION, TEAM_SECTION, { name }]
 
 /**
  * The locations hub, defined once, for the same reason as LEARN_SECTION.

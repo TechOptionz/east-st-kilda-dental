@@ -4,6 +4,7 @@ import Link from 'next/link'
 import CarePoints from '@/components/CarePoints'
 import CarouselNav from '@/components/CarouselNav'
 import Photo from '@/components/Photo'
+import { practitionerPath } from '@/data/practitioners'
 import GetInTouch from '@/components/GetInTouch'
 import HealthFundLogos from '@/components/HealthFundLogos'
 import HeroVideoBg from '@/components/HeroVideoBg'
@@ -514,7 +515,8 @@ export default function Home() {
                 objectPosition="center top"
                 sizes="(max-width: 900px) 50vw, 198px"
               />
-              <h4>Dr Anbar Ganatra</h4>
+              {/* Linked once her profile page is published; plain text until then. */}
+              <h4>{practitionerPath('anbar-ganatra') ? <Link className="name-link" href={practitionerPath('anbar-ganatra')!}>Dr Anbar Ganatra</Link> : 'Dr Anbar Ganatra'}</h4>
               <span>Cosmetic &amp; General Dentist</span>
             </div>
             <div className="team-member">

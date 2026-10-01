@@ -6,6 +6,7 @@ import { populatedTopics } from '@/data/topics'
 import { suburbs, suburbPath } from '@/data/suburbs'
 import { CONTENT_UPDATED } from '@/lib/content-dates'
 import { STATIC_PAGES } from '@/lib/site-pages'
+import { publishedPractitioners } from '@/data/practitioners'
 
 /**
  * Every indexable route, as an absolute production URL.
@@ -28,6 +29,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Suburb landing pages. Adding an entry to data/suburbs.ts (and its stub
     // route) is all it takes for a new suburb page to appear here.
     ...suburbs.map((s) => suburbPath(s.slug)),
+    // Practitioner profiles, once published. An unfinished profile is noindex
+    // and stays out of here until data/practitioners.ts marks it published.
+    ...publishedPractitioners.map((p) => `/about/${p.slug}`),
   ]
 
   // lastModified only where a page has a real content date (lib/content-dates.ts).

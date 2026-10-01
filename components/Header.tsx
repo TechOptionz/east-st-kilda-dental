@@ -116,10 +116,20 @@ export default function Header() {
             <li className="nav-extra"><Link href="/nervous-patients" className="menu-link" onClick={close}>Gentle Dentistry</Link></li>
 
                         {/* About */}
-            <li className={`has-dd${openDrop === 'about' ? ' open' : ''}`}>
-              <button className="menu-link" onClick={() => toggleDrop('about')} aria-expanded={openDrop === 'about'}>
-                About
-              </button>
+            {/* The label is a real link to the /about hub; the caret beside it is
+                the button that opens the dropdown, so the hub is one click away
+                and the sub-pages stay a tap away on a phone. */}
+            <li className={`has-dd has-split${openDrop === 'about' ? ' open' : ''}`}>
+              <div className="menu-split">
+                <Link href="/about" className="menu-link" onClick={close}>About</Link>
+                <button
+                  type="button"
+                  className="dd-toggle"
+                  onClick={() => toggleDrop('about')}
+                  aria-expanded={openDrop === 'about'}
+                  aria-label="Show About pages"
+                />
+              </div>
               <div className="dd">
                 <Link href="/about" onClick={close}>About Us</Link>
                 <Link href="/areas-we-serve" onClick={close}>Areas We Serve</Link>

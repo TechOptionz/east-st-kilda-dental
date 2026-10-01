@@ -6,6 +6,7 @@ import BreadcrumbBar from '@/components/BreadcrumbBar'
 import { learnHubTrail } from '@/components/Breadcrumb'
 import GuideLibrary from '@/components/GuideLibrary'
 import GetInTouch from '@/components/GetInTouch'
+import { practitionerPath } from '@/data/practitioners'
 import { withSocial } from '@/lib/seo'
 import { SCHEMA_ID, SITE_URL, business, telHref } from '@/lib/business'
 import { publishedArticles } from '@/data/articles'
@@ -217,7 +218,7 @@ export default function LearnIndex() {
                   objectPosition={writer.objectPosition}
                   sizes="(max-width: 820px) 50vw, 25vw"
                 />
-                <h4>{writer.name}</h4>
+                <h4>{practitionerPath(writer.name) ? <Link className="name-link" href={practitionerPath(writer.name)!}>{writer.name}</Link> : writer.name}</h4>
                 <span>{writer.role}</span>
               </div>
             ))}

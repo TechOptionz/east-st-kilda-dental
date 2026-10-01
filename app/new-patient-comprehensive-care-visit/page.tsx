@@ -8,6 +8,7 @@ import CarouselNav from '@/components/CarouselNav'
 import JsonLd from '@/components/JsonLd'
 import Ico, { type IconName } from '@/components/LineIcon'
 import Photo from '@/components/Photo'
+import { practitionerPath } from '@/data/practitioners'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
@@ -541,7 +542,7 @@ export default function OfferPage() {
                   objectPosition={teamCrop[c.slug] ?? 'center top'}
                   sizes="(max-width: 900px) 50vw, 198px"
                 />
-                <h4>{c.name}</h4>
+                <h4>{practitionerPath(c.slug) ? <Link className="name-link" href={practitionerPath(c.slug)!}>{c.name}</Link> : c.name}</h4>
                 <span>{c.jobTitle}</span>
               </div>
             ))}
