@@ -1,0 +1,515 @@
+/*
+ * The practitioner profile: /about/<slug>.
+ *
+ * Only the pieces this page has and no other does. Everything it shares with
+ * the rest of the site — .hero-v2, .sec, .sec-head, .eyebrow, .pathlink,
+ * .ctaband, .rmq-card, the buttons and the tokens — still comes from
+ * globals.css, so the page moves with the site rather than beside it.
+ */
+
+/* The page root. Rules that have to outrank a global section rule (.sec h2,
+   .sec padding, .ph.tall) are scoped under it rather than forced. */
+.profile {
+  display: block;
+}
+
+/* A small shared badge: line icon on the sage tint, the npv pillar badge. */
+.ico {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--sage-tint);
+  color: var(--clay-deep);
+  display: grid;
+  place-items: center;
+}
+.ico svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* The hero portrait is a 591x842 head-and-shoulders; held to a portrait frame
+   rather than the .tall landscape box, so the face is never cropped away. */
+.profile :global(.ph).portrait {
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+  max-width: 480px;
+  width: 100%;
+  justify-self: end;
+}
+.ahpra {
+  font-size: 14px;
+  margin-top: -14px;
+  margin-bottom: 20px;
+}
+
+/* The name on one line. The copy column is a query container, so 1cqw is a
+   hundredth of its own width; "Dr Anbar Ganatra" measures 7.29em in the hero
+   face, so 13.3cqw leaves about 3% in hand and the 74px cap is the site's
+   hero size. A longer name needs this remeasured. */
+.heroCopy {
+  container-type: inline-size;
+  min-width: 0;
+}
+.profile .heroCopy h1 {
+  font-size: min(74px, 13.3cqw);
+  white-space: nowrap;
+}
+
+/* ── At a glance ─────────────────────────────────────────
+   A row of tiles, one fact each: the badge and its label on one line, the
+   value beneath. A long fact (areas of care) takes a full-width tile of its own, so
+   it does not stretch every tile in the row to its height. Flex rather than
+   grid so a short last row always fills its width instead of leaving holes.
+   Tucked up under the hero, whose gradient ends in the same cream. */
+.profile .factsSec {
+  padding-top: 8px;
+}
+.profile .glanceHead {
+  font-size: clamp(26px, 2.6vw, 32px);
+  margin: 0 0 22px;
+  color: var(--sage-deep);
+}
+.facts {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.fact {
+  flex: 1 1 150px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 12px;
+  align-content: start;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px 18px 22px;
+}
+.fact .ico {
+  width: 36px;
+  height: 36px;
+}
+.fact .ico svg {
+  width: 19px;
+  height: 19px;
+}
+.factWide {
+  flex-basis: 100%;
+}
+.fact dt {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  line-height: 1.4;
+}
+.fact dd {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ── In their own words ──────────────────────────────────
+   An interview layout: the heading holds its place on the left while the
+   answers run down the right, so a long run of questions still reads as one
+   conversation. */
+.qaRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.5fr);
+  gap: 72px;
+  align-items: start;
+}
+.qaRow + .qaRow {
+  margin-top: 88px;
+  padding-top: 88px;
+  border-top: 1px solid var(--line);
+}
+.qaHead {
+  position: sticky;
+  top: 112px;
+}
+.profile .qaHead h2 {
+  color: var(--sage-deep);
+}
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 26px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.byline img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.byline b {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15px;
+}
+.qa + .qa {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line-soft);
+}
+.qa h3 {
+  font-size: clamp(22px, 2.1vw, 27px);
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+.answer p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  max-width: 40em;
+}
+.answer p + p {
+  margin-top: 12px;
+}
+/* Answer-first: the opening line is the direct answer, so it carries the
+   page's ink rather than the softer body colour. */
+.answer p:first-child {
+  color: var(--ink);
+}
+.answer a {
+  color: var(--sage-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.answer a:hover {
+  color: var(--clay-deep);
+}
+
+/* ── What an appointment is like ─────────────────────────
+   Five steps on one line, joined by a hairline through the badges. */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 28px;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 31px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: var(--line);
+}
+.steps li {
+  position: relative;
+  text-align: center;
+  container-type: inline-size;
+}
+.stepIco {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  color: var(--clay-deep);
+  display: grid;
+  place-items: center;
+}
+.stepIco svg {
+  width: 26px;
+  height: 26px;
+}
+/* Each title on one line: sized off its own column. The longest, "We start
+   by understanding", measures 10.14em, so 9.6cqw keeps it inside. */
+.steps h3 {
+  font-size: min(20px, 9.6cqw);
+  white-space: nowrap;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+.steps p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Areas of care ───────────────────────────────────────
+   An index of linked rows in one panel: each area is a way into its
+   treatment page, and five reads more cleanly as a list than as a grid. */
+.areas {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 920px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+.areas li + li {
+  border-top: 1px solid var(--line);
+}
+.area {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  padding: 24px 32px;
+  transition: background 0.2s ease;
+}
+.area:hover {
+  background: var(--paper);
+}
+.area:focus-visible {
+  outline: 2px solid var(--sage-deep);
+  outline-offset: -4px;
+}
+.area .ico {
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+}
+.areaBody h3 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0 0 5px;
+}
+.area:hover h3 {
+  color: var(--sage-deep);
+}
+.areaBody p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--clay);
+  transition: transform 0.2s ease;
+}
+.area:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* ── Why this practice ──────────────────────────────────── */
+.practice {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 64px;
+  align-items: center;
+}
+.practice h2 {
+  margin-bottom: 28px;
+}
+.practice .qa h3 {
+  font-size: 22px;
+  color: var(--sage-deep);
+}
+.quals {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-card);
+  padding: 34px 36px;
+}
+.profile .quals h2 {
+  font-size: clamp(24px, 2.4vw, 30px);
+  margin: 0 0 16px;
+}
+
+/* ── Outside the practice ────────────────────────────────
+   A short, personal aside: a narrow centred block, deliberately smaller in
+   scale than the sections around it. */
+.profile .outsideSec {
+  padding: 80px 0;
+}
+.outside {
+  max-width: 40em;
+  text-align: center;
+}
+.profile .outside h2 {
+  font-size: clamp(28px, 3vw, 38px);
+  margin: 0 0 18px;
+}
+.outside h3 {
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--clay-deep);
+  margin: 0 0 12px;
+}
+.outside p {
+  font-family: var(--display);
+  font-size: clamp(24px, 2.6vw, 30px);
+  line-height: 1.35;
+  color: var(--sage-deep);
+}
+
+/* ── Patient feedback ────────────────────────────────────
+   The home page's review row as it is, bar two things: the longest reviews are
+   held to a few lines so one long card does not set the height of the whole
+   row, and the Google link is styled here rather than inline. */
+.reviewsSec :global(.rmq-quote) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 9;
+  overflow: hidden;
+}
+.reviewsSec :global(.gscore a) {
+  color: var(--sage-deep);
+  font-weight: 600;
+}
+
+/* ── Closing call to action ──────────────────────────────── */
+.profile .cta h2 {
+  font-size: clamp(28px, 3.2vw, 40px);
+  color: var(--cream);
+  margin: 0 0 16px;
+}
+.address {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  font-style: normal;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+}
+.address svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--clay-soft);
+}
+.address b {
+  color: var(--cream);
+  font-weight: 600;
+  margin-right: 4px;
+}
+.updated {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--ink-faint);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  /* The hairline turns to run down through the badges. */
+  .steps::before {
+    top: 31px;
+    bottom: 31px;
+    left: 31px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+  .steps li {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    column-gap: 20px;
+    text-align: left;
+    padding-bottom: 26px;
+  }
+  .steps li:last-child {
+    padding-bottom: 0;
+  }
+  .stepIco {
+    grid-row: 1 / span 2;
+    margin: 0;
+  }
+  .steps h3 {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 860px) {
+  .profile :global(.ph).portrait {
+    justify-self: stretch;
+    max-width: none;
+    aspect-ratio: 4 / 4.4;
+  }
+  .qaRow {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .qaRow + .qaRow {
+    margin-top: 60px;
+    padding-top: 60px;
+  }
+  .qaHead {
+    position: static;
+  }
+  .practice {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .facts {
+    gap: 10px;
+  }
+  .fact {
+    flex-basis: 130px;
+  }
+  .factWide {
+    flex-basis: 100%;
+  }
+  .fact {
+    padding: 16px 14px 18px;
+  }
+  .area {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 16px;
+    padding: 22px 20px;
+    align-items: start;
+  }
+  .area .arrow {
+    display: none;
+  }
+  .areaBody h3 {
+    font-size: 20px;
+  }
+  .qa + .qa {
+    margin-top: 32px;
+    padding-top: 32px;
+  }
+  .answer p {
+    font-size: 16.5px;
+  }
+  .profile .outsideSec {
+    padding: 56px 0;
+  }
+  .address {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

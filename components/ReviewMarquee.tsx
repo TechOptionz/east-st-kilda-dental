@@ -21,20 +21,25 @@
  * anywhere on the site.
  */
 
+import type { CSSProperties } from 'react'
 import CarouselNav from './CarouselNav'
 
-interface Review {
+export interface Review {
   quote: string
   name: string
   /** Drawn from the Google listing. Absent where we do not have the date. */
   when?: string
 }
 
-const REVIEWS: Review[] = [
+/**
+ * The site's one review source. The practitioner profiles pick their reviews
+ * out of this list by name, so a quote exists in exactly one place.
+ */
+export const REVIEWS: Review[] = [
   {
     quote:
       'Dr Anbar was fantastic and extremely knowledgeable. Very comfortable experience as well, from my perspective there was no pain or discomfort. Would highly recommend to anyone looking for a new dentist.',
-    name: 'Emily Wooton',
+    name: 'Emily Wootton',
     when: '3 months ago',
   },
   {
@@ -86,7 +91,7 @@ function GoogleMark() {
   )
 }
 
-function ReviewCard({ quote, name, when }: Review) {
+export function ReviewCard({ quote, name, when }: Review) {
   return (
     <figure className="rmq-card">
       {/* The faint mark in the corner. Decorative — the <blockquote> below is
@@ -120,21 +125,36 @@ function ReviewCard({ quote, name, when }: Review) {
   )
 }
 
-export default function ReviewMarquee() {
+interface ReviewMarqueeProps {
+  /** Defaults to the home page's six. A practitioner profile passes its own. */
+  reviews?: Review[]
+  /** The scroller's id, for the phone carousel's controls. Unique per page. */
+  id?: string
+  label?: string
+}
+
+export default function ReviewMarquee({
+  reviews = REVIEWS,
+  id = 'home-reviews',
+  label = 'Reviews from our patients',
+}: ReviewMarqueeProps) {
+  // One lap of the row takes 16s a card, so a longer list drifts at the same
+  // speed as the home page's six rather than racing to fit the 96s lap.
+  const lap = { '--rmq-lap': `${reviews.length * 16}s` } as CSSProperties
   return (
     /* The wrapper is the positioning context for the phone-only arrows, and
        nothing more — on a wide screen it is a plain block around the row. */
     <div className="rmq-wrap">
-      <div className="rmq" id="home-reviews" role="region" aria-label="Reviews from our patients">
-        <div className="rmq-track">
-          {REVIEWS.map(r => (
+      <div className="rmq" id={id} role="region" aria-label={label}>
+        <div className="rmq-track" style={lap}>
+          {reviews.map(r => (
             <ReviewCard key={r.name} {...r} />
           ))}
-          {/* The second lap. Hidden from assistive tech so the six reviews are
+          {/* The second lap. Hidden from assistive tech so each review is
               announced once, not twice. On a phone the row is a carousel
               rather than a marquee and this copy is hidden outright. */}
           <div className="rmq-loop" aria-hidden="true">
-            {REVIEWS.map(r => (
+            {reviews.map(r => (
               <ReviewCard key={`${r.name}-loop`} {...r} />
             ))}
           </div>
@@ -142,8 +162,8 @@ export default function ReviewMarquee() {
       </div>
       {/* Phone only — display:none from 601px up. See globals.css. */}
       <CarouselNav
-        targetId="home-reviews"
-        count={REVIEWS.length}
+        targetId={id}
+        count={reviews.length}
         itemSelector=".rmq-track > .rmq-card"
         className="rmq-nav"
       />

@@ -9,6 +9,7 @@ import JsonLd from '@/components/JsonLd'
 import Ico, { type IconName } from '@/components/LineIcon'
 import Photo from '@/components/Photo'
 import ReviewMarquee from '@/components/ReviewMarquee'
+import { practitionerPath } from '@/data/practitioners'
 import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
 import { SCHEMA_ID, SITE_URL, areasServed, business, clinicians, telHref } from '@/lib/business'
@@ -372,7 +373,7 @@ export default function GentlePage() {
             <div className="eyebrow">The people you&apos;ll meet</div>
             <h2>A calm team that genuinely <em>gets it</em></h2>
             <p>
-              <Link href={`${TEAM}#${anbar.slug}`}>{anbar.name}</Link> and the {business.name} team regularly care for patients with dental anxiety and people returning after long gaps between dental visits.
+              <Link href={practitionerPath(anbar.slug) ?? `${TEAM}#${anbar.slug}`}>{anbar.name}</Link> and the {business.name} team regularly care for patients with dental anxiety and people returning after long gaps between dental visits.
             </p>
           </div>
           <div className="team-row reveal">

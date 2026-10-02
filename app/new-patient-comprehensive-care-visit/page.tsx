@@ -498,14 +498,14 @@ export default function OfferPage() {
           <div className="sec-head center reveal">
             <div className="eyebrow">Experienced, friendly, local</div>
             <h2>You&apos;ll be looked after by a team that explains things properly.</h2>
-            {/* Names the dentists as linked entities, each pointing at the
-                anchor that carries their Person node on the team page. */}
+            {/* Names the dentists as linked entities: a dentist with a
+                published profile links to it, the rest to their team card. */}
             <p className="npv-clinicians">
               Your visit may be with{' '}
               {dentists.map((d, i) => (
                 <span key={d.slug}>
                   {i > 0 && (i === dentists.length - 1 ? ' or ' : ', ')}
-                  <Link href={`/about/our-team#${d.slug}`}>{d.name}</Link>
+                  <Link href={practitionerPath(d.slug) ?? `/about/our-team#${d.slug}`}>{d.name}</Link>
                 </span>
               ))}
               . Each takes the time to explain what they see and talk you through your options before anything goes ahead.

@@ -10,6 +10,7 @@ import {
   SITE_URL,
   business,
   clinicianId,
+  clinicianUrl,
   clinicianJobTitle,
   telHref,
 } from '@/lib/business'
@@ -147,7 +148,7 @@ const teamSchema = {
       image: `${SITE_URL}${c.image}`,
       // A clinician with a published profile page is described there; until
       // then the card on this page is their URL.
-      url: practitionerPath(c.slug) ? `${SITE_URL}${practitionerPath(c.slug)}` : clinicianId(c.slug),
+      url: clinicianUrl(c.slug),
       worksFor: { '@id': SCHEMA_ID.practice },
     })),
   ],

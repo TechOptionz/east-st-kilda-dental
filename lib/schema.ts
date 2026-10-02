@@ -4,6 +4,7 @@ import {
   areasServed,
   business,
   clinicianId,
+  clinicianUrl,
   clinicians,
   openingHours,
   socialProfiles,
@@ -45,15 +46,16 @@ export const practiceNode = () => ({
 })
 
 /**
- * A clinician as a Person. The full node — photo and bio — lives on the team
- * page; this restates only what lib/business.ts pins.
+ * A clinician as a Person. The full node — photo and bio — lives on their
+ * profile page, or the team page until they have one; this restates only what
+ * lib/business.ts pins.
  */
 export const personNode = (c: (typeof clinicians)[number]) => ({
   '@type': 'Person',
   '@id': clinicianId(c.slug),
   name: c.name,
   jobTitle: c.jobTitle,
-  url: clinicianId(c.slug),
+  url: clinicianUrl(c.slug),
   worksFor: { '@id': SCHEMA_ID.practice },
 })
 

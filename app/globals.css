@@ -240,7 +240,7 @@ p{margin:0;color:var(--ink-soft);}
 .btn-alt{background:var(--sage-deep);color:#fff;border:none;}
 .btn-alt:hover{background:var(--sage);}
 .gt-btn{background:var(--clay-deep);color:#fff;border:none;cursor:pointer;}
-.gt-btn:hover{background:var(--sage-deep);}
+.gt-btn:hover{background:var(--clay);}
 .btn-emergency-nav{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--clay);color:var(--clay-deep);background:transparent;border-radius:30px;padding:9px 16px;font-weight:700;font-size:14px;transition:.2s;white-space:nowrap;cursor:pointer;font-family:var(--body);}
 .btn-emergency-nav:hover{background:var(--clay);color:#fff;}
 .ed-dot{width:8px;height:8px;border-radius:50%;background:var(--clay);display:inline-block;animation:edpulse 1.8s infinite;}
@@ -2653,7 +2653,8 @@ body{overflow-x:hidden;max-width:100%;}
   width:max-content;
   /* Slow on purpose: one lap of the six cards takes a minute and a half, which
      is roughly 25px a second on a desktop and slower still on a phone. */
-  animation:rmq-drift 96s linear infinite;
+  /* --rmq-lap is set by ReviewMarquee from the number of cards. */
+  animation:rmq-drift var(--rmq-lap,96s) linear infinite;
   will-change:transform;
 }
 /* The second lap. A flex box of its own, so the track's direct children are
@@ -2728,6 +2729,8 @@ body{overflow-x:hidden;max-width:100%;}
   margin:0 0 26px;
   font-size:17px;line-height:1.75;
   color:var(--ink);
+  /* Reviews are kept exactly as written, paragraph breaks included. */
+  white-space:pre-line;
 }
 /* margin-top:auto pins the person to the card foot, so the rule above them
    lines up across cards whatever length the quote ran to. */
@@ -3387,7 +3390,9 @@ body{overflow-x:hidden;max-width:100%;}
    carrying a shadow of its own so it lifts off the deep green rather than
    sitting flat in it like another field. */
 .gt-btn{display:block;width:100%;padding:19px 24px;background:var(--clay-deep);color:#fff;border:none;border-radius:40px;font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,box-shadow .2s ease,transform .2s ease;margin-top:24px;text-align:center;box-shadow:0 10px 26px rgba(12,22,17,.34);}
-.gt-btn:hover{background:var(--sage-deep);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
+/* Stays clay on hover: the form panel is --sage-deep, so the sage hover every
+   other button takes would make this one vanish into its own background. */
+.gt-btn:hover{background:var(--clay);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
 .gt-btn:disabled{opacity:.65;cursor:progress;transform:none;}
 @media(prefers-reduced-motion:reduce){.gt-btn{transition:none;}.gt-btn:hover{transform:none;}}
 /* Confirmation state — replaces the form in place once an enquiry sends.

@@ -10,6 +10,8 @@
  * they match the canonical URL.
  */
 
+import { publishedPractitioners } from '@/data/practitioners'
+
 /**
  * The production origin, and the bare domain rather than www on purpose.
  *
@@ -173,7 +175,26 @@ export const clinicians = [
   { slug: 'michelle-callaghan', name: 'Michelle Callaghan', jobTitle: 'Dental Hygienist' },
 ] as const
 
-export const clinicianId = (slug: string) => `${SITE_URL}/about/our-team#${slug}`
+/**
+ * The one Person @id for a clinician, used by every page that names them.
+ *
+ * A clinician with a published profile is identified by that page
+ * (/about/<profile>#person), which is where the entity is described in full;
+ * everyone else by their card on the team page. Because every node goes
+ * through this, publishing a profile moves the home page, team page, landing
+ * pages and article bylines onto the new @id together — there is never a
+ * second Person for the same clinician.
+ */
+export const clinicianId = (slug: string) => {
+  const profile = publishedPractitioners.find(p => p.clinicianSlug === slug)
+  return profile ? `${SITE_URL}/about/${profile.slug}#person` : `${SITE_URL}/about/our-team#${slug}`
+}
+
+/** The URL a clinician's Person node publishes: their profile once live, else their team card. */
+export const clinicianUrl = (slug: string) => {
+  const profile = publishedPractitioners.find(p => p.clinicianSlug === slug)
+  return profile ? `${SITE_URL}/about/${profile.slug}` : `${SITE_URL}/about/our-team#${slug}`
+}
 
 /**
  * The jobTitle to publish for a clinician, where the entity graph pins one.

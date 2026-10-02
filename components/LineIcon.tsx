@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 
 /**
- * The line icons used across the landing pages (/new-patient-comprehensive-care-visit
- * and /nervous-patients): pillar badges, "who is this for" cards, reassurance
+ * The line icons used across the landing pages (/new-patient-comprehensive-care-visit,
+ * /nervous-patients and the practitioner profiles): pillar badges, "who is this for" cards, reassurance
  * chips, booking cards and the alternate paths at the foot.
  *
  * Kept as one map rather than inline <svg> blocks so the pages stay readable,
@@ -33,6 +33,12 @@ const icons = {
   headphones: <><path d="M5 15.5V12a7 7 0 0 1 14 0v3.5" /><rect x="4" y="14" width="3.6" height="5.6" rx="1.2" /><rect x="16.4" y="14" width="3.6" height="5.6" rx="1.2" /></>,
   pause: <><circle cx="12" cy="12" r="8.5" /><path d="M10 9v6M14 9v6" /></>,
   droplet: <path d="M12 4.5s-5.5 6-5.5 9.6a5.5 5.5 0 0 0 11 0C17.5 10.5 12 4.5 12 4.5Z" />,
+  /* The practitioner profile's facts, appointment steps and areas of care. */
+  briefcase: <><rect x="4" y="8" width="16" height="11" rx="1.8" /><path d="M9.2 8V6.3a1.3 1.3 0 0 1 1.3-1.3h3a1.3 1.3 0 0 1 1.3 1.3V8M4 12.8h16" /></>,
+  building: <><path d="M6 19.5V5.8A1.3 1.3 0 0 1 7.3 4.5h9.4A1.3 1.3 0 0 1 18 5.8v13.7M4.5 19.5h15" /><path d="M9.3 8h1.4M13.3 8h1.4M9.3 11.3h1.4M13.3 11.3h1.4M10.5 19.5v-4h3v4" /></>,
+  pin: <><path d="M12 19.8s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10Z" /><circle cx="12" cy="9.8" r="2.2" /></>,
+  eye: <><path d="M3.5 12s3-5.8 8.5-5.8S20.5 12 20.5 12s-3 5.8-8.5 5.8S3.5 12 3.5 12Z" /><circle cx="12" cy="12" r="2.4" /></>,
+  gem: <><path d="M7.5 5h9l3.5 4.5L12 19.5 4 9.5Z" /><path d="M4 9.5h16M9.8 5 8.5 9.5l3.5 10 3.5-10L14.2 5" /></>,
 } satisfies Record<string, ReactNode>
 
 export type IconName = keyof typeof icons
