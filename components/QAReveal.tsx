@@ -16,9 +16,15 @@ import styles from './PractitionerProfile.module.css'
  */
 export default function QAReveal({
   question,
+  number,
+  className,
   children,
 }: {
   question: string
+  /** A small index label over the question, e.g. "01". Decorative. */
+  number?: string
+  /** Extra class on the item, for the card and dark-band variants. */
+  className?: string
   /** The answer, revealed on hover. */
   children: ReactNode
 }) {
@@ -28,7 +34,7 @@ export default function QAReveal({
 
   return (
     <div
-      className={styles.qa}
+      className={className ? `${styles.qa} ${className}` : styles.qa}
       data-open={open ? 'true' : undefined}
       // Short delays both ways: on the way in, so sweeping the cursor past a
       // question does not open it; on the way out, so a brief slip off the
@@ -45,6 +51,11 @@ export default function QAReveal({
         timer.current = window.setTimeout(() => setOpen(false), 160)
       }}
     >
+      {number && (
+        <span className={styles.qaNum} aria-hidden="true">
+          {number}
+        </span>
+      )}
       <h3 className={styles.qaQuestion}>
         <button
           type="button"

@@ -124,9 +124,9 @@ function QA({ item }: { item: Answer }) {
  * answer (see QAReveal). Rendered here, so the full answer is in the server
  * HTML whether or not it has been opened.
  */
-function InterviewQA({ item }: { item: Answer }) {
+function InterviewQA({ item, number, className }: { item: Answer; number?: string; className?: string }) {
   return (
-    <QAReveal question={item.question}>
+    <QAReveal question={item.question} number={number} className={className}>
       {item.answer.map((text, i) => (
         <Rich key={i} text={text} />
       ))}
@@ -244,7 +244,7 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
       <BreadcrumbBar trail={practitionerTrail(p.name)} id={`${url}#breadcrumb`} />
 
       {/* ── HERO: name, role, portrait ───────────────────── */}
-      <section className="hero-v2">
+      <section className={`hero-v2 ${styles.hero}`}>
         <div className="container hero-v2-grid">
           <div className={`reveal ${styles.heroCopy}`}>
             {p.eyebrow && <div className="eyebrow">{p.eyebrow}</div>}
@@ -257,19 +257,32 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
               <a href={telHref} className="btn btn-ghost">Call {business.telephoneDisplay}</a>
             </div>
           </div>
-          <Photo
-            tall
-            className={`reveal ${styles.portrait}`}
-            priority
-            src={p.image}
-            alt={p.imageAlt}
-            objectPosition={p.objectPosition}
-            sizes="(max-width: 860px) 100vw, 480px"
-          />
+          {/* The portrait on an offset tint, with a line of theirs floated
+              over its corner. */}
+          <div className={`reveal ${styles.portraitWrap}`}>
+            <Photo
+              tall
+              className={styles.portrait}
+              priority
+              src={p.image}
+              alt={p.imageAlt}
+              objectPosition={p.objectPosition}
+              sizes="(max-width: 860px) 100vw, 480px"
+            />
+            {p.heroQuote && (
+              <figure className={styles.heroQuote}>
+                <span className={styles.quoteMark} aria-hidden="true">&ldquo;</span>
+                <blockquote>{p.heroQuote}</blockquote>
+                <figcaption>{p.name}</figcaption>
+              </figure>
+            )}
+          </div>
         </div>
       </section>
 
       {/* ── AT A GLANCE ──────────────────────────────────── */}
+      {/* One panel: the short facts in a row of cells split by hairlines, the
+          long one (areas of care) as a tinted strip along its foot. */}
       {has(p.facts) && (
         <section className={`sec ${styles.factsSec}`} aria-labelledby="at-a-glance">
           <div className="container">
@@ -290,47 +303,73 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
       )}
 
       {/* ── IN THEIR OWN WORDS ───────────────────────────── */}
+      {/* The first group as a feature on the deep green band — their pull
+          quote beside its questions — and every group after it as numbered
+          cards, two across, as the wireframe lays them out. */}
       {has(p.interview) && (
-        <section className={`sec alt ${styles.qaSec}`}>
-          <div className="container">
-            {p.interview.map((group, gi) => (
-              <div key={group.heading} className={styles.qaRow}>
-                <div className={`${styles.qaHead} reveal`}>
-                  <div className="eyebrow">In {p.shortName}&apos;s own words</div>
-                  <h2>{group.heading}</h2>
-                  {gi === 0 && (
-                    <div className={styles.byline}>
-                      <Image src={p.image} alt="" width={52} height={52} style={{ objectPosition: p.objectPosition }} />
-                      <span>
-                        <b>{p.name}</b>
-                        {p.roles[0]}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className={`${styles.qaList} reveal`}>
-                  {group.items.map(item => (
-                    <InterviewQA key={item.question} item={item} />
-                  ))}
-                </div>
+        <section className={`sec sage-bg ${styles.featureSec}`}>
+          <div className={`container ${styles.feature}`}>
+            <div className="reveal">
+              <div className="eyebrow">In {p.shortName}&apos;s own words</div>
+              <h2>{p.interview[0].heading}</h2>
+              {p.interview[0].quote && (
+                <figure className={styles.pull}>
+                  <span className={styles.quoteMark} aria-hidden="true">&ldquo;</span>
+                  <blockquote>{p.interview[0].quote}</blockquote>
+                </figure>
+              )}
+              <div className={styles.byline}>
+                <Image src={p.image} alt="" width={56} height={56} style={{ objectPosition: p.objectPosition }} />
+                <span>
+                  <b>{p.name}</b>
+                  {p.roles.join(' · ')}
+                </span>
               </div>
-            ))}
+            </div>
+            <div className={`${styles.qaStack} reveal`}>
+              {p.interview[0].items.map(item => (
+                <InterviewQA key={item.question} item={item} className={styles.qaGlass} />
+              ))}
+            </div>
           </div>
         </section>
       )}
+      {p.interview?.slice(1).map(group => (
+        <section key={group.heading} className={`sec ${styles.qaSec}`}>
+          <div className="container">
+            <div className="sec-head center reveal">
+              <div className="eyebrow">In {p.shortName}&apos;s own words</div>
+              <h2>{group.heading}</h2>
+            </div>
+            <div className={`${styles.qaGrid} reveal`}>
+              {group.items.map((item, i) => (
+                <InterviewQA
+                  key={item.question}
+                  item={item}
+                  number={String(i + 1).padStart(2, '0')}
+                  className={styles.qaCard}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
 
       {/* ── WHAT AN APPOINTMENT IS LIKE ──────────────────── */}
       {has(p.appointment) && (
-        <section className="sec">
+        <section className="sec alt">
           <div className="container">
             <div className="sec-head center reveal">
               <div className="eyebrow">Your visit</div>
-              <h2>What an appointment with {p.shortName} is like</h2>
+              <h2>What an appointment with {p.shortName} is <em>like</em></h2>
             </div>
             <ol className={`${styles.steps} reveal`}>
-              {p.appointment.map(s => (
+              {p.appointment.map((s, i) => (
                 <li key={s.title}>
-                  <span className={styles.stepIco}><Ico name={s.icon} /></span>
+                  <span className={styles.stepIco}>
+                    <Ico name={s.icon} />
+                    <span className={styles.stepNum} aria-hidden="true">{i + 1}</span>
+                  </span>
                   <h3>{s.title}</h3>
                   <p>{s.text}</p>
                 </li>
@@ -342,22 +381,22 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
 
       {/* ── AREAS OF CARE ────────────────────────────────── */}
       {has(p.areasOfCare) && (
-        <section className="sec alt">
+        <section className="sec">
           <div className="container">
             <div className="sec-head center reveal">
               <div className="eyebrow">Treatments</div>
-              <h2>Areas of care</h2>
+              <h2>Areas of <em>care</em></h2>
             </div>
             <ul className={`${styles.areas} reveal`}>
               {p.areasOfCare.map(a => (
                 <li key={a.title}>
                   <Link href={a.href} className={styles.area}>
-                    <span className={styles.ico}><Ico name={a.icon} /></span>
+                    <span className={styles.areaIco}><Ico name={a.icon} /></span>
                     <div className={styles.areaBody}>
                       <h3>{a.title}</h3>
                       <p>{a.text}</p>
                     </div>
-                    <Arrow />
+                    <span className={styles.areaGo}><Arrow /></span>
                   </Link>
                 </li>
               ))}
@@ -368,7 +407,7 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
 
       {/* ── WHY THIS PRACTICE / QUALIFICATIONS ───────────── */}
       {(p.practice || has(quals)) && (
-        <section className="sec">
+        <section className="sec alt">
           <div className={`container ${styles.practice}`}>
             {p.practice && (
               <div className="reveal">
@@ -407,14 +446,19 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
                 </ul>
               </div>
             ) : (
-              <Photo
-                tall
-                className="reveal"
-                src="/assets/about/our-story-clinic-corner.webp"
-                alt="The East St Kilda Dental clinic on the corner of Dandenong Rd, its sign out front beside the street sign"
-                objectPosition="48% center"
-                sizes="(max-width: 860px) 100vw, 45vw"
-              />
+              <div className={`reveal ${styles.clinicWrap}`}>
+                <Photo
+                  tall
+                  src="/assets/about/our-story-clinic-corner.webp"
+                  alt="The East St Kilda Dental clinic on the corner of Dandenong Rd, its sign out front beside the street sign"
+                  objectPosition="48% center"
+                  sizes="(max-width: 860px) 100vw, 45vw"
+                />
+                <div className={styles.since}>
+                  <span>Caring locally since</span>
+                  <b>{business.foundedYear}</b>
+                </div>
+              </div>
             )}
           </div>
         </section>
@@ -422,13 +466,35 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
 
       {/* ── OUTSIDE THE PRACTICE ─────────────────────────── */}
       {p.outside && (
-        <section className={`sec alt ${styles.outsideSec}`}>
-          <div className={`container ${styles.outside} reveal`}>
-            <h2>{p.outside.heading}</h2>
-            <h3>{p.outside.question}</h3>
-            {p.outside.answer.map((text, i) => (
-              <Rich key={i} text={text} />
-            ))}
+        <section className={`sec ${styles.outsideSec}`}>
+          <div className="container">
+            <div className={`${styles.outside} reveal`}>
+              <Image
+                className={styles.outsideAvatar}
+                src={p.image}
+                alt=""
+                width={120}
+                height={120}
+                style={{ objectPosition: p.objectPosition }}
+              />
+              <div>
+                <h2>{p.outside.heading}</h2>
+                <h3>{p.outside.question}</h3>
+                {p.outside.answer.map((text, i) => (
+                  <Rich key={i} text={text} />
+                ))}
+                {has(p.outside.tags) && (
+                  <ul className={styles.tags}>
+                    {p.outside.tags.map(t => (
+                      <li key={t.label}>
+                        <Ico name={t.icon} />
+                        {t.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
         </section>
       )}
@@ -442,7 +508,7 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
           <div className="container">
             <div className="sec-head center reveal">
               <div className="eyebrow">Google reviews</div>
-              <h2>What patients say about {p.shortName}</h2>
+              <h2>What patients <em>say</em> about {p.shortName}</h2>
             </div>
           </div>
           {/* Outside the container on purpose — the row runs off both edges. */}
@@ -490,6 +556,14 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
       <section className="sec">
         <div className="container">
           <div className={`ctaband ${styles.cta} reveal`} data-analytics-location="practitioner-cta">
+            <Image
+              className={styles.ctaAvatar}
+              src={p.image}
+              alt=""
+              width={84}
+              height={84}
+              style={{ objectPosition: p.objectPosition }}
+            />
             <h2>{p.cta?.heading ?? `Book with ${p.name}`}</h2>
             {p.cta?.text && <p>{p.cta.text}</p>}
             <div className="ctaband-actions">

@@ -51,6 +51,11 @@ export interface Answer {
 /** A run of answers under one H2. */
 export interface InterviewGroup {
   heading: string
+  /**
+   * A pull quote set beside the group. Must be a sentence copied whole from
+   * one of the answers below it — never a paraphrase or a composite.
+   */
+  quote?: string
   items: Answer[]
 }
 
@@ -117,6 +122,8 @@ export interface PractitionerProfile {
   eyebrow?: string
   /** One or two sentences under the H1. */
   intro?: string
+  /** A short line of theirs floated over the portrait, copied whole from an answer. */
+  heroQuote?: string
   /** The factual summary under the hero. */
   facts?: Fact[]
   /** First-person answers, introduced as "In <shortName>'s own words". */
@@ -131,8 +138,11 @@ export interface PractitionerProfile {
   qualifications?: Qualification[]
   /** AHPRA registration number, if the practice wants it shown. */
   ahpraNumber?: string
-  /** Life outside dentistry, in their own words. Do not embellish. */
-  outside?: Answer & { heading: string }
+  /**
+   * Life outside dentistry, in their own words. Do not embellish. `tags` may
+   * only restate what the answer itself says, as icon chips.
+   */
+  outside?: Answer & { heading: string; tags?: { label: string; icon: IconName }[] }
   /** Published as knowsAbout. Genuine areas of practice only. */
   knowsAbout?: string[]
   /** Verified external profiles only, published as sameAs. */
@@ -185,6 +195,8 @@ export const practitioners: PractitionerProfile[] = [
     eyebrow: 'Meet your dentist',
     intro:
       'Dr Anbar provides comprehensive general, restorative and cosmetic dental care at East St Kilda Dental. Her approach is gentle, considered and focused on helping patients understand what needs attention, what can wait, and how to care for their teeth over the long term.',
+    // From her answer to the nervous and returning patients question.
+    heroQuote: 'Just come as you are.',
 
     facts: [
       { label: 'Name', value: 'Dr Anbar Ganatra', icon: 'person' },
@@ -203,6 +215,8 @@ export const practitioners: PractitionerProfile[] = [
     interview: [
       {
         heading: 'Why dentistry?',
+        quote:
+          "They're such a small part of the body, but they affect so much — eating, speaking, health, appearance and confidence.",
         items: [
           {
             question: 'What first drew you to becoming a dentist?',
@@ -387,6 +401,11 @@ export const practitioners: PractitionerProfile[] = [
       heading: 'Outside the practice',
       question: 'What do you enjoy outside dentistry?',
       answer: ['I enjoy going to the gym, swimming and dancing.'],
+      tags: [
+        { label: 'Gym', icon: 'dumbbell' },
+        { label: 'Swimming', icon: 'wave' },
+        { label: 'Dancing', icon: 'music' },
+      ],
     },
 
     knowsAbout: [
