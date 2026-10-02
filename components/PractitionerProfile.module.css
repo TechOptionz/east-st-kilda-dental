@@ -165,8 +165,8 @@
   font-size: 15px;
 }
 .qa + .qa {
-  margin-top: 40px;
-  padding-top: 40px;
+  margin-top: 30px;
+  padding-top: 30px;
   border-top: 1px solid var(--line-soft);
 }
 .qa h3 {
@@ -184,11 +184,6 @@
 .answer p + p {
   margin-top: 12px;
 }
-/* Answer-first: the opening line is the direct answer, so it carries the
-   page's ink rather than the softer body colour. */
-.answer p:first-child {
-  color: var(--ink);
-}
 .answer a {
   color: var(--sage-deep);
   font-weight: 600;
@@ -197,6 +192,102 @@
 }
 .answer a:hover {
   color: var(--clay-deep);
+}
+
+/* The interview questions open on hover (components/QAReveal.tsx). The
+   question is a button, so a tap or a keypress opens it as well; it keeps the
+   H3's type and only adds a marker. The answer's first line is always shown —
+   only what follows it is folded. */
+.qaToggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.qaToggle:hover,
+.qa[data-open] .qaToggle {
+  color: var(--sage-deep);
+}
+.qaToggle:focus-visible {
+  outline: 2px solid var(--sage-deep);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+/* A plus that turns to a minus as the answer opens. */
+.qaMark {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.qaMark::before,
+.qaMark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -5.5px;
+  background: var(--clay-deep);
+  transition: transform 0.3s ease;
+}
+.qaMark::after {
+  transform: rotate(90deg);
+}
+.qa[data-open] .qaMark {
+  background: var(--sage-tint);
+  border-color: transparent;
+}
+.qa[data-open] .qaMark::after {
+  transform: rotate(0deg);
+}
+/* The fold. Grid rows animate from 0fr to 1fr, so the height follows the
+   text without a fixed max-height; visibility keeps the folded text out of
+   the tab order and away from screen readers until it is open. */
+.qaMore {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.4s;
+}
+.qaMore > div {
+  overflow: hidden;
+  min-height: 0;
+}
+/* Folded, the question stands alone; the gap under it opens with the answer. */
+.profile .qaQuestion {
+  margin-bottom: 0;
+}
+.qaMore > div > :first-child {
+  margin-top: 14px;
+}
+.qa[data-open] .qaMore {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qaMore,
+  .qa[data-open] .qaMore,
+  .qaMark::after {
+    transition: none;
+  }
 }
 
 /* ── What an appointment is like ─────────────────────────
@@ -499,8 +590,8 @@
     font-size: 20px;
   }
   .qa + .qa {
-    margin-top: 32px;
-    padding-top: 32px;
+    margin-top: 24px;
+    padding-top: 24px;
   }
   .answer p {
     font-size: 16.5px;

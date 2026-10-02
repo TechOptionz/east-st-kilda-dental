@@ -8,6 +8,7 @@ import GuideGrid from '@/components/GuideGrid'
 import JsonLd from '@/components/JsonLd'
 import Ico from '@/components/LineIcon'
 import Photo from '@/components/Photo'
+import QAReveal from '@/components/QAReveal'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { publishedArticles } from '@/data/articles'
 import { getPractitioner, type Answer, type PractitionerProfile } from '@/data/practitioners'
@@ -93,7 +94,17 @@ function Rich({ text }: { text: string }) {
   )
 }
 
-/** A question as an H3 and the answer beneath it, with any follow-on link. */
+/** The follow-on link set under an answer, e.g. to a related service. */
+function More({ more }: { more: NonNullable<Answer['more']> }) {
+  return (
+    <p className="pathlink">
+      {more.lead && <>{more.lead} </>}
+      <Link href={more.href}>{more.label}</Link> &rarr;
+    </p>
+  )
+}
+
+/** A question as an H3 and the whole answer beneath it, always open. */
 function QA({ item }: { item: Answer }) {
   return (
     <div className={styles.qa}>
@@ -103,13 +114,24 @@ function QA({ item }: { item: Answer }) {
           <Rich key={i} text={text} />
         ))}
       </div>
-      {item.more && (
-        <p className="pathlink">
-          {item.more.lead && <>{item.more.lead} </>}
-          <Link href={item.more.href}>{item.more.label}</Link> &rarr;
-        </p>
-      )}
+      {item.more && <More more={item.more} />}
     </div>
+  )
+}
+
+/**
+ * An interview question: the question alone until hovered, then the whole
+ * answer (see QAReveal). Rendered here, so the full answer is in the server
+ * HTML whether or not it has been opened.
+ */
+function InterviewQA({ item }: { item: Answer }) {
+  return (
+    <QAReveal question={item.question}>
+      {item.answer.map((text, i) => (
+        <Rich key={i} text={text} />
+      ))}
+      {item.more && <More more={item.more} />}
+    </QAReveal>
   )
 }
 
@@ -288,7 +310,7 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
                 </div>
                 <div className={`${styles.qaList} reveal`}>
                   {group.items.map(item => (
-                    <QA key={item.question} item={item} />
+                    <InterviewQA key={item.question} item={item} />
                   ))}
                 </div>
               </div>
