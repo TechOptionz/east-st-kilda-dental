@@ -105,11 +105,22 @@ export const emailHref = `mailto:${business.email}`
  *
  * It is a different domain, so nothing after the click is visible to our
  * analytics — a completed booking is counted in the practice software, not
- * here. BOOKING_HOST exists so the click itself can be recognised as an
- * outbound conversion wherever it appears; see components/AnalyticsEvents.tsx.
+ * here. BOOKING_HOST exists so a link that opens it can be recognised as a
+ * booking_start wherever it appears; see components/AnalyticsEvents.tsx.
  */
 export const BOOKING_HOST = 'centaurportal.com'
 export const BOOKING_URL = `https://www.${BOOKING_HOST}/d4w/org-1240/extended_search`
+
+/**
+ * Third-party platforms a patient can book the practice through instead of
+ * this site, keyed by domain. A link to any of them is tracked as an
+ * external_booking_click carrying the value as `provider`, so patients who
+ * start here and book elsewhere are still counted. The site links to none of
+ * them today; add the domain here on the commit that adds the first link.
+ */
+export const EXTERNAL_BOOKING_PROVIDERS: Record<string, string> = {
+  'healthengine.com.au': 'healthengine',
+}
 
 /** "364 Dandenong Rd" */
 export const streetAddress = business.address.streetAddress

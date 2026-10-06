@@ -1,0 +1,57 @@
+PASS [desktop] landing: no conversion events on page load — []
+PASS [desktop] landing: UTMs still in the address bar
+PASS [desktop] phone_click fires exactly once per tap — count=1
+PASS [desktop] phone_click params — {"event":"phone_click","page_path":"/dentist-elwood","page_location":"http://localhost:3111/dentist-elwood","landing_page":"/dentist-elwood","link_url":"tel:+61395273678","link_text":"(03) 9527 3678Call us","link_location":"header"}
+PASS [desktop] booking_click fires exactly once — count=1, text="Book your visit"
+PASS [desktop] booking_click attributed to originating page — {"event":"booking_click","page_path":"/dentist-elwood","page_location":"http://localhost:3111/dentist-elwood","landing_page":"/dentist-elwood","link_url":"/online-booking","link_text":"Book your visit","link_location":"header"}
+PASS [desktop] spa_page_view fires once for the route change — ["/online-booking"]
+PASS [desktop] booking_start NOT fired by merely loading /online-booking
+PASS [desktop] booking_widget_view once when widget scrolled into view
+PASS [desktop] booking_start NOT fired by viewing the widget
+PASS [desktop] booking_start fires on first interaction inside widget — {"event":"booking_start","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","booking_method":"widget"}
+PASS [desktop] booking_start not duplicated by further widget use or the new-tab link — count=1, tabs before=1
+PASS [desktop] link_text does not leak from booking_click into booking_start (dataLayer reset) — {"event":"booking_start","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","booking_method":"widget"}
+PASS [desktop] email_click fires exactly once — {"event":"email_click","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","link_url":"mailto:reception@eaststkildadental.com.au","link_text":"reception@eaststkildadental.com.au","link_location":"footer"}
+PASS [desktop] form_start NOT fired before interaction
+PASS [desktop] form_start fires once on first field focus — [{"event":"form_start","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","form_name":"callback"}]
+PASS [desktop] form_submit NOT fired when validation fails — apiCalls=0
+PASS [desktop] form_submit NOT fired when the API rejects; form_error fired instead
+PASS [desktop] form_submit (callback) fires exactly once after successful submission — {"event":"form_submit","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","form_name":"callback"}
+PASS [desktop] form_start still only once
+PASS [desktop] get-in-touch: form_submit NOT fired with required email missing
+PASS [desktop] get-in-touch: form_start once, form_submit once after success — {"event":"form_submit","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","form_name":"get-in-touch"}
+PASS [desktop] no patient-entered data anywhere in the dataLayer
+PASS [desktop] parameter keys are the allow-list only — booking_method,engaged_seconds,event,form_name,landing_page,link_location,link_text,link_url,page_location,page_path,page_title,time_on_page
+PASS [desktop] emergency page tel link → exactly one phone_click — [{"event":"phone_click","page_path":"/emergency-dentist","page_location":"http://localhost:3111/emergency-dentist","landing_page":"/dentist-elwood","link_url":"tel:+61395273678","link_text":"(03) 9527 3678Call us","link_location":"header"}]
+PASS [desktop] landing_page preserved across a full page load in the same visit — /dentist-elwood
+PASS [desktop] "open it in a new tab" → one booking_start (new_tab), not booking_click — [{"event":"booking_start","page_path":"/new-patient-comprehensive-care-visit","page_location":"http://localhost:3111/new-patient-comprehensive-care-visit","landing_page":"/dentist-elwood","link_url":"https://www.centaurportal.com/d4w/org-1240/extended_search","link_text":"open it in a new tab","link_location":"book","booking_method":"new_tab"}]
+PASS [mobile] landing: no conversion events on page load — []
+PASS [mobile] landing: UTMs still in the address bar
+PASS [mobile] phone_click fires exactly once per tap — count=1
+PASS [mobile] phone_click params — {"event":"phone_click","page_path":"/dentist-elwood","page_location":"http://localhost:3111/dentist-elwood","landing_page":"/dentist-elwood","link_url":"tel:+61395273678","link_text":"Call (03) 9527 3678","link_location":"section"}
+PASS [mobile] booking_click fires exactly once — count=1, text="Book your visit"
+PASS [mobile] booking_click attributed to originating page — {"event":"booking_click","page_path":"/dentist-elwood","page_location":"http://localhost:3111/dentist-elwood","landing_page":"/dentist-elwood","link_url":"/online-booking","link_text":"Book your visit","link_location":"header"}
+PASS [mobile] spa_page_view fires once for the route change — ["/online-booking"]
+PASS [mobile] booking_start NOT fired by merely loading /online-booking
+PASS [mobile] booking_widget_view once when widget scrolled into view
+PASS [mobile] booking_start NOT fired by viewing the widget
+PASS [mobile] booking_start fires on first interaction inside widget — {"event":"booking_start","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","booking_method":"widget"}
+PASS [mobile] booking_start not duplicated by further widget use or the new-tab link — count=1, tabs before=1
+PASS [mobile] link_text does not leak from booking_click into booking_start (dataLayer reset) — {"event":"booking_start","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","booking_method":"widget"}
+PASS [mobile] email_click fires exactly once — {"event":"email_click","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","link_url":"mailto:reception@eaststkildadental.com.au","link_text":"reception@eaststkildadental.com.au","link_location":"footer"}
+PASS [mobile] form_start NOT fired before interaction
+PASS [mobile] form_start fires once on first field focus — [{"event":"form_start","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","form_name":"callback"}]
+PASS [mobile] form_submit NOT fired when validation fails — apiCalls=0
+PASS [mobile] form_submit NOT fired when the API rejects; form_error fired instead
+PASS [mobile] form_submit (callback) fires exactly once after successful submission — {"event":"form_submit","page_path":"/contact","page_location":"http://localhost:3111/contact","landing_page":"/dentist-elwood","form_name":"callback"}
+PASS [mobile] form_start still only once
+PASS [mobile] get-in-touch: form_submit NOT fired with required email missing
+PASS [mobile] get-in-touch: form_start once, form_submit once after success — {"event":"form_submit","page_path":"/online-booking","page_location":"http://localhost:3111/online-booking","landing_page":"/dentist-elwood","form_name":"get-in-touch"}
+PASS [mobile] no patient-entered data anywhere in the dataLayer
+PASS [mobile] parameter keys are the allow-list only — booking_method,engaged_seconds,event,form_name,landing_page,link_location,link_text,link_url,page_location,page_path,page_title,time_on_page
+PASS [mobile] sticky call bar is present and visible on mobile
+PASS [mobile] sticky call bar → exactly one phone_click, labelled — [{"event":"phone_click","page_path":"/emergency-dentist","page_location":"http://localhost:3111/emergency-dentist","landing_page":"/dentist-elwood","link_url":"tel:+61395273678","link_text":"Call now(03) 9527 3678","link_location":"sticky-call-bar"}]
+PASS [mobile] no legacy emergency_call_click duplicate
+PASS [mobile] landing_page preserved across a full page load in the same visit — /dentist-elwood
+PASS [mobile] "open it in a new tab" → one booking_start (new_tab), not booking_click — [{"event":"booking_start","page_path":"/new-patient-comprehensive-care-visit","page_location":"http://localhost:3111/new-patient-comprehensive-care-visit","landing_page":"/dentist-elwood","link_url":"https://www.centaurportal.com/d4w/org-1240/extended_search","link_text":"open it in a new tab","link_location":"book","booking_method":"new_tab"}]
+56/56 checks passed

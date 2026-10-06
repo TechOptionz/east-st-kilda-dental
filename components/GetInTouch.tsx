@@ -101,14 +101,9 @@ export default function GetInTouch({
       }
 
       /* Only after the API accepts it — see the same note in CallbackForm.
-         patient_type and form_intent ride along so GA4 can separate a new
-         patient's enquiry from an existing one's admin question. */
-      track('generate_lead', {
-        form_name: 'get-in-touch',
-        form_intent: String(fd.get('intent') ?? ''),
-        patient_type: String(fd.get('patienttype') ?? ''),
-        page_path: window.location.pathname,
-      })
+         Nothing the patient entered or chose goes with it: this is a
+         healthcare form, and the event says only that it was sent, and where. */
+      track('form_submit', { form_name: 'get-in-touch' })
 
       setSentName(String(fd.get('firstName') ?? '').trim())
       form.reset()

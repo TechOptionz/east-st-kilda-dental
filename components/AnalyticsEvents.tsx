@@ -2,8 +2,14 @@
 
 import { Suspense, useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { takeUnfinishedForms, track } from '@/lib/analytics'
-import { BOOKING_HOST } from '@/lib/business'
+import {
+  landingPage,
+  resetBookingStart,
+  takeUnfinishedForms,
+  track,
+  trackBookingStart,
+} from '@/lib/analytics'
+import { BOOKING_HOST, EXTERNAL_BOOKING_PROVIDERS } from '@/lib/business'
 
 /**
  * Site-wide event tracking. Rendered once, in the root layout.
@@ -25,7 +31,7 @@ import { BOOKING_HOST } from '@/lib/business'
  *      started ever got sent. See EngagementTracking below.
  *
  * A phone call is this practice's conversion — most visitors ring rather than
- * fill in a form — so call_click is the number that matters most here.
+ * fill in a form — so phone_click is the number that matters most here.
  */
 
 /** Where on the page a link was, for the link_location parameter. */
@@ -41,6 +47,13 @@ function locationOf(el: Element): string {
   return 'page'
 }
 
+const BOOKING_PATH = '/online-booking'
+
+/** True for the domain itself and any subdomain of it, and nothing that merely contains it. */
+function hostMatches(hostname: string, domain: string): boolean {
+  return hostname === domain || hostname.endsWith(`.${domain}`)
+}
+
 function ClickTracking() {
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -53,13 +66,13 @@ function ClickTracking() {
       const href = link.getAttribute('href') ?? ''
       const shared = {
         link_url: href,
-        link_text: (link.textContent ?? '').trim().slice(0, 80),
+        link_text: (link.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 80),
         link_location: locationOf(link),
-        page_path: window.location.pathname,
       }
 
+      // Each click is exactly one event: the first rule that matches wins.
       if (href.startsWith('tel:')) {
-        track('call_click', shared)
+        track('phone_click', shared)
         return
       }
 
@@ -68,8 +81,23 @@ function ClickTracking() {
         return
       }
 
-      if (href.includes(BOOKING_HOST)) {
-        track('booking_widget_open', shared)
+      // The booking system itself, opened in its own tab.
+      if (hostMatches(link.hostname, BOOKING_HOST)) {
+        trackBookingStart('new_tab', shared)
+        return
+      }
+
+      const provider = Object.entries(EXTERNAL_BOOKING_PROVIDERS).find(([host]) =>
+        hostMatches(link.hostname, host),
+      )?.[1]
+      if (provider) {
+        track('external_booking_click', { ...shared, provider })
+        return
+      }
+
+      // Every "Book online" / "Book your visit" button on the site is a link here.
+      if (link.origin === window.location.origin && link.pathname === BOOKING_PATH) {
+        track('booking_click', shared)
       }
     }
 
@@ -101,10 +129,13 @@ function PageViewTracking() {
   useEffect(() => {
     if (lastUrl.current === null) {
       lastUrl.current = url
+      // Records the landing page now, before any event needs it.
+      landingPage()
       return
     }
     if (lastUrl.current === url) return
     lastUrl.current = url
+    resetBookingStart()
 
     // After the paint, by which point React has swapped in the new <title>.
     const frame = requestAnimationFrame(() => {
@@ -145,7 +176,7 @@ function timeBucket(seconds: number): string {
  * form_abandon is stricter: it waits for a real exit (route change or
  * pagehide), because switching to the calendar mid-form and coming back to
  * finish it is not abandoning it. Where a browser kills the page without a
- * pagehide, the abandon is lost — form_start against generate_lead remains the
+ * pagehide, the abandon is lost — form_start against form_submit remains the
  * exact completion rate.
  */
 function EngagementTracking() {
