@@ -96,6 +96,12 @@ const LEGACY_PATHS: Record<string, string> = {
   '/home/services-4': '/learn/prevention', // "How should I look after my teeth?"
   '/home/services-4/faqs': '/dental-faqs',
   '/contact-us': '/contact',
+  // A malformed internal link on the old site, with a space for the hyphen.
+  // Crawlers request it percent-encoded.
+  '/contact%20us': '/contact',
+  // WordPress's own site-wide RSS feeds. The posts they carried live in /learn.
+  '/feed': '/learn',
+  '/comments/feed': '/learn',
   '/gentle-dentistry': '/nervous-patients',
   '/info-centre': '/learn',
   '/terms-conditions': '/terms',
@@ -116,8 +122,19 @@ const LEGACY_PATHS: Record<string, string> = {
 }
 
 /**
- * Every legacy path and its destination, in one list: the table above, the old
- * site's /dentist-near-<suburb> pages, and this site's own retired
+ * WordPress gave every page, post and category its own RSS feed at <url>/feed/,
+ * and linked it from the page's <head>, so crawlers found and indexed them —
+ * /home/services/feed/, /category/working-with-your-dentist/feed/ and the rest
+ * show up in Ahrefs' 403 report from the old host. Each one goes to wherever
+ * its page went, in one hop.
+ */
+const LEGACY_FEEDS: [source: string, destination: string][] = Object.entries(LEGACY_PATHS)
+  .filter(([source]) => !source.endsWith('/feed') && !source.includes('%20'))
+  .map(([source, destination]) => [`${source}/feed`, destination])
+
+/**
+ * Every legacy path and its destination, in one list: the table above, the
+ * feed of each, the old site's /dentist-near-<suburb> pages, and this site's own retired
  * /areas/<slug> pages — a second, generated copy of each suburb page that
  * competed with /dentist-<slug> for the same searches.
  *
@@ -126,6 +143,7 @@ const LEGACY_PATHS: Record<string, string> = {
  */
 const LEGACY_REDIRECTS: [source: string, destination: string][] = [
   ...Object.entries(LEGACY_PATHS),
+  ...LEGACY_FEEDS,
   ...suburbs.flatMap((s): [string, string][] => [
     [`/dentist-near-${s.slug}`, suburbPath(s.slug)],
     [`/areas/${s.slug}`, suburbPath(s.slug)],
@@ -180,6 +198,9 @@ const nextConfig: NextConfig = {
         destination,
         statusCode: 301 as const,
       })),
+      // The feed of any other old URL goes to the page it belonged to, which the
+      // rules above then send on if that page moved too.
+      { source: '/:path+/feed', destination: '/:path+', statusCode: 301 as const },
       // Any other URL requested with a trailing slash goes to the form without.
       { source: '/:path+/', destination: '/:path+', statusCode: 301 as const },
     ]
