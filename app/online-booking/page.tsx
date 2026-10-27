@@ -23,7 +23,7 @@ export default function BookingPage() {
         <div className="container">
           <div className="sec-head center reveal">
             <div className="eyebrow">Real-time availability</div>
-            <h2>Pick a time that <em>works for you</em></h2>
+            <h1 className="h2">Book an appointment: pick a time that <em>works for you</em></h1>
           </div>
           <div className="embed-card reveal">
             <BookingFrame />

@@ -67,6 +67,9 @@ export const business = {
   currenciesAccepted: 'AUD',
   /** The practice has cared for the neighbourhood since around 1980. */
   foundedYear: 1980,
+  /** One-sentence description of the practice, for the Organization/Dentist node. */
+  description:
+    'Gentle, judgement-free family dental practice in St Kilda East, Melbourne, caring for the local community since 1980 — check-ups, nervous patients, cosmetic, implants and emergency dentistry.',
   /** The catchment, as we describe it in prose. */
   serviceRegion: "Melbourne's inner south-east",
   address: {
@@ -88,6 +91,18 @@ export const business = {
   hasMap:
     'https://www.google.com/maps?q=East+St+Kilda+Dental,+364+Dandenong+Rd,+St+Kilda+East+VIC+3183',
 } as const
+
+/**
+ * Where "Read all reviews" links: the practice's Google Maps listing, which
+ * opens on the reviews.
+ *
+ * A Maps search URL (Google's documented Maps URLs format) rather than a
+ * share.google or maps.app.goo.gl short link: those answer with a 302 to a
+ * second Google URL, so every page linking to them was reported by the SEO
+ * crawl as linking to a redirect. This one serves a 200 directly.
+ */
+export const GOOGLE_REVIEWS_URL =
+  'https://www.google.com/maps/search/?api=1&query=East+St+Kilda+Dental%2C+364+Dandenong+Rd%2C+St+Kilda+East+VIC+3183'
 
 /**
  * Ready-made strings for visible copy and href attributes.

@@ -4,7 +4,7 @@ import { business, emailHref, fullAddress, SITE_URL, telHref } from '@/lib/busin
 
 export const metadata: Metadata = withSocial({
   title: 'Terms & Conditions | East St Kilda Dental',
-  description: 'Terms and conditions for East St Kilda Dental — website use, appointment policy, and service terms.',
+  description: 'Terms and conditions for East St Kilda Dental, covering use of this website, our appointment and cancellation policy, fees and service terms.',
   alternates: { canonical: `${SITE_URL}/terms` },
 })
 

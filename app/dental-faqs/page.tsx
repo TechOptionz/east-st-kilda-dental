@@ -23,7 +23,7 @@ const PAGE_URL = `${SITE_URL}/dental-faqs`
 
 const TITLE = 'Dental FAQs St Kilda East | Common Dental Questions Answered'
 const DESCRIPTION =
-  'Clear answers to common dental questions about first visits, emergencies, tooth pain, nervous patients, costs, implants, cosmetic dentistry, Invisalign and more.'
+  'Clear answers to common dental questions: first visits, emergencies, tooth pain, nervous patients, costs, implants, cosmetic dentistry and Invisalign.'
 
 export const metadata: Metadata = withSocial({
   title: TITLE,
@@ -31,7 +31,7 @@ export const metadata: Metadata = withSocial({
   alternates: { canonical: PAGE_URL },
 })
 
-const HEALTHDIRECT_TOOTHACHE = 'https://www.healthdirect.gov.au/toothache-and-gum-swelling'
+const HEALTHDIRECT_TOOTHACHE = 'https://www.healthdirect.gov.au/symptoms/aches-and-pains/toothache-and-gum-swelling'
 
 const reviewer = FAQ_REVIEWER ? clinicians.find((c) => c.slug === FAQ_REVIEWER) : undefined
 

@@ -20,16 +20,29 @@ import {
  * No Review or aggregateRating anywhere, per AHPRA advertising guidance.
  */
 
+/** How to reach the practice, as the Organization's ContactPoint. */
+export const contactPointNode = () => ({
+  '@type': 'ContactPoint',
+  contactType: 'customer service',
+  telephone: business.telephone,
+  email: business.email,
+  areaServed: 'AU',
+  availableLanguage: 'English',
+})
+
 /** The practice as a Dentist (a LocalBusiness subtype), with its core facts. */
 export const practiceNode = () => ({
   '@type': 'Dentist',
   '@id': SCHEMA_ID.practice,
   name: business.name,
+  description: business.description,
   url: business.url,
   image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
   logo: `${SITE_URL}/assets/brand/eskd-logo.png`,
+  foundingDate: String(business.foundedYear),
   telephone: business.telephone,
   email: business.email,
+  contactPoint: contactPointNode(),
   currenciesAccepted: business.currenciesAccepted,
   address: { '@type': 'PostalAddress', ...business.address },
   geo: { '@type': 'GeoCoordinates', ...business.geo },

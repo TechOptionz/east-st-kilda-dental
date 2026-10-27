@@ -180,7 +180,7 @@ export const practitioners: PractitionerProfile[] = [
     meta: {
       title: 'Dr Anbar Ganatra, Dentist | East St Kilda Dental',
       description:
-        'Meet Dr Anbar Ganatra, Principal Dentist and General & Cosmetic Dentist at East St Kilda Dental. Learn about her approach to care, treatment philosophy and background.',
+        'Meet Dr Anbar Ganatra, Principal Dentist and General & Cosmetic Dentist at East St Kilda Dental: her approach to care, treatment philosophy and background.',
       ogTitle: 'Dr Anbar Ganatra | East St Kilda Dental',
     },
     shareImage: '/assets/social/dr-anbar-ganatra-east-st-kilda-dental.jpg',

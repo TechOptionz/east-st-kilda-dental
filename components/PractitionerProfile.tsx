@@ -14,6 +14,7 @@ import { publishedArticles } from '@/data/articles'
 import { getPractitioner, type Answer, type PractitionerProfile } from '@/data/practitioners'
 import { withSocial } from '@/lib/seo'
 import {
+  GOOGLE_REVIEWS_URL,
   SCHEMA_ID,
   SITE_URL,
   business,
@@ -33,7 +34,7 @@ function requirePractitioner(slug: string): PractitionerProfile {
 const profileUrl = (p: PractitionerProfile) => `${SITE_URL}/about/${p.slug}`
 
 /** The practice's Google reviews — the same link the home page's row uses. */
-const GOOGLE_REVIEWS = 'https://share.google/M1ZtOT5z13fj2mhWf'
+const GOOGLE_REVIEWS = GOOGLE_REVIEWS_URL
 
 /**
  * Title, description, self-referencing canonical and share card, from the
@@ -186,7 +187,9 @@ export default function PractitionerProfilePage({ slug }: { slug: string }) {
         breadcrumb: { '@id': `${url}#breadcrumb` },
         mainEntity: { '@id': personId },
         publisher: { '@id': SCHEMA_ID.practice },
-        primaryImageOfPage: `${SITE_URL}${p.image}`,
+        // An ImageObject, not a bare URL: schema.org types this property as
+        // ImageObject, and the plain string failed validation.
+        primaryImageOfPage: { '@type': 'ImageObject', url: `${SITE_URL}${p.image}` },
         datePublished: p.datePublished,
         dateModified: p.dateModified,
         inLanguage: 'en-AU',

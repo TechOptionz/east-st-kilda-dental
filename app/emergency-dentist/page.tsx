@@ -27,7 +27,7 @@ const PAGE_URL = `${SITE_URL}/emergency-dentist`
 
 const TITLE = 'Emergency Dentist St Kilda East | Same-Day Dental Care'
 const DESCRIPTION =
-  `Dental emergency in St Kilda East? Call ${business.telephoneDisplay} for same-day emergency appointments. Toothache, swelling, broken or knocked-out teeth — we're here for you.`
+  `Dental emergency in St Kilda East? Call ${business.telephoneDisplay} for a same-day appointment. Toothache, swelling, broken or knocked-out teeth.`
 
 export const metadata: Metadata = withSocial({
   title: TITLE,
@@ -55,8 +55,8 @@ const reviewer = REVIEW.reviewer ? clinicians.find((c) => c.slug === REVIEW.revi
 /** The authorities the first-aid and urgency guidance on this page follows. */
 const SOURCES = [
   { label: 'Australian Dental Association (teeth.org.au): Dental trauma', href: 'https://www.teeth.org.au/dental-trauma' },
-  { label: 'Healthdirect Australia: Dental injury', href: 'https://www.healthdirect.gov.au/dental-injury' },
-  { label: 'Healthdirect Australia: Toothache and gum swelling', href: 'https://www.healthdirect.gov.au/toothache-and-gum-swelling' },
+  { label: 'Healthdirect Australia: Dental injury', href: 'https://www.healthdirect.gov.au/accidents-and-injuries/dental-injury' },
+  { label: 'Healthdirect Australia: Toothache and gum swelling', href: 'https://www.healthdirect.gov.au/symptoms/aches-and-pains/toothache-and-gum-swelling' },
 ]
 
 const saturday = openingHours.find((h) => (h.days as readonly string[]).includes('Saturday'))

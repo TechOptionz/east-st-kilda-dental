@@ -49,7 +49,7 @@ export const FAQ_LAST_UPDATED = CONTENT_UPDATED['/dental-faqs']
  */
 export const FAQ_REVIEWER: string | null = null
 
-const HEALTHDIRECT_TOOTHACHE = 'https://www.healthdirect.gov.au/toothache-and-gum-swelling'
+const HEALTHDIRECT_TOOTHACHE = 'https://www.healthdirect.gov.au/symptoms/aches-and-pains/toothache-and-gum-swelling'
 const CDBS_COVER = 'https://www.servicesaustralia.gov.au/whats-covered-child-dental-benefits-schedule'
 const CDBS_HOW_TO = 'https://www.servicesaustralia.gov.au/how-to-use-child-dental-benefits-schedule'
 

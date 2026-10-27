@@ -224,9 +224,27 @@ export default async function LearnEntryPage({ params }: Props) {
       }
     : null
 
+  // The guide itself, as the Article the page carries. The page node above
+  // describes the URL; this describes the writing on it, with the same byline,
+  // dates and image, so the two cannot disagree.
+  const articleNode = {
+    '@type': 'Article',
+    '@id': `${url}#article`,
+    headline: article.title,
+    description: article.meta.description,
+    ...(article.image ? { image: `${SITE_URL}${article.image}` } : {}),
+    author: byline(article.author),
+    publisher: { ...practiceRef, logo: `${SITE_URL}/assets/brand/eskd-logo.png` },
+    datePublished: article.date,
+    dateModified: article.date,
+    inLanguage: 'en-AU',
+    mainEntityOfPage: { '@id': `${url}#webpage` },
+    isPartOf: { '@id': `${url}#webpage` },
+  }
+
   const schema = {
     '@context': 'https://schema.org',
-    '@graph': [webPage, ...(faqNode ? [faqNode] : []), ...videoNodes],
+    '@graph': [webPage, articleNode, ...(faqNode ? [faqNode] : []), ...videoNodes],
   }
 
   return (

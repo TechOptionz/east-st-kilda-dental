@@ -12,8 +12,9 @@ import HomeOffers from '@/components/HomeOffers'
 import MapEmbed from '@/components/MapEmbed'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { suburbs, suburbPath } from '@/data/suburbs'
-import { SCHEMA_ID, SITE_URL, areasServed, business, clinicianId, clinicians, comprehensiveCareVisit, fullAddress, openingHours, socialProfiles, telHref } from '@/lib/business'
+import { GOOGLE_REVIEWS_URL, SCHEMA_ID, SITE_URL, areasServed, business, clinicianId, clinicians, comprehensiveCareVisit, fullAddress, openingHours, socialProfiles, telHref } from '@/lib/business'
 import { withSocial } from '@/lib/seo'
+import { contactPointNode } from '@/lib/schema'
 
 export const metadata = withSocial({
   title: 'East St Kilda Dental | Gentle Family & Emergency Dentist',
@@ -182,11 +183,14 @@ const homeSchema = {
       '@type': 'Dentist',
       '@id': SCHEMA_ID.practice,
       name: business.name,
+      description: business.description,
       url: business.url,
       image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
-      logo: `${SITE_URL}/assets/brand/eskd-logo.png`,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/assets/brand/eskd-logo.png` },
+      foundingDate: String(business.foundedYear),
       telephone: business.telephone,
       email: business.email,
+      contactPoint: contactPointNode(),
       currenciesAccepted: business.currenciesAccepted,
       address: { '@type': 'PostalAddress', ...business.address },
       geo: { '@type': 'GeoCoordinates', ...business.geo },
@@ -351,7 +355,7 @@ export default function Home() {
         <div className="container">
           <div className="gscore reveal">
             Rated <b>5.0 on Google</b> by our local patients &middot;{' '}
-            <a href="https://share.google/M1ZtOT5z13fj2mhWf" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+            <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
               Read all reviews
             </a>
           </div>

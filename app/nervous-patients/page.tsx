@@ -12,13 +12,13 @@ import ReviewMarquee from '@/components/ReviewMarquee'
 import { practitionerPath } from '@/data/practitioners'
 import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
-import { SCHEMA_ID, SITE_URL, areasServed, business, clinicians, telHref } from '@/lib/business'
+import { GOOGLE_REVIEWS_URL, SCHEMA_ID, SITE_URL, areasServed, business, clinicians, telHref } from '@/lib/business'
 
 const PAGE_URL = `${SITE_URL}/nervous-patients`
 
-const TITLE = 'Gentle Dentist for Nervous Patients St Kilda East | East St Kilda Dental'
+const TITLE = 'Nervous Patient Dentist St Kilda East | East St Kilda Dental'
 const DESCRIPTION =
-  'Nervous about the dentist? East St Kilda Dental offers gentle, no-judgement care, longer appointments, stop signals and happy gas for anxious patients in St Kilda East.'
+  'Nervous about the dentist? Gentle, no-judgement care in St Kilda East, with longer appointments, stop signals and happy gas for anxious patients.'
 
 export const metadata: Metadata = withSocial({
   title: TITLE,
@@ -358,7 +358,7 @@ export default function GentlePage() {
         <div className="container">
           <div className="gscore reveal">
             Rated <b>5.0 on Google</b> by our local patients &middot;{' '}
-            <a href="https://share.google/M1ZtOT5z13fj2mhWf" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+            <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
               Read all reviews
             </a>
           </div>

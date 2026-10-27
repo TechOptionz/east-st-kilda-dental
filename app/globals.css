@@ -2169,8 +2169,9 @@ body{overflow-x:hidden;max-width:100%;}
 .sec{padding:104px 0;}
 .sec-head{max-width:46em;margin-bottom:44px;}
 .sec-head.center{margin:0 auto 48px;text-align:center;}
-.sec h2{font-size:clamp(30px,3.8vw,46px);color:var(--ink);margin-top:10px;}
-.sec h2 em{font-style:italic;color:var(--clay-deep);}
+/* h1.h2: a page's h1 at section-heading size, for a page that opens on a section rather than a hero. */
+.sec h2,.sec h1.h2{font-size:clamp(30px,3.8vw,46px);color:var(--ink);margin-top:10px;}
+.sec h2 em,.sec h1.h2 em{font-style:italic;color:var(--clay-deep);}
 /* The lead paragraph under a section heading. Held clearly below the H2 and
    clearly above the eyebrow, which is the distinction that kept collapsing. */
 .sec-head p{font-size:17.5px;line-height:1.7;}

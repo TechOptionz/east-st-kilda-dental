@@ -14,6 +14,7 @@ import { faqPageNode, personNode, practiceNode } from '@/lib/schema'
 import { withSocial } from '@/lib/seo'
 import {
   BOOKING_URL,
+  GOOGLE_REVIEWS_URL,
   SCHEMA_ID,
   SITE_URL,
   areasServed,
@@ -27,7 +28,7 @@ const PAGE_URL = `${SITE_URL}/new-patient-comprehensive-care-visit`
 
 const TITLE = 'New Patient Dentist Visit St Kilda East | East St Kilda Dental'
 const DESCRIPTION =
-  'Book a thorough 60–75 minute new patient dental visit in St Kilda East. Understand what needs attention, what can wait and your options, without pressure or judgement.'
+  'A thorough 60–75 minute new patient visit in St Kilda East. Learn what needs attention, what can wait and your options, without pressure or judgement.'
 
 export const metadata: Metadata = withSocial({
   title: TITLE,
@@ -481,7 +482,7 @@ export default function OfferPage() {
         <div className="container">
           <div className="gscore reveal">
             Rated <b>5.0 on Google</b> by our local patients &middot;{' '}
-            <a href="https://share.google/M1ZtOT5z13fj2mhWf" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+            <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
               Read all reviews
             </a>
           </div>
