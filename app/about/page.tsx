@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import CardMore from '@/components/CardMore'
 import GetInTouch from '@/components/GetInTouch'
 import Photo from '@/components/Photo'
 import { withSocial } from '@/lib/seo'
@@ -66,7 +67,7 @@ export default function AboutPage() {
               <Link key={item.href} href={item.href} className="svc" style={{ cursor: 'pointer', textDecoration: 'none' }}>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-                <span style={{ color: 'var(--clay-deep)', fontWeight: 600, fontSize: '14px' }}>Explore &rarr;</span>
+                <CardMore>Explore</CardMore>
               </Link>
             ))}
           </div>
