@@ -3683,8 +3683,10 @@ a:hover>.card-more .card-go svg{transform:translateX(2px);}
 
    Still a native <details>, so it opens without JavaScript, the answers stay in
    the server HTML, and find-in-page and /dental-faqs#question links keep
-   working. components/DetailsMotion.tsx adds the open and close animation on
-   top; without it the card simply snaps open.
+   working. components/DetailsMotion.tsx opens a card when a mouse rests on it and
+   folds it away again when the mouse leaves, as the profile's cards do, and
+   animates the fold; a tap or a keypress toggles it. Without the script the
+   card simply opens on a click.
 
    The padding lives on the summary and on the answer, never on the card, so
    the whole of a closed card is the click target and its closed height is
@@ -3743,13 +3745,16 @@ a:hover>.card-more .card-go svg{transform:translateX(2px);}
 .faq details[data-closing]>:not(summary){opacity:0;transition:opacity .18s ease;}
 @media(hover:hover){
   .faq details:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);}
-  .faq details:not([open]):hover{transform:translateY(-2px);}
+  /* Lifted for as long as it is pointed at, open or not: it opens under the
+     cursor a moment after it lifts, and dropping back at that instant would
+     read as a flinch. */
+  .faq details:hover{transform:translateY(-2px);}
   .faq summary:hover{color:var(--sage-deep);}
   .faq details:not([open]) summary:hover::after{border-color:var(--clay);}
 }
 @media(prefers-reduced-motion:reduce){
   .faq details,.faq summary,.faq summary::after{transition:none;}
-  .faq details:not([open]):hover{transform:none;}
+  .faq details:hover{transform:none;}
   .faq details[open]>:not(summary){animation:none;}
 }
 
