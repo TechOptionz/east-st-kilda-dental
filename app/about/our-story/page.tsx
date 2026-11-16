@@ -32,8 +32,9 @@ export default function AboutStoryPage() {
           <Photo
             tall
             className="reveal"
-            src="/assets/about/our-story-hero.webp"
-            alt="Clinic exterior on the corner"
+            src="/assets/about/our-story-clinic-corner.webp"
+            alt="The East St Kilda Dental clinic on the corner of Dandenong Rd, its sign out front beside the street sign"
+            objectPosition="48% center"
             hint="Warm, real hero photo of the clinic exterior on the corner, with local character. Never stock."
             sizes="(max-width: 860px) 100vw, 48vw"
           />

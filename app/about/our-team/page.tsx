@@ -3,12 +3,14 @@ import Link from 'next/link'
 import GetInTouch from '@/components/GetInTouch'
 import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
+import { practitionerPath } from '@/data/practitioners'
 import { withSocial } from '@/lib/seo'
 import {
   SCHEMA_ID,
   SITE_URL,
   business,
   clinicianId,
+  clinicianUrl,
   clinicianJobTitle,
   telHref,
 } from '@/lib/business'
@@ -34,6 +36,7 @@ const clinicians = [
     role: 'Cosmetic & General Dentist',
     bio: 'Anbar leads the practice with a calm, gentle, no-judgement approach, and is known for putting nervous patients at ease.',
     image: '/assets/team/anbar-ganatra.webp',
+    card: '/assets/team/anbar-ganatra-card.webp',
   },
   {
     slug: 'edmund-goldman',
@@ -41,6 +44,7 @@ const clinicians = [
     role: 'Dentist',
     bio: 'Edmund has cared for local families on this corner for decades, with a focus on rebuilding and replacing teeth.',
     image: '/assets/team/edmund-goldman.webp',
+    card: '/assets/team/edmund-goldman-card.webp',
   },
   {
     slug: 'jarrod-dean',
@@ -48,6 +52,7 @@ const clinicians = [
     role: 'Dentist',
     bio: 'Jarrod provides gentle, thorough general and family dentistry across the practice.',
     image: '/assets/team/jarrod-dean.webp',
+    card: '/assets/team/jarrod-dean-card.webp',
   },
   {
     slug: 'marina-bekheet',
@@ -55,47 +60,44 @@ const clinicians = [
     role: 'General Dentist',
     bio: 'Marina offers warm, careful general dentistry and takes the time to explain every step.',
     image: '/assets/team/marina-bakheet.webp',
+    card: '/assets/team/marina-bekheet-card.webp',
   },
   {
     slug: 'michelle-callaghan',
     name: 'Michelle Callaghan',
-    role: 'Hygienist',
+    role: 'Dental Hygienist',
     bio: 'Michelle looks after gum health and preventive care with a light, reassuring touch.',
     image: '/assets/team/michelle-callaghan.webp',
+    card: '/assets/team/michelle-callaghan-card.webp',
   },
   {
     slug: 'beverly-spector',
     name: 'Beverly Spector',
-    role: 'Hygienist',
+    role: 'Dental Hygienist',
     bio: 'Beverly helps keep your teeth and gums healthy with gentle, attentive cleans.',
     image: '/assets/team/beverly-spector.webp',
+    card: '/assets/team/beverly-spector-card.webp',
   },
 ]
 
 const practiceTeam = [
   {
-    name: 'Daniel Loh',
-    role: 'Practice Manager',
-    bio: 'Daniel keeps the practice running smoothly and looks after your experience from first call to follow-up.',
-    image: '/assets/team/daniel-loh2.webp',
-  },
-  {
     name: 'Michelle Mirjam',
     role: 'Dental Assistant & Receptionist',
     bio: 'Michelle welcomes you at reception and supports your care chairside.',
-    image: '/assets/team/michelle-mirjam.webp',
+    card: '/assets/team/michelle-mirjam-card.webp',
   },
   {
     name: "Indiana O'Connor",
     role: 'Dental Assistant & Receptionist',
     bio: 'Indiana helps every visit run smoothly, from the front desk to the chair.',
-    image: '/assets/team/indiana-oconnor.webp',
+    card: '/assets/team/indiana-oconnor-card.webp',
   },
   {
     name: 'Maddy Coventry',
     role: 'Dental Assistant & Receptionist',
     bio: "Maddy is one of the friendly faces who'll greet you and assist during your visit.",
-    image: '/assets/team/maddy-coventry.webp',
+    card: '/assets/team/maddy-coventry-card.webp',
   },
 ]
 
@@ -144,10 +146,55 @@ const teamSchema = {
       jobTitle: clinicianJobTitle(c.slug) ?? c.role,
       description: c.bio,
       image: `${SITE_URL}${c.image}`,
-      url: clinicianId(c.slug),
+      // A clinician with a published profile page is described there; until
+      // then the card on this page is their URL.
+      url: clinicianUrl(c.slug),
       worksFor: { '@id': SCHEMA_ID.practice },
     })),
   ],
+}
+
+/**
+ * One team member as their branded profile card, shown whole (1086x1448).
+ *
+ * The card image already carries the name, title and contact details, so no
+ * text sits beside it; the name and role stay in the DOM as a visually hidden
+ * heading for the outline and screen readers. The five clinician cards were
+ * supplied designed; the rest come from scripts/make-team-cards.mjs.
+ */
+function ProfileCard({ id, slug, name, role, card }: { id?: string; slug?: string; name: string; role: string; card: string }) {
+  const photo = (
+    <Photo
+      src={card}
+      alt={`${name}, ${role} at East St Kilda Dental`}
+      sizes="(max-width: 560px) 100vw, (max-width: 1024px) 50vw, 300px"
+      objectFit="contain"
+      style={{ aspectRatio: '1086 / 1448', minHeight: 0, width: '100%' }}
+    />
+  )
+  // A clinician with a published profile page: the whole card links to it, and
+  // a visible text link under it carries their name as the anchor text.
+  const profile = practitionerPath(slug)
+
+  return (
+    <div id={id} style={{ scrollMarginTop: '110px', alignSelf: 'start' }}>
+      <h4 className="sr-only">{name}, {role}</h4>
+      {profile ? (
+        <>
+          <Link href={profile} style={{ display: 'block' }} tabIndex={-1} aria-hidden="true">
+            {photo}
+          </Link>
+          <p style={{ textAlign: 'center', marginTop: '12px', fontSize: '15px' }}>
+            <Link href={profile} style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+              {name}&apos;s profile &rarr;
+            </Link>
+          </p>
+        </>
+      ) : (
+        photo
+      )}
+    </div>
+  )
 }
 
 export default function AboutTeamPage() {
@@ -187,26 +234,10 @@ export default function AboutTeamPage() {
             <h2>Dentists &amp; clinicians</h2>
           </div>
           <div className="team-grid reveal">
-            {/* 280px, not the 150px these cards used to use. At 150 the frame is
-                a ~2.5:1 letterbox, and anbar-ganatra's portrait-orientation
-                source (0.70:1) renders her head about 207px tall at the card's
-                width — taller than the frame itself, so it cropped to her
-                forehead. Raising the height for the whole row fixes that
-                without leaving one card taller than the two beside it. */}
-            {clinicians.map((member, i) => (
-              <div key={i} className="svc">
-                <Photo
-                  src={'image' in member ? (member.image as string) : undefined}
-                  hint={`Warm, real photo of ${member.name}. Never stock.`}
-                  alt={`Photo of ${member.name}`}
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  objectPosition="center top"
-                  style={{ height: '280px', marginBottom: '12px' }}
-                />
-                <h4 style={{ marginBottom: '2px' }}>{member.name}</h4>
-                <p style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px', margin: '2px 0 8px' }}>{member.role}</p>
-                <p style={{ fontSize: '15px', margin: 0 }}>{member.bio}</p>
-              </div>
+            {clinicians.map(member => (
+              // id matches the fragment in clinicianId(), so a link to
+              // /about/our-team#<slug> lands on the card its Person node names.
+              <ProfileCard key={member.slug} id={member.slug} {...member} />
             ))}
           </div>
         </div>
@@ -220,20 +251,8 @@ export default function AboutTeamPage() {
             <h2>Our practice team</h2>
           </div>
           <div className="team-grid reveal">
-            {practiceTeam.map((member, i) => (
-              <div key={i} className="svc">
-                <Photo
-                  src={'image' in member ? (member.image as string) : undefined}
-                  hint={`Warm, real photo of ${member.name}. Never stock.`}
-                  alt={`Photo of ${member.name}`}
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  objectPosition="center top"
-                  style={{ height: '150px', marginBottom: '12px' }}
-                />
-                <h4 style={{ marginBottom: '2px' }}>{member.name}</h4>
-                <p style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px', margin: '2px 0 8px' }}>{member.role}</p>
-                <p style={{ fontSize: '15px', margin: 0 }}>{member.bio}</p>
-              </div>
+            {practiceTeam.map(member => (
+              <ProfileCard key={member.name} {...member} />
             ))}
           </div>
 

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { requireSuburb, suburbPath } from '@/data/suburbs'
 import { business, emailHref, localityLine, streetAddress, telHref } from '@/lib/business'
@@ -31,7 +32,9 @@ export default function Footer() {
 
           {/* ── Col 1: Brand + newsletter ─────────────────── */}
           <div>
-            <div className="foot-logo">East St Kilda Dental</div>
+            <Link href="/" className="foot-logo" aria-label="East St Kilda Dental — home">
+              <Image src="/assets/brand/eskd-logo-reversed.png" alt="East St Kilda Dental" width={174} height={38} />
+            </Link>
             <p style={{ fontSize: '14px' }}>
               Gentle, no-judgement dental care for the St Kilda East community since 1980.
             </p>
@@ -44,13 +47,14 @@ export default function Footer() {
 
           {/* ── Col 2: Care ───────────────────────────────── */}
           <div>
-            <h4>Care</h4>
+            <h2>Care</h2>
             <ul>
               <li><Link href="/services/check-ups">Check-ups &amp; cleans</Link></li>
               <li><Link href="/emergency-dentist">Emergency</Link></li>
               <li><Link href="/nervous-patients">Nervous patients</Link></li>
               <li><Link href="/services/dental-implants">Implants</Link></li>
               <li><Link href="/services/smile-design">Cosmetic</Link></li>
+              <li><Link href="/dental-faqs">Dental FAQs</Link></li>
               <li><Link href="/services">All services</Link></li>
               <li><Link href="/using-your-super">Using your super</Link></li>
             </ul>
@@ -58,7 +62,7 @@ export default function Footer() {
 
           {/* ── Col 3: Areas ─────────────────────────────── */}
           <div>
-            <h4>Areas we serve</h4>
+            <h2>Areas we serve</h2>
             <ul>
               <li><Link href="/">St Kilda East</Link></li>
               {FOOTER_SUBURBS.map((s) => (
@@ -70,7 +74,7 @@ export default function Footer() {
 
           {/* ── Col 4: Contact ───────────────────────────── */}
           <div>
-            <h4>Get in touch</h4>
+            <h2>Get in touch</h2>
             <ul>
               <li>
                 {streetAddress}<br />

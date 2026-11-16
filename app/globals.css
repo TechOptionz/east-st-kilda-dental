@@ -157,6 +157,14 @@ p{margin:0;color:var(--ink-soft);}
 .reveal.scale-in{transform:scale(0.91) translateY(18px);}
 .reveal.visible{opacity:1;transform:none;}
 
+/* Heroes are on screen at load, so their reveal runs as a CSS animation from
+   first paint rather than waiting for ScrollEffects to hydrate and add
+   .visible. Waiting kept the hero photo — each page's LCP element — at
+   opacity 0 for a second or more after it had downloaded. Only a `to` frame:
+   the start is whatever .reveal (or its from-left / scale-in variant) sets. */
+@keyframes reveal-in{to{opacity:1;transform:none;}}
+.hero-v2 .reveal,.hero-reveal .reveal{animation:reveal-in .95s cubic-bezier(.22,1,.36,1) both;}
+
 /* Eyebrow line draws in — works whether reveal is on a parent or on the eyebrow itself */
 .reveal .eyebrow::before,
 .eyebrow.reveal::before,
@@ -178,6 +186,7 @@ p{margin:0;color:var(--ink-soft);}
 
 @media(prefers-reduced-motion:reduce){
   .reveal,.reveal.from-left,.reveal.from-right,.reveal.scale-in{opacity:1;transform:none;transition:none;}
+  .hero-v2 .reveal,.hero-reveal .reveal{animation:none;}
   .reveal .eyebrow::before,.eyebrow.reveal::before,
   .reveal .eyebrow.center::after,.eyebrow.center.reveal::after{width:34px;transition:none;}
   .scroll-progress{display:none;}
@@ -230,8 +239,8 @@ p{margin:0;color:var(--ink-soft);}
 .btn-teal:hover{background:var(--sage-deep);}
 .btn-alt{background:var(--sage-deep);color:#fff;border:none;}
 .btn-alt:hover{background:var(--sage);}
-.gt-btn{background:var(--clay);color:#fff;border:none;cursor:pointer;}
-.gt-btn:hover{background:var(--clay-deep);}
+.gt-btn{background:var(--clay-deep);color:#fff;border:none;cursor:pointer;}
+.gt-btn:hover{background:var(--clay);}
 .btn-emergency-nav{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--clay);color:var(--clay-deep);background:transparent;border-radius:30px;padding:9px 16px;font-weight:700;font-size:14px;transition:.2s;white-space:nowrap;cursor:pointer;font-family:var(--body);}
 .btn-emergency-nav:hover{background:var(--clay);color:#fff;}
 .ed-dot{width:8px;height:8px;border-radius:50%;background:var(--clay);display:inline-block;animation:edpulse 1.8s infinite;}
@@ -269,8 +278,8 @@ p{margin:0;color:var(--ink-soft);}
 /* ── Header ──────────────────────────────────────────────── */
 header.site-header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 28px 13px max(28px,calc((100vw - var(--container)) / 2 + 28px))}
-.logo{font-family:var(--display);font-weight:600;font-size:22px;color:var(--sage-deep);letter-spacing:-.02em;line-height:1;flex:none;text-decoration:none}
-.logo small{display:block;font-family:var(--body);font-weight:600;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--clay-deep);margin-top:3px}
+.logo{display:block;flex:none;line-height:0;text-decoration:none}
+.logo img{display:block;height:37px;width:auto}
 .mainmenu{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;}
 .mainmenu>ul{display:flex;gap:2px;list-style:none;align-items:center;margin:0;padding:0;}
 .mainmenu>ul>li{position:relative}
@@ -282,6 +291,20 @@ header.site-header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,
 .has-dd:hover>.dd,.has-dd.open>.dd{opacity:1;visibility:visible;transform:translateY(0)}
 .dd a{display:block;padding:9px 13px;border-radius:8px;font-size:14.5px;font-weight:500;color:var(--ink-soft)}
 .dd a:hover{background:var(--sage-tint);color:var(--sage-deep)}
+/* A top-level item whose label is a link and whose caret is a separate button
+   (About). Together they look like one .menu-link: the pill hover sits on the
+   pair, and the caret matches the one other dropdown labels draw. */
+.menu-split{display:flex;align-items:center;border-radius:9px;transition:.2s}
+.menu-split:hover{background:var(--sage-tint)}
+.menu-split>.menu-link{padding-right:4px}
+.menu-split>.menu-link:hover{background:none}
+.dd-toggle{display:flex;align-items:center;align-self:stretch;background:none;border:none;cursor:pointer;padding:0 12px 0 3px;color:var(--ink);border-radius:9px}
+.dd-toggle::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.55;transition:.2s}
+.has-dd:hover .dd-toggle::after,.has-dd.open .dd-toggle::after{transform:rotate(225deg);opacity:.9}
+.menu-split:hover .menu-link,.menu-split:hover .dd-toggle{color:var(--clay-deep)}
+.dd-toggle:focus-visible{outline:2px solid var(--sage-deep);outline-offset:-2px}
+/* Keyboard users reach the dropdown by focusing into it, as hover does. */
+.has-split:focus-within>.dd{opacity:1;visibility:visible;transform:translateY(0)}
 .mainmenu>ul>li.has-mega{position:static}
 .mega{left:50%;min-width:0;width:780px;padding:24px 26px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px 26px;transform:translate(-50%,8px)}
 .has-mega:hover>.mega,.has-mega.open>.mega{transform:translate(-50%,0)}
@@ -318,6 +341,12 @@ header.site-header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,
   .menu-link{width:100%;justify-content:space-between;padding:17px 0;font-size:16px;border-radius:0}
   .menu-link:hover{background:none}
   .has-dd>.menu-link::after{margin-left:auto}
+  .menu-split{width:100%;border-radius:0}
+  .menu-split:hover{background:none}
+  .menu-split>.menu-link{flex:1;padding-right:0}
+  .dd-toggle{padding:0 4px 0 20px}
+  .has-split:focus-within>.dd{display:none}
+  .has-split.open>.dd{display:block}
   .dd,.mega{position:static;opacity:1;visibility:visible;transform:none!important;box-shadow:none;border:none;background:none;padding:0 0 12px;width:auto;min-width:0;display:none}
   .mega{grid-template-columns:1fr 1fr}
   .has-dd.open>.dd{display:block}
@@ -1632,12 +1661,12 @@ footer.site-footer{
   min-height:56px;                   /* comfortably above the 44px tap-target minimum */
   padding:14px 18px calc(14px + env(safe-area-inset-bottom));  /* iOS safe area */
   align-items:center;justify-content:center;gap:10px;
-  background:var(--clay);color:#fff;text-decoration:none;
+  background:var(--clay-deep);color:#fff;text-decoration:none;
   font-family:var(--body);font-weight:700;font-size:16px;letter-spacing:.01em;
   box-shadow:0 -6px 20px rgba(44,42,38,.18);
 }
 .sticky-call svg{width:20px;height:20px;flex:none;}
-.sticky-call:active{background:var(--clay-deep);}
+.sticky-call:active{background:var(--sage-deep);}
 @media(max-width:820px){
   .sticky-call{display:flex;}
   /* Stop the bar covering the last of the content and the footer. Scoped with
@@ -2140,8 +2169,9 @@ body{overflow-x:hidden;max-width:100%;}
 .sec{padding:104px 0;}
 .sec-head{max-width:46em;margin-bottom:44px;}
 .sec-head.center{margin:0 auto 48px;text-align:center;}
-.sec h2{font-size:clamp(30px,3.8vw,46px);color:var(--ink);margin-top:10px;}
-.sec h2 em{font-style:italic;color:var(--clay-deep);}
+/* h1.h2: a page's h1 at section-heading size, for a page that opens on a section rather than a hero. */
+.sec h2,.sec h1.h2{font-size:clamp(30px,3.8vw,46px);color:var(--ink);margin-top:10px;}
+.sec h2 em,.sec h1.h2 em{font-style:italic;color:var(--clay-deep);}
 /* The lead paragraph under a section heading. Held clearly below the H2 and
    clearly above the eyebrow, which is the distinction that kept collapsing. */
 .sec-head p{font-size:17.5px;line-height:1.7;}
@@ -2203,19 +2233,20 @@ body{overflow-x:hidden;max-width:100%;}
   color:var(--sage);margin:16px 0 0;
 }
 .hero-v2 .lead{font-size:20px;margin:24px 0 30px;max-width:30em;color:var(--ink-soft);}
-/* A hero headline set on ONE line at every width. Same technique as .pqfit and
-   .fundfit: the copy column becomes a query container, so 1cqw is a hundredth
-   of the column's own width — which is what the headline has to fit inside,
-   and is narrower than the container because .hero-v2-grid splits it 1.05/.95
-   with a 54px gap. Measured in Cormorant at 600 with "check-up" italic, "More
-   than a check-up" runs 8.12em, so 11.7cqw leaves about 5% in hand. At the
-   74px cap it would need 601px against a 541px column, i.e. it wrapped before
-   this rule existed. Any reword needs the 11.7cqw remeasured.
+/* The hero headline on the new patient page. The copy column is a query
+   container, so 1cqw is a hundredth of the column's own width — narrower than
+   the container because .hero-v2-grid splits it 1.05/.95 with a 54px gap.
+
+   "What if you could leave the dentist feeling relieved instead of worried?"
+   is far too long for one line, so unlike the old "More than a check-up" it is
+   allowed to wrap: no nowrap (that is what pushed it across the photograph),
+   sized off the column so it settles at about three balanced lines beside the
+   image, and overflow-wrap as a backstop so no word can ever break out of it.
 
    The body paragraphs carry their own rhythm here because the .lead that used
    to space them off the headline is gone. */
-.hero-fit{container-type:inline-size;}
-.hero-fit h1{font-size:min(74px,11.7cqw);white-space:nowrap;}
+.hero-fit{container-type:inline-size;min-width:0;}
+.hero-fit h1{font-size:clamp(34px,9.2cqw,54px);line-height:1.1;text-wrap:balance;overflow-wrap:break-word;max-width:100%;}
 .hero-fit>p{margin-top:20px;font-size:17px;line-height:1.7;max-width:34em;}
 .hero-fit .hero-cta{margin-top:30px;}
 
@@ -2233,16 +2264,29 @@ body{overflow-x:hidden;max-width:100%;}
 .sage-bg .pathlink a{color:var(--clay-soft);}
 .sage-bg .pathlink a:hover{color:#fff;}
 
-/* "Put it off for years? You're exactly who we're best with" on ONE line at
-   every width. Same technique as .pqfit, .fundfit and .hero-fit: the heading
+/* "Put it off for years? You're exactly who we're best with" on ONE line down
+   to 600px. Same technique as .pqfit, .fundfit and .hero-fit: the heading
    box becomes a query container, so 1cqw is a hundredth of its own width —
    which here is .sec-head's 46em measure, not the container. Measured in
    Cormorant at 500 with "best" italic and the h2's -.01em tracking, the line
    runs 20.39em, so 4.67cqw leaves about 5% in hand. At the 42px .sec h2 cap it
    would need 856px against a ~736px box, i.e. it wrapped before this rule.
-   Any reword needs the 4.67cqw remeasured. */
+   Any reword needs the 4.67cqw remeasured.
+
+   Written as `.sec .welcome-fit h2` for the same reason `.sec .oneline-head`
+   is: the small-mobile `.sec h2{font-size:clamp(26px,7vw,36px)}` further down
+   the file matches at the same specificity and would win on source order. It
+   took the font-size and left the nowrap, which set this 56-character line at
+   ~27px — about 550px of unbreakable text on a 390px phone, clipped by
+   body{overflow-x:hidden} into a blank strip the page could still be
+   scrolled sideways into. */
 .welcome-fit{container-type:inline-size;}
-.welcome-fit h2{font-size:min(42px,4.67cqw);white-space:nowrap;}
+.sec .welcome-fit h2{font-size:min(42px,4.67cqw);white-space:nowrap;}
+/* Below 600px, 4.67cqw is ~16px — under the body copy. Wrapping buys a
+   readable size back, exactly as .fundfit and .emg-fit do. */
+@media(max-width:600px){
+  .sec .welcome-fit h2{white-space:normal;font-size:clamp(26px,7vw,34px);}
+}
 .hero-cta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
 .hero-proof-band{background:var(--paper);border-bottom:1px solid var(--line);padding:15px 0;}
 .hero-proof{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:14px;font-weight:600;color:var(--ink-soft);justify-content:center;}
@@ -2270,7 +2314,12 @@ body{overflow-x:hidden;max-width:100%;}
   justify-content:flex-end;
   min-height:clamp(560px,80vh,800px);
   overflow:hidden;
-  background:#1E2F27 url('/assets/video/hero-clinic-poster.webp') center/cover no-repeat;
+  background:#1E2F27 url('/assets/video/hero-clinic-poster-1080.webp') center/cover no-repeat;
+}
+/* Phones show only the centre of the frame (see the ≤600px block below), so
+   they get a square centre crop of the poster at a tenth of the weight. */
+@media(max-width:600px){
+  .hero-video{background-image:url('/assets/video/hero-clinic-poster-mobile.webp');}
 }
 .hero-video-media{
   position:absolute;inset:0;z-index:0;
@@ -2340,11 +2389,11 @@ body{overflow-x:hidden;max-width:100%;}
    is the only button that carries a drop shadow of its own at rest — the call
    link beside it stays a quiet outline. Both keep the standard .btn box. */
 .hero-video .btn{
-  background:var(--clay);border-color:var(--clay);
+  background:var(--clay-deep);border-color:var(--clay-deep);
   font-size:17px;padding:18px 40px;
   box-shadow:0 10px 26px rgba(20,33,26,.34);
 }
-.hero-video .btn:hover{background:var(--clay-deep);border-color:var(--clay-deep);box-shadow:0 14px 32px rgba(20,33,26,.42);}
+.hero-video .btn:hover{background:var(--sage-deep);border-color:var(--sage-deep);box-shadow:0 14px 32px rgba(20,33,26,.42);}
 .hero-video .btn-ghost-light{background:rgba(255,255,255,.06);font-size:16px;padding:18px 32px;}
 .hero-video-note{margin:18px 0 0;font-size:15px;}
 .hero-video-note a{color:var(--clay-soft);font-weight:600;}
@@ -2483,7 +2532,9 @@ body{overflow-x:hidden;max-width:100%;}
      strokes, while the label below is semibold sans. At the previous 19/12 the
      two looked the same size — the number needs roughly twice the label, not a
      little more, before the hierarchy reads. */
-  .hero-stat dt{font-size:clamp(16px,5.9vw,23px);}
+  /* At this size the figures count as normal text (4.5:1), which --clay
+     misses on white; desktop sizes are large text and keep --clay. */
+  .hero-stat dt{font-size:clamp(16px,5.9vw,23px);color:var(--clay-deep);}
   /* "45+ years" is now the widest of the three figures and sets the ceiling
      above; "5.0 ★★★★★" is the one with no break opportunity to spare, so the
      stars are cut to .4em and the 2px tracking they carry on the hero's proof
@@ -2518,6 +2569,8 @@ body{overflow-x:hidden;max-width:100%;}
 .ph{position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,var(--sage-soft),var(--clay-soft));display:flex;align-items:flex-end;min-height:240px;border:1px solid var(--line-soft);}
 .ph span{font-family:var(--body);font-style:italic;font-size:13.5px;color:var(--sage-deep);background:rgba(252,250,245,.78);padding:8px 13px;border-radius:8px;margin:14px;line-height:1.4;max-width:88%;}
 .ph.tall{min-height:420px;}
+/* Visually hidden, still read by screen readers and kept in the outline. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;}
 
 /* Pillars */
 .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;}
@@ -2601,7 +2654,8 @@ body{overflow-x:hidden;max-width:100%;}
   width:max-content;
   /* Slow on purpose: one lap of the six cards takes a minute and a half, which
      is roughly 25px a second on a desktop and slower still on a phone. */
-  animation:rmq-drift 96s linear infinite;
+  /* --rmq-lap is set by ReviewMarquee from the number of cards. */
+  animation:rmq-drift var(--rmq-lap,96s) linear infinite;
   will-change:transform;
 }
 /* The second lap. A flex box of its own, so the track's direct children are
@@ -2676,6 +2730,8 @@ body{overflow-x:hidden;max-width:100%;}
   margin:0 0 26px;
   font-size:17px;line-height:1.75;
   color:var(--ink);
+  /* Reviews are kept exactly as written, paragraph breaks included. */
+  white-space:pre-line;
 }
 /* margin-top:auto pins the person to the card foot, so the rule above them
    lines up across cards whatever length the quote ran to. */
@@ -2692,7 +2748,7 @@ body{overflow-x:hidden;max-width:100%;}
   font-family:var(--display);font-size:23px;font-weight:600;
 }
 .rmq-name{display:block;font-size:16.5px;font-weight:600;color:var(--ink);line-height:1.3;}
-.rmq-when{display:block;font-size:13.5px;color:var(--ink-faint);margin-top:2px;}
+.rmq-when{display:block;font-size:13.5px;color:var(--ink-soft);margin-top:2px;}
 
 @media(max-width:820px){
   .rmq-card{flex-basis:370px;margin-right:22px;padding:32px 28px 28px;}
@@ -2767,6 +2823,14 @@ body{overflow-x:hidden;max-width:100%;}
   .offer-includes.tight{grid-template-columns:1fr 1fr;gap:8px 14px;}
   .offer-includes.tight li{font-size:13.5px;padding-left:22px;}
 }
+/* Home only: once the card stacks, the photo leads it instead of closing it.
+   The nervous-patients band directly below opens with its own photo, so a
+   trailing photo here put two pictures back to back with nothing between
+   them. Photo first, copy and button last, keeps a block of text between the
+   two. Other pages using the card keep their photo-last order. */
+@media(max-width:820px){
+  .home .offer-card-v2 .offer-photo{order:-1;border-bottom:1px solid var(--line);}
+}
 
 /* Services grid */
 .svc-grid-v2{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
@@ -2801,7 +2865,7 @@ body{overflow-x:hidden;max-width:100%;}
    all six cards whatever the source file's aspect ratio. */
 .svc-item .ph{border:0;border-radius:0;min-height:0;height:222px;flex:none;}
 .svc-item-body{display:flex;flex-direction:column;flex:1;padding:28px 30px 30px;}
-.svc-item h4{font-size:23px;line-height:1.2;margin-bottom:12px;}
+.svc-item h4,.svc-item h3{font-size:23px;line-height:1.2;margin-bottom:12px;}
 .svc-item p{font-size:15.5px;line-height:1.65;}
 /* margin-top:auto pins the CTA to the card foot, so the three cards in a row
    line their links up however long the blurb above ran. */
@@ -2903,11 +2967,11 @@ body{overflow-x:hidden;max-width:100%;}
    at the same scale across all four regardless of the source file. Per-person
    framing is set with objectPosition in app/page.tsx, never by changing this. */
 .team-member .ph{min-height:0;aspect-ratio:3/4;margin-bottom:20px;border-radius:var(--radius-card);}
-.team-member h4,.team-row-group h4{font-size:22px;line-height:1.25;margin-bottom:5px;}
+.team-member h4,.team-row-group h4,.team-row-group h3{font-size:22px;line-height:1.25;margin-bottom:5px;}
 .team-member span,.team-row-group span{font-size:15px;color:var(--clay-deep);font-weight:600;letter-spacing:.01em;}
 .lang-band{margin-top:30px;background:var(--sage-tint);border-radius:var(--radius-card);padding:22px 26px;font-size:15px;}
 .lang-band b{color:var(--sage-deep);}
-@media(max-width:1024px){.team-grid-v2{gap:26px;}.team-member h4,.team-row-group h4{font-size:20px;}}
+@media(max-width:1024px){.team-grid-v2{gap:26px;}.team-member h4,.team-row-group h4,.team-row-group h3{font-size:20px;}}
 
 /* ── Team: the group shot and the four portraits as one row ──
    Used by the home page and /new-patient-comprehensive-care-visit, which show
@@ -2994,7 +3058,7 @@ body{overflow-x:hidden;max-width:100%;}
   /* Down from the 20px the 1024px step-down leaves, which is what made the
      captions wrap unevenly. At these sizes both the longest name and the
      longest role hold one line. */
-  .team-member h4,.team-row-group h4{font-size:17px;}
+  .team-member h4,.team-row-group h4,.team-row-group h3{font-size:17px;}
   .team-member span,.team-row-group span{font-size:13.5px;}
   /* Dots only, as with the article row: at 62% the next card is already in
      view, so arrows would be telling the reader something they can see.
@@ -3064,6 +3128,13 @@ body{overflow-x:hidden;max-width:100%;}
    Scaled from 30px with the taller tile, so the padding around each mark is
    unchanged in proportion. */
 .ins-logos .lg img{height:calc(var(--logo-h,30px) * 1.13);width:auto;max-width:100%;object-fit:contain;}
+/* Desktop: a fixed six to a row (12 funds = two even rows) instead of however
+   many the wrap happens to fit. Tiles are narrower here, so the side padding
+   comes in; the widest marks scale down by width via max-width above. */
+@media(min-width:1024px){
+  .ins-logos{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;}
+  .ins-logos .lg{min-width:0;padding:0 16px;}
+}
 @media(max-width:560px){
   .ins-logos{gap:14px;}
   .ins-logos .lg{height:62px;min-width:112px;padding:0 18px;}
@@ -3281,8 +3352,8 @@ body{overflow-x:hidden;max-width:100%;}
 .gt-form input::placeholder,.gt-form textarea::placeholder{color:rgba(255,255,255,.45);}
 .gt-form input:focus,.gt-form textarea:focus{outline:none;border-color:var(--clay-soft);background:rgba(255,255,255,.13);}
 .gt-form textarea{min-height:118px;resize:vertical;}
-/* Native dropdown, dressed as a field of this panel. Rendered only where
-   GetInTouch is given compactMobile, at phone width — see the component. The
+/* Native dropdown, dressed as a field of this panel. Rendered at phone width
+   only — see the component. The
    arrow is a background image because a <select>'s own is not stylable, and
    the options are painted by the OS, so they get explicit colours rather than
    inheriting the cream-on-green of the panel. */
@@ -3319,8 +3390,10 @@ body{overflow-x:hidden;max-width:100%;}
 /* Full width and unmistakably the panel's conclusion: taller, set larger, and
    carrying a shadow of its own so it lifts off the deep green rather than
    sitting flat in it like another field. */
-.gt-btn{display:block;width:100%;padding:19px 24px;background:var(--clay);color:#fff;border:none;border-radius:40px;font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,box-shadow .2s ease,transform .2s ease;margin-top:24px;text-align:center;box-shadow:0 10px 26px rgba(12,22,17,.34);}
-.gt-btn:hover{background:var(--clay-deep);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
+.gt-btn{display:block;width:100%;padding:19px 24px;background:var(--clay-deep);color:#fff;border:none;border-radius:40px;font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,box-shadow .2s ease,transform .2s ease;margin-top:24px;text-align:center;box-shadow:0 10px 26px rgba(12,22,17,.34);}
+/* Stays clay on hover: the form panel is --sage-deep, so the sage hover every
+   other button takes would make this one vanish into its own background. */
+.gt-btn:hover{background:var(--clay);transform:translateY(-2px);box-shadow:0 14px 32px rgba(12,22,17,.42);}
 .gt-btn:disabled{opacity:.65;cursor:progress;transform:none;}
 @media(prefers-reduced-motion:reduce){.gt-btn{transition:none;}.gt-btn:hover{transform:none;}}
 /* Confirmation state — replaces the form in place once an enquiry sends.
@@ -3390,7 +3463,7 @@ body{overflow-x:hidden;max-width:100%;}
    higher opacity than it was on --ink and the headings go to pure white. */
 .footer-v2{background:var(--sage-darker);color:rgba(255,255,255,.86);padding:64px 0 30px;font-size:14.5px;}
 .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:40px;}
-.footer-v2 h4{color:#fff;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;}
+.footer-v2 h4,.footer-v2 h2{color:#fff;font-family:var(--body);font-weight:700;font-size:13px;line-height:1.12;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;}
 /* The global `p{color:var(--ink-soft)}` rule wins over the inherited footer
    colour, which left the brand blurb as dark ink on the deep green. */
 .footer-v2 p{color:rgba(255,255,255,.86);line-height:1.6;}
@@ -3398,7 +3471,8 @@ body{overflow-x:hidden;max-width:100%;}
 .footer-v2 li{margin-bottom:10px;}
 .footer-v2 a{color:rgba(255,255,255,.86);transition:color .2s;}
 .footer-v2 a:hover{color:var(--clay-soft);}
-.foot-logo{font-family:var(--display);font-size:22px;color:#fff;font-weight:600;margin-bottom:14px;}
+.foot-logo{display:inline-block;margin-bottom:14px;line-height:0;}
+.foot-logo img{display:block;height:38px;width:auto;max-width:100%;}
 .news{display:flex;gap:8px;margin-top:14px;}
 .news input{flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:var(--cream);font-family:var(--body);font-size:14px;}
 .news input::placeholder{color:rgba(255,255,255,.45);}
@@ -3428,6 +3502,9 @@ body{overflow-x:hidden;max-width:100%;}
 /* h3 as well as h4: cards whose heading is a real question use h3 so the page
    keeps a clean outline under the section's h2. */
 .svc h4,.svc h3{font-size:21px;margin-bottom:8px;}
+/* The home page's gallery and article cards were h4s; as h3s they keep the h4
+   leading so the cards look exactly as before. */
+.edu-grid>.svc h3{line-height:1.12;}
 .svc p{font-size:15px;}
 /* Contextual "Related:" line under a first-aid card — quiet, informational,
    descriptive anchors that pass relevance to the treatment page behind it. */
@@ -3619,21 +3696,21 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .guide-card-body{display:flex;flex-direction:column;flex:1;padding:20px 0 0;}
 /* Clamped to three lines so a long question does not knock the row out of
    alignment with the cards beside it. */
-.guide-card-body h4{
+.guide-card-body h4,.guide-card-body h3{
   font-family:var(--display);font-size:21px;line-height:1.32;color:var(--ink);margin:0;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
   transition:color .2s ease;
 }
-.guide-card:hover .guide-card-body h4{color:var(--clay-deep);}
+.guide-card:hover .guide-card-body h4,.guide-card:hover .guide-card-body h3{color:var(--clay-deep);}
 .guide-byline{font-size:14px;color:var(--ink-faint);margin:10px 0 0;}
 @media(max-width:600px){
-  .guide-card-body h4{font-size:17px;}
+  .guide-card-body h4,.guide-card-body h3{font-size:17px;}
   .guide-byline{font-size:13px;}
   .guide-tag{top:10px;left:10px;padding:6px 11px;font-size:10.5px;}
   .guide-cover-title{padding:16px 12px;font-size:15px;}
   .guide-cover-title span{-webkit-line-clamp:4;}
 }
-.sage-bg .guide-card-body h4{color:var(--cream);}
+.sage-bg .guide-card-body h4,.sage-bg .guide-card-body h3{color:var(--cream);}
 .sage-bg .guide-byline{color:rgba(255,255,255,.7);}
 
 .article-card-soon{opacity:.55;pointer-events:none;}
@@ -3668,7 +3745,13 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .breadcrumb li+li::before{content:'/';margin:0 9px;color:var(--ink-faint);opacity:.55;}
 .breadcrumb a{color:var(--ink-soft);text-decoration:none;}
 .breadcrumb a:hover{color:var(--sage-deep);text-decoration:underline;}
-.breadcrumb li[aria-current="page"]{color:var(--ink-faint);}
+.breadcrumb li[aria-current="page"]{color:var(--ink);}
+
+/* A clinician's name linking to their profile page, inside a team card. Keeps
+   the heading's own colour and type, with a quiet underline as the cue. */
+.name-link{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:rgba(44,42,38,.28);transition:color .2s ease,text-decoration-color .2s ease;}
+.name-link:hover{color:var(--clay-deep);text-decoration-color:currentColor;}
+.sage-bg .name-link{text-decoration-color:rgba(255,255,255,.4);}
 
 .post-back{display:inline-flex;align-items:center;gap:6px;color:var(--sage-deep);font-weight:600;font-size:14px;text-decoration:none;margin-bottom:22px;}
 .post-back:hover{color:var(--clay-deep);}
@@ -3923,8 +4006,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* ── Very small (≤420px) ─────────────────────────────────── */
 @media(max-width:420px){
   .nav{padding:11px 14px;}
-  .logo{font-size:18px;}
-  .logo small{font-size:8px;letter-spacing:.2em;}
+  .logo img{height:30px;}
   .nav-right .btn{padding:10px 14px;font-size:13.5px;}
   .sec{padding:44px 0;}
   .hero-v2{padding:36px 0 44px;}
@@ -4047,12 +4129,6 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
-  background:var(--cream-2);
-  border:1px solid var(--line);
-  border-radius:var(--radius-panel);
-  /* Insets the cards so each one can show all four of its own corners
-     instead of being clipped by the container's curve. */
-  padding:10px;
 }
 /* Lighter surface + accent border + a soft lift, so the cards read as
    raised out of the tinted band rather than merely tinted differently.
@@ -4228,7 +4304,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 
 @media(max-width:639px){
   .offers{padding-top:clamp(36px,8vw,48px);}
-  .offers-row{grid-template-columns:1fr;padding:6px;gap:6px;}
+  .offers-row{grid-template-columns:1fr;gap:6px;}
   .offers-card:last-child{grid-column:1;}
   /* Stacked, the bodies turn the row into a wall of prose the reader
      has to scroll past to reach the services grid. On phones the cards keep
@@ -4420,9 +4496,15 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .home .svc-grid-v2{grid-template-columns:1fr 1fr;gap:12px;}
   .home .svc-item .ph{height:118px;}
   .home .svc-item-body{padding:13px 13px 15px;}
-  .home .svc-item h4{font-size:15px;line-height:1.25;margin-bottom:5px;}
+  .home .svc-item h4,.home .svc-item h3{font-size:15px;line-height:1.25;margin-bottom:5px;}
   .home .svc-item p{font-size:12.5px;line-height:1.5;}
   .home .svc-item-more{font-size:12.5px;padding-top:11px;}
+  /* Implants and cosmetic dentistry — the two cards the phone drops, so the
+     grid closes on an even second row. Flagged per card by `phoneHidden` in
+     the .svc-item map in app/page.tsx, not by :nth-child, so reordering that
+     array can't hide the wrong two. display:none also keeps their lazy photos
+     off the phone's network — the element never intersects the viewport. */
+  .home .svc-item-phone-hide{display:none;}
 
   /* ── CTA band ───────────────────────────────────────────
      The reference gives this the most weight of anything on the page: a full
@@ -4654,10 +4736,13 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      The opening hours come off: the "Finding us" card directly above already
      carries them, and so does the footer. The "caring for families…" line goes
      with them — it is the block's quietest sentence and the width it frees is
-     worth more here. Home only; every other page carrying this section keeps
-     both, and keeps its field headings. */
-  .home .gt-hours,
-  .home .gt-area{display:none;}
+     worth more here.
+
+     Scoped to .getintouch rather than .home: the section is shared furniture,
+     and every page carrying it gets this phone layout, not only the home page.
+     The footer carries the hours and the address on every page. */
+  .getintouch .gt-hours,
+  .getintouch .gt-area{display:none;}
   /* The panel becomes a two-track grid so the phone and the email can share a
      row; everything else spans both tracks and reads as it did.
 
@@ -4668,37 +4753,37 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      and dropping it is what leaves room for the other two side by side. */
   /* The email track is the wider of the two: 30 unbreakable characters against
      a 14-character phone number. */
-  .home .gt-info{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);column-gap:10px;align-content:start;}
-  .home .gt-info>*{grid-column:1/-1;}
-  .home .gt-info>.gt-detail:nth-of-type(2){grid-column:1;}
-  .home .gt-info>.gt-detail:nth-of-type(3){display:none;}
-  .home .gt-info>.gt-detail:nth-of-type(4){grid-column:2;}
+  .getintouch .gt-info{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);column-gap:10px;align-content:start;}
+  .getintouch .gt-info>*{grid-column:1/-1;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(2){grid-column:1;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(3){display:none;}
+  .getintouch .gt-info>.gt-detail:nth-of-type(4){grid-column:2;}
   /* The panel is four short blocks now, not eight — the shared phone padding
      and the 28px under the intro were measured for a column that also carried
      an address, the hours and a closing note. */
-  .home .gt-info{padding:24px 20px 22px;}
-  .home .gt-info h2{margin:8px 0 10px;}
-  .home .gt-sub{margin-bottom:14px;}
-  .home .gt-detail{font-size:13.5px;align-items:center;gap:5px;margin-bottom:2px;}
+  .getintouch .gt-info{padding:24px 20px 22px;}
+  .getintouch .gt-info h2{margin:8px 0 10px;}
+  .getintouch .gt-sub{margin-bottom:14px;}
+  .getintouch .gt-detail{font-size:13.5px;align-items:center;gap:5px;margin-bottom:2px;}
   /* Everything the icon was taking: the lane narrows from 18px to 12 and the
      gap from 12px to 5, which is most of what lets the address sit on one
      line beside it. */
-  .home .gt-detail .ic{width:12px;font-size:12px;}
-  .home .gt-detail>*:last-child{min-width:0;}
+  .getintouch .gt-detail .ic{width:12px;font-size:12px;}
+  .getintouch .gt-detail>*:last-child{min-width:0;}
   /* The address is 30 characters that cannot break anywhere useful, so it is
      set a step down and held to one line rather than split across two. Sized
      off the viewport, not in px: at 11px it fits a 390px screen exactly, and
      anything narrower needs it to come down with the screen. */
-  .home .gt-info>.gt-detail:nth-of-type(4){font-size:min(11px,2.85vw);}
+  .getintouch .gt-info>.gt-detail:nth-of-type(4){font-size:min(11px,2.85vw);}
   /* Below 375px even that is not enough room, so the smallest phones get the
      address over two lines rather than a line that runs past its track. */
   @media(min-width:375px){
-    .home .gt-info>.gt-detail:nth-of-type(4) a{white-space:nowrap;}
+    .getintouch .gt-info>.gt-detail:nth-of-type(4) a{white-space:nowrap;}
   }
   /* The field headings come off: every control below either carries a
      placeholder or is a dropdown whose closed state names itself. They stay in
      the DOM, visually hidden, so each input keeps its accessible name. */
-  .home .gt-label{
+  .getintouch .gt-label{
     position:absolute;
     width:1px;height:1px;
     padding:0;margin:-1px;
@@ -4710,16 +4795,16 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
      rule stacks these below 480px, which is the right call for a form carrying
      visible headings and 15.5px fields; here the headings are gone and the
      fields are a step smaller, so the pairs fit. */
-  .home .gt-row2{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-  .home .gt-field{margin-bottom:12px;}
-  .home .gt-form input[type=text],
-  .home .gt-form input[type=email],
-  .home .gt-form input[type=tel],
-  .home .gt-form textarea{padding:12px 13px;font-size:13.5px;border-radius:10px;}
-  .home .gt-form textarea{min-height:92px;}
-  .home .gt-select{padding:12px 30px 12px 13px;font-size:13.5px;border-radius:10px;background-position:right 10px center;}
-  .home .gt-btn{padding:16px 18px;font-size:13px;letter-spacing:.08em;margin-top:18px;}
-  .home .gt-finehint{font-size:12px;line-height:1.55;margin-top:14px;}
+  .getintouch .gt-row2{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .getintouch .gt-field{margin-bottom:12px;}
+  .getintouch .gt-form input[type=text],
+  .getintouch .gt-form input[type=email],
+  .getintouch .gt-form input[type=tel],
+  .getintouch .gt-form textarea{padding:12px 13px;font-size:13.5px;border-radius:10px;}
+  .getintouch .gt-form textarea{min-height:92px;}
+  .getintouch .gt-select{padding:12px 30px 12px 13px;font-size:13.5px;border-radius:10px;background-position:right 10px center;}
+  .getintouch .gt-btn{padding:16px 18px;font-size:13px;letter-spacing:.08em;margin-top:18px;}
+  .getintouch .gt-finehint{font-size:12px;line-height:1.55;margin-top:14px;}
 
   /* ── Education ──────────────────────────────────────────
      The reference's community row: the cards run off the screen edge and are
@@ -4743,7 +4828,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   /* .ph carries a 240px floor that beat the 140px height set on these frames in
      app/page.tsx; at 74% of the screen that made the picture most of the card. */
   .home .edu-grid .ph{min-height:0;}
-  .home .edu-grid>.svc h4{font-size:16px;line-height:1.25;margin:6px 0;}
+  .home .edu-grid>.svc h4,.home .edu-grid>.svc h3{font-size:16px;line-height:1.25;margin:6px 0;}
   .home .edu-grid>.svc p{font-size:13px;line-height:1.5;}
   /* Dots only under this row — the reference gives the community carousel no
      arrows, and at 74% of the screen the next card is already in view. */
@@ -4756,11 +4841,12 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 }
 
 /* ═══════════════════════════════════════════════════════
-   /new-patient-comprehensive-care-visit
+   /new-patient-comprehensive-care-visit  (and /nervous-patients)
    Built to docs/New Patient Comprehensive.jpeg. Every rule below is prefixed
-   .npv — the class on that page's <main> — so the shared pieces this page
-   reuses (.pillars, .chips, .booking-cols, .offer-card-v2) keep their own
-   look everywhere else. The responsive tail is at the foot of this block
+   .npv — the class on the <main> of both landing pages — so the shared pieces
+   they reuse (.pillars, .chips, .booking-cols, .offer-card-v2) keep their own
+   look everywhere else. /nervous-patients adds .gentle alongside .npv for the
+   handful of rules only it needs; those sit at the end of this block. The responsive tail is at the foot of this block
    rather than in the site-wide mobile passes above, because these selectors
    outrank those and would otherwise survive into a phone layout.
 ═══════════════════════════════════════════════════════ */
@@ -4840,6 +4926,77 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .npv .offer-actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px;margin-top:20px;}
 .npv .offer-actions-link{font-size:14.5px;font-weight:600;color:var(--sage-deep);text-decoration:underline;text-underline-offset:3px;}
 .npv .offer-actions-link:hover{color:var(--clay-deep);}
+/* The H2 is a full sentence with the suburb in it, set in half the card —
+   the section size would run it to four lines. */
+.npv .offer-card-v2 h2{font-size:clamp(28px,2.9vw,38px);line-height:1.15;}
+.npv .offer-lead{margin:0;font-size:15.5px;font-weight:600;color:var(--ink-soft);}
+.npv .offer-lead+.offer-includes{margin-top:14px;}
+
+/* ── The direct answer ───────────────────────────────────
+   Directly under the hero, whose gradient ends in the same cream, so no top
+   padding: the card reads as the hero's footnote rather than a new band. */
+.npv .sec.npv-answer{padding-top:0;}
+.npv .npv-answer-card{
+  max-width:880px;margin:0 auto;
+  background:var(--paper);
+  border:1px solid var(--line);border-left:4px solid var(--clay);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card);
+  padding:28px 34px;
+}
+.npv .npv-answer-card h2{margin:0 0 10px;font-size:clamp(22px,2.4vw,28px);line-height:1.2;color:var(--sage-deep);}
+.npv .npv-answer-card p{margin:0;font-size:18px;line-height:1.65;color:var(--ink);}
+
+/* ── Who is this visit for ───────────────────────────────
+   Six situations, three across. The section is .alt (white), so the tiles
+   take the cream ground to stand off it. */
+.npv .npv-who{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
+}
+.npv .npv-who li{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;
+  background:var(--cream);border:1px solid var(--line-soft);
+  border-radius:var(--radius-card);padding:20px 22px;
+}
+.npv .npv-who-ico{
+  width:40px;height:40px;flex:none;border-radius:50%;
+  background:var(--sage-tint);color:var(--clay-deep);
+  display:grid;place-items:center;
+}
+.npv .npv-who-ico svg{width:20px;height:20px;}
+.npv .npv-who h3{margin:2px 0 6px;font-size:18px;line-height:1.25;}
+.npv .npv-who p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-soft);}
+
+/* ── Cost and health funds ───────────────────────────── */
+.npv .npv-cost-card{max-width:46em;margin:0 auto;text-align:center;}
+.npv .npv-cost-card h2{font-size:clamp(28px,3.2vw,40px);line-height:1.15;}
+.npv .npv-cost-card p{margin:16px auto 0;font-size:17.5px;line-height:1.7;max-width:40em;}
+.npv .npv-cost-card .offer-actions{justify-content:center;margin-top:24px;}
+
+/* ── Clinicians sentence under the team heading ──────────
+   .npv-team .sec-head has no max-width (see below), so the line needs its
+   own measure. */
+.npv .npv-clinicians{max-width:44em;margin:14px auto 0;font-size:16.5px;color:var(--ink-soft);}
+.npv .npv-clinicians a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.npv .npv-clinicians a:hover{color:var(--clay-deep);}
+
+/* ── Book it now ─────────────────────────────────────────
+   The live widget, set between the white offer card above it and the cream
+   cost band below. --cream-2 is what keeps it a band of its own: on plain
+   cream it would run into .npv-cost as one long surface, and on .alt white it
+   would merge with the offer card. Same ground as .npv-why and .npv-faq, so
+   the page still holds to its three light surfaces. */
+.npv-book{background:var(--cream-2);}
+/* The embed is a white card on that ground, so the line under it takes the
+   quiet treatment the same note has on /online-booking. */
+.npv .npv-book-fallback{text-align:center;margin-top:16px;font-size:14px;color:var(--ink-faint);}
+.npv .npv-book-fallback a{color:var(--clay-deep);font-weight:600;}
+
+/* ── FAQ ─────────────────────────────────────────────────
+   --cream-2, so it separates from the plain booking section that follows. */
+.npv-faq{background:var(--cream-2);}
+
 /* ── Reassurance chips ───────────────────────────────── */
 .npv .chips-ico .chip{display:inline-flex;align-items:center;gap:9px;}
 .npv .chips-ico .chip svg{width:17px;height:17px;flex:none;color:var(--clay-soft);}
@@ -4979,8 +5136,310 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .npv-trust{padding:56px 0;}
 .npv-trust p{text-align:center;max-width:44em;margin:0 auto;font-size:15px;color:var(--ink-faint);}
 
+/* ── Inline links inside the landing-page cards and copy ── */
+.npv :is(.npv-who,.pillar,.npv-cost-card) p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.npv :is(.npv-who,.pillar,.npv-cost-card) p a:hover{color:var(--clay-deep);}
+
+/* ── /nervous-patients only ──────────────────────────── */
+/* The summary paragraph under the hero intro: the same copy measure, set a
+   step quieter and ruled off so it reads as the plain statement beneath the
+   warm one. */
+.gentle .hero-fit>p.hero-summary{
+  margin-top:16px;padding-left:16px;
+  border-left:3px solid var(--clay);
+  font-size:15.5px;line-height:1.65;color:var(--ink-soft);
+}
+.gentle .gentle-team-head p{max-width:44em;margin:14px auto 0;font-size:16.5px;color:var(--ink-soft);}
+.gentle .gentle-team-head p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.gentle .gentle-team-head p a:hover{color:var(--clay-deep);}
+.gentle .nervous-grid .chips-ico{gap:10px;}
+/* "A genuinely different way of working with fear" on ONE line. Same technique
+   as .welcome-fit: the heading box is the query container, so 1cqw is a
+   hundredth of .sec-head's ~736px measure. Scaled from .welcome-fit's measured
+   line (56 characters at 20.39em in the same Cormorant 500 h2), this 47
+   character line runs about 17.1em, so 5.4cqw leaves roughly 7% in hand —
+   about 40px at full width. Below 480px that would fall under 24px, smaller
+   than a heading should read, so it wraps there instead. Any reword needs the
+   5.4cqw remeasured. */
+.gentle .approach-fit{container-type:inline-size;}
+.gentle .approach-fit h2{font-size:min(46px,5.4cqw);white-space:nowrap;}
+@media(max-width:480px){
+  .gentle .approach-fit h2{white-space:normal;font-size:clamp(26px,7vw,32px);}
+}
+
+/* ── /dental-faqs ────────────────────────────────────────
+   The FAQ library. <main> carries .npv (the shared landing-page pieces) and
+   .faqs for everything below. */
+.faqs .hero-fit>p.faqs-disclaimer{
+  display:flex;gap:10px;align-items:flex-start;
+  margin-top:18px;padding:12px 14px;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  font-size:14px;line-height:1.55;color:var(--ink-soft);
+}
+.faqs .faqs-disclaimer svg{width:18px;height:18px;flex:none;margin-top:1px;color:var(--clay-deep);}
+.faqs .hero-fit>p.faqs-meta{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;
+  margin-top:18px;font-size:13.5px;font-weight:600;color:var(--ink-faint);
+}
+.faqs .faqs-meta a{color:var(--sage-deep);}
+
+/* Two columns: a sticky jump list, and the categories. 96px clears the
+   sticky site header, the same offset .post-aside uses. */
+.faqs .faqs-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:56px;align-items:start;}
+.faqs .faqs-nav{position:sticky;top:96px;}
+.faqs .faqs-nav-title{display:block;margin-bottom:12px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);}
+.faqs .faqs-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.faqs .faqs-nav a{
+  display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:center;
+  padding:8px 10px;border-radius:10px;
+  font-size:14px;line-height:1.3;color:var(--ink-soft);text-decoration:none;
+  transition:background .2s,color .2s;
+}
+.faqs .faqs-nav a svg{width:17px;height:17px;color:var(--clay-deep);}
+.faqs .faqs-nav a:hover{background:var(--sage-tint);color:var(--sage-deep);}
+
+/* Each category. scroll-margin so a jump lands below the sticky header. */
+.faqs .faqs-cat{scroll-margin-top:96px;}
+.faqs .faqs-cat+.faqs-cat{margin-top:64px;}
+.faqs .faqs-cat-head{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;
+  padding-bottom:14px;border-bottom:1px solid var(--line);
+}
+.faqs .faqs-cat-ico{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--sage-tint);color:var(--clay-deep);
+  display:grid;place-items:center;
+}
+.faqs .faqs-cat-ico svg{width:21px;height:21px;}
+.faqs .faqs-cat-head h2{margin:0;font-size:clamp(24px,2.6vw,32px);line-height:1.2;}
+.faqs .faqs-cat-count{font-size:13px;font-weight:600;color:var(--ink-faint);white-space:nowrap;}
+.faqs .faqs-cat .faq{max-width:none;}
+.faqs .faqs-cat .faq details{scroll-margin-top:96px;}
+.faqs .faqs-cat .faq summary{font-size:19.5px;padding:18px 0;}
+.faqs .faqs-answer p{padding:0;margin:0 0 12px;max-width:46em;}
+.faqs .faqs-answer p:last-child{margin-bottom:22px;}
+.faqs .faqs-answer a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.faqs .faqs-answer a:hover{color:var(--clay-deep);}
+
+/* Visuals, set between a category heading and its questions. */
+.faqs figure{margin:24px 0 8px;}
+.faqs figcaption{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--ink-faint);}
+.faqs figcaption a{color:var(--sage-deep);font-weight:600;}
+.faqs .faqs-photo .ph{aspect-ratio:16/7;max-width:100%;border-radius:var(--radius-card);}
+
+.faqs .faqs-urgency-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.faqs .faqs-tier{
+  border-radius:var(--radius-card);border:1px solid var(--line);border-top-width:4px;
+  background:var(--paper);padding:16px 18px;
+}
+.faqs .faqs-tier-label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;}
+.faqs .faqs-tier b{display:block;margin:4px 0 10px;font-family:var(--display);font-size:20px;font-weight:600;color:var(--ink);line-height:1.2;}
+.faqs .faqs-tier ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5;color:var(--ink-soft);}
+.faqs .faqs-tier li+li{margin-top:6px;}
+.faqs .faqs-tier-routine{border-top-color:var(--sage);}
+.faqs .faqs-tier-routine .faqs-tier-label{color:var(--sage-deep);}
+.faqs .faqs-tier-prompt{border-top-color:var(--clay);}
+.faqs .faqs-tier-prompt .faqs-tier-label{color:var(--clay-deep);}
+.faqs .faqs-tier-urgent{border-top-color:#B4412E;background:#FBEDE4;}
+.faqs .faqs-tier-urgent .faqs-tier-label{color:#9A3323;}
+
+.faqs .faqs-diagram{
+  background:var(--cream);border:1px solid var(--line-soft);border-radius:var(--radius-card);
+  padding:20px 22px 16px;
+}
+.faqs .faqs-diagram svg{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;}
+.faqs .faqs-diagram .d-bone{fill:#E9DDC8;}
+.faqs .faqs-diagram .d-gum{fill:#E7B3A6;}
+.faqs .faqs-diagram .d-implant{fill:#B9C0C4;stroke:#7E878C;stroke-width:1.5;}
+.faqs .faqs-diagram .d-thread{stroke:#7E878C;stroke-width:1.5;}
+.faqs .faqs-diagram .d-abutment{fill:#CDD3D6;stroke:#7E878C;stroke-width:1.5;}
+.faqs .faqs-diagram .d-crown{fill:#FFFFFF;stroke:var(--sage-deep);stroke-width:2;}
+.faqs .faqs-diagram .d-leader{stroke:var(--ink-faint);stroke-width:1;stroke-dasharray:3 3;}
+.faqs .faqs-diagram .d-label{font-family:var(--display);font-size:17px;font-weight:600;fill:var(--ink);}
+.faqs .faqs-diagram .d-sub{font-family:var(--body);font-size:11.5px;fill:var(--ink-soft);}
+
+.faqs .offer-card-v2 .body>p{font-size:17px;line-height:1.7;}
+/* The two buttons side by side. The copy column gets the wider share of the
+   card, and the buttons trade some side padding for the room: at .btn's 34px
+   the pair ran ~485px against a ~430px column and wrapped onto two rows. */
+.faqs .offer-card-v2{grid-template-columns:1.2fr .8fr;}
+.faqs :is(.hero-cta,.offer-actions){flex-wrap:nowrap;gap:12px;}
+.faqs :is(.hero-cta,.offer-actions) .btn{margin:0;padding-inline:22px;}
+.faqs .faqs-cta-links{margin-top:18px;font-size:14.5px;color:var(--ink-soft);}
+.faqs .faqs-cta-links a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+
+@media(max-width:900px){
+  /* One column; the jump list becomes a scrolling chip row above the answers. */
+  .faqs .faqs-layout{grid-template-columns:minmax(0,1fr);gap:28px;}
+  .faqs .faqs-nav{position:static;}
+  /* flex:none on each chip, and inline-flex rather than the desktop grid: the
+     grid's minmax(0,1fr) column let every chip shrink to nothing inside the
+     scroller, so the labels spilled over one another. */
+  .faqs .faqs-nav ul{flex-direction:row;overflow-x:auto;gap:8px;padding-bottom:8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;}
+  .faqs .faqs-nav li{flex:none;}
+  .faqs .faqs-nav a{
+    display:inline-flex;align-items:center;gap:8px;
+    white-space:nowrap;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:8px 14px;
+  }
+  .faqs .faqs-urgency-row{grid-template-columns:minmax(0,1fr);}
+}
+@media(max-width:820px){
+  /* The card stacks here, so the column split no longer applies. */
+  .faqs .offer-card-v2{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  /* Still side by side on a phone: each button takes half the row, and a label
+     may wrap inside its own button rather than push the pair onto two rows. */
+  .faqs :is(.hero-cta,.offer-actions){gap:8px;}
+  .faqs :is(.hero-cta,.offer-actions) .btn{
+    flex:1 1 0;min-width:0;white-space:normal;
+    padding:13px 10px;font-size:14px;line-height:1.25;
+  }
+  .faqs .faqs-cat+.faqs-cat{margin-top:44px;}
+  .faqs .faqs-cat-head{grid-template-columns:auto minmax(0,1fr);}
+  .faqs .faqs-cat-count{display:none;}
+  .faqs .faqs-cat .faq summary{font-size:17.5px;}
+  .faqs .faqs-photo .ph{aspect-ratio:4/3;}
+}
+
+/* ── /emergency-dentist ──────────────────────────────────
+   <main> carries .npv (answer card, step cards) and .emg for the rest. */
+.emg .emg-subline{
+  margin-top:10px;
+  font-family:var(--display);font-style:italic;font-weight:500;
+  font-size:clamp(24px,5.2cqw,34px);line-height:1.2;color:var(--clay-deep);
+}
+.emg .hero-fit>p.emg-subline{margin-top:10px;font-size:clamp(24px,5.2cqw,34px);line-height:1.2;}
+
+/* Is this a dental emergency? */
+.emg .emg-table-wrap{max-width:900px;margin:0 auto;overflow-x:auto;border-radius:var(--radius-card);border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow-card);}
+.emg .emg-table{width:100%;border-collapse:collapse;font-size:15.5px;line-height:1.45;}
+.emg .emg-table thead th{
+  text-align:left;padding:14px 20px;background:var(--sage-tint);
+  font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);
+}
+.emg .emg-table tbody th,.emg .emg-table td{padding:16px 20px;border-top:1px solid var(--line-soft);vertical-align:middle;text-align:left;}
+.emg .emg-table tbody th{font-weight:500;color:var(--ink);width:58%;border-left:5px solid transparent;}
+.emg .emg-table td{font-weight:700;color:var(--ink);}
+.emg .emg-level{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:10px;vertical-align:middle;}
+.emg .emg-row-routine th{border-left-color:var(--sage);}
+.emg .emg-row-routine .emg-level{background:var(--sage);}
+.emg .emg-row-prompt th{border-left-color:var(--clay);}
+.emg .emg-row-prompt .emg-level{background:var(--clay);}
+.emg .emg-row-urgent th{border-left-color:var(--clay-deep);}
+.emg .emg-row-urgent .emg-level{background:var(--clay-deep);}
+.emg .emg-row-hospital{background:#FBEDE4;}
+.emg .emg-row-hospital th{border-left-color:#9A3323;}
+.emg .emg-row-hospital td{color:#9A3323;}
+.emg .emg-row-hospital .emg-level{background:#9A3323;}
+
+.emg .emg-note{text-align:center;margin:24px auto 0;max-width:44em;font-size:16px;color:var(--ink-soft);}
+.emg .emg-note a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-note a:hover{color:var(--clay-deep);}
+.emg .emg-prompt-list{max-width:760px;margin:0 auto;}
+
+/* First aid cards: answers now carry their links inline. */
+.emg .emg-aid p{margin:0 0 10px;}
+.emg .emg-aid p:last-child{margin-bottom:0;}
+.emg .emg-aid p a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-aid p a:hover{color:var(--clay-deep);}
+
+/* 000 box */
+.emg .emg-hospital{
+  max-width:820px;margin:0 auto;
+  background:#FBEDE4;border:1px solid var(--clay);border-left:5px solid var(--clay-deep);
+  border-radius:14px;padding:30px 32px;
+}
+.emg .emg-hospital h2{margin:0 0 12px;font-size:clamp(22px,2.6vw,26px);line-height:1.25;color:var(--clay-deep);}
+.emg .emg-hospital p{margin:0 0 14px;}
+.emg .emg-hospital ul{margin:0;padding-left:20px;line-height:1.9;}
+
+/* Emergency appointment steps — .npv-who cards, numbered. */
+.emg .emg-steps{counter-reset:none;}
+.emg .emg-step-n{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:2px;}
+.emg .emg-steps li{background:var(--paper);}
+
+/* Gentle reassurance */
+.emg .emg-gentle{text-align:center;max-width:48em;margin-inline:auto;}
+.emg .emg-gentle p{font-size:18px;margin-top:14px;}
+.emg .emg-gentle p.emg-gentle-sub{font-size:16px;margin-top:16px;color:var(--ink-soft);}
+.emg .emg-gentle a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-gentle a.btn{color:#fff;text-decoration:none;}
+.emg .emg-gentle-cta{margin-top:24px;}
+
+/* FAQ: the site's .faq accordion. The H3 inside each <summary> takes the
+   summary's own type rather than the heading scale, so the row reads exactly
+   like the accordions on the other pages. */
+.emg .emg-faq h3{margin:0;font:inherit;color:inherit;letter-spacing:inherit;}
+.emg .emg-faq-answer p{padding:0;margin:0 0 12px;max-width:46em;}
+.emg .emg-faq-answer p:last-child{margin-bottom:22px;}
+.emg .emg-faq-answer a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-faq-answer a:hover{color:var(--clay-deep);}
+
+/* One-line headings and note.
+   The two H2s — "What happens at an emergency dental appointment?" (48
+   characters) and "We'll get you comfortable, then sort the cause" (46) — use
+   the .welcome-fit technique: the heading's box is the query container, and
+   scaled from that heading's measured 20.39em for 56 characters in the same
+   Cormorant h2, these run about 17.5em and 16.8em. The cqw values leave ~7% in
+   hand, which lands both near 40px at full width. Below 600px one line would
+   fall under about 22px, so they wrap there instead. Any reword needs the cqw
+   remeasured. */
+.emg .emg-fit{container-type:inline-size;}
+.emg .emg-fit h2{white-space:nowrap;}
+.emg #appointment .emg-fit h2{font-size:min(46px,5.3cqw);}
+.emg .emg-gentle.emg-fit h2{font-size:min(46px,5.55cqw);}
+/* The urgency-guide line, in Hanken Grotesk at roughly 52em: the 44em measure
+   every other .emg-note keeps is lifted, and the size eases down with the
+   viewport so it holds one line to 760px, then wraps. */
+.emg .emg-note.emg-note-line{max-width:none;white-space:nowrap;font-size:min(16px,1.75vw);}
+@media(max-width:760px){
+  .emg .emg-note.emg-note-line{white-space:normal;font-size:15px;max-width:44em;}
+}
+@media(max-width:600px){
+  .emg .emg-fit h2{white-space:normal;}
+  .emg #appointment .emg-fit h2,.emg .emg-gentle.emg-fit h2{font-size:clamp(26px,7vw,32px);}
+}
+
+/* Funding: one quiet line, not a band. */
+.emg .sec.emg-funding-sec{padding-block:56px 0;}
+.emg .emg-funding{
+  max-width:820px;margin:0 auto;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;
+  background:var(--sage-tint);border-radius:var(--radius-card);padding:20px 24px;
+}
+.emg .emg-funding-ico{width:44px;height:44px;border-radius:50%;background:var(--paper);color:var(--clay-deep);display:grid;place-items:center;}
+.emg .emg-funding-ico svg{width:21px;height:21px;}
+.emg .emg-funding h2{margin:0 0 4px;font-size:clamp(20px,2.2vw,24px);line-height:1.25;}
+.emg .emg-funding p{margin:0;font-size:15.5px;color:var(--ink-soft);}
+.emg .emg-funding a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+
+.emg .sec.emg-area-sec{padding-block:40px;}
+
+/* Review & sources */
+.emg .emg-review-sec{padding-block:0 56px;}
+.emg .emg-review{max-width:820px;margin:0 auto;padding-top:24px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-faint);}
+.emg .emg-review-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;font-weight:600;color:var(--ink-soft);}
+.emg .emg-review-meta a{color:var(--sage-deep);}
+.emg .emg-sources{display:flex;flex-wrap:wrap;gap:4px 10px;}
+.emg .emg-sources>span{font-weight:600;}
+.emg .emg-sources ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}
+.emg .emg-sources a{color:var(--sage-deep);text-decoration:underline;text-underline-offset:2px;}
+.emg .emg-review-note{margin:12px 0 0;font-size:13px;}
+
+@media(max-width:600px){
+  .emg .emg-table{font-size:14.5px;}
+  .emg .emg-table tbody th,.emg .emg-table td{padding:14px 14px;}
+  .emg .emg-table thead th{padding:12px 14px;}
+  .emg .emg-hospital{padding:22px 20px;}
+  .emg .sec.emg-funding-sec{padding-top:40px;}
+  .emg .emg-funding{grid-template-columns:minmax(0,1fr);padding:18px;}
+  .emg .emg-funding-ico{display:none;}
+}
+
 /* ── Responsive tail ─────────────────────────────────── */
 @media(max-width:900px){
+  .npv .npv-who{grid-template-columns:repeat(2,minmax(0,1fr));}
   .npv .know-grid{grid-template-columns:1fr;gap:34px;}
   .npv .know-grid .ph.tall{min-height:300px;}
   .npv .altpaths{grid-template-columns:1fr;gap:16px;}
@@ -4996,6 +5455,10 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .npv .pillars-ico .pillar-ico{width:36px;height:36px;}
   .npv .pillars-ico .pillar h3{font-size:18px;}
   .npv .know-list{grid-template-columns:1fr;gap:12px;}
+  .npv .npv-who{grid-template-columns:1fr;gap:12px;}
+  .npv .npv-who li{padding:18px 18px;}
+  .npv .npv-answer-card{padding:22px 20px;}
+  .npv .npv-answer-card p{font-size:16.5px;}
   .npv .book-card{padding:24px 20px;}
   .npv .booking-cols .book-card .form{grid-template-columns:1fr;}
   .npv .booking-cols .book-card .form input.full{grid-column:1/-1;}

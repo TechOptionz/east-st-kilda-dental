@@ -1,6 +1,7 @@
-'use client'
+  'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { business, telHref } from '@/lib/business'
 
@@ -32,12 +33,26 @@ export default function Header() {
     <header className="site-header" ref={navRef}>
       <div className="nav">
         <Link href="/" className="logo" aria-label="East St Kilda Dental — home">
-          East St Kilda Dental<small>Gentle care since 1980</small>
+          {/* Sized to its 37px display height, so next/image offers 256w (1x) and
+              384w (2x) files instead of 2048w/3840w. Eager but not priority:
+              a high-priority preload here competed with each page's LCP image. */}
+          <Image src="/assets/brand/eskd-logo.png" alt="East St Kilda Dental" width={170} height={37} loading="eager" />
         </Link>
 
         <nav className={`mainmenu${menuOpen ? ' open' : ''}`} aria-label="Main">
           <ul>
             {/* <li><Link href="/" className="menu-link" onClick={close}>Home</Link></li> */}
+
+            {/* New Patients */}
+            <li className={`has-dd${openDrop === 'newpatients' ? ' open' : ''}`}>
+              <button className="menu-link" onClick={() => toggleDrop('newpatients')} aria-expanded={openDrop === 'newpatients'}>
+                New Patients
+              </button>
+              <div className="dd">
+                <Link href="/new-patient-comprehensive-care-visit" onClick={close}>The New Patient Comprehensive Care Visit</Link>
+                <Link href="/dental-faqs" onClick={close}>Dental FAQs</Link>
+              </div>
+            </li>
 
             {/* Services mega-menu */}
             <li className={`has-dd has-mega${openDrop === 'services' ? ' open' : ''}`}>
@@ -98,26 +113,25 @@ export default function Header() {
               </div>
             </li>
 
-            {/* New Patients */}
-            <li className={`has-dd${openDrop === 'newpatients' ? ' open' : ''}`}>
-              <button className="menu-link" onClick={() => toggleDrop('newpatients')} aria-expanded={openDrop === 'newpatients'}>
-                New Patients
-              </button>
-              <div className="dd">
-                <Link href="/new-patient-comprehensive-care-visit" onClick={close}>The New Patient Comprehensive Care Visit</Link>
-                <Link href="/#faq" onClick={close}>FAQ</Link>
-              </div>
-            </li>
-
             <li className="nav-extra"><Link href="/nervous-patients" className="menu-link" onClick={close}>Gentle Dentistry</Link></li>
-            <li className="nav-extra"><Link href="/learn" className="menu-link" onClick={close}>Dental Education</Link></li>
 
-            {/* About */}
-            <li className={`has-dd${openDrop === 'about' ? ' open' : ''}`}>
-              <button className="menu-link" onClick={() => toggleDrop('about')} aria-expanded={openDrop === 'about'}>
-                About
-              </button>
+                        {/* About */}
+            {/* The label is a real link to the /about hub; the caret beside it is
+                the button that opens the dropdown, so the hub is one click away
+                and the sub-pages stay a tap away on a phone. */}
+            <li className={`has-dd has-split${openDrop === 'about' ? ' open' : ''}`}>
+              <div className="menu-split">
+                <Link href="/about" className="menu-link" onClick={close}>About</Link>
+                <button
+                  type="button"
+                  className="dd-toggle"
+                  onClick={() => toggleDrop('about')}
+                  aria-expanded={openDrop === 'about'}
+                  aria-label="Show About pages"
+                />
+              </div>
               <div className="dd">
+                <Link href="/about" onClick={close}>About Us</Link>
                 <Link href="/areas-we-serve" onClick={close}>Areas We Serve</Link>
                 <Link href="/about/our-story" onClick={close}>Our Story</Link>
                 <Link href="/about/why-were-different" onClick={close}>Why We&apos;re Different</Link>
@@ -125,6 +139,9 @@ export default function Header() {
                 <Link href="/our-work" onClick={close}>Smile Gallery</Link>
               </div>
             </li>
+            
+            <li className="nav-extra"><Link href="/learn" className="menu-link" onClick={close}>Dental Education</Link></li>
+
 
             {/* Costs & Support */}
             <li className={`has-dd${openDrop === 'costs' ? ' open' : ''}`}>

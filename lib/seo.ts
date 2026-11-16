@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { business } from './business'
-import { isProduction } from './env'
 
 /**
  * The share card every page falls back to.
@@ -12,7 +11,7 @@ export const SHARE_IMAGE = {
   url: '/assets/social/share-1200x630.jpg',
   width: 1200,
   height: 630,
-  alt: `${business.name} — gentle family and emergency dentist in St Kilda East`,
+  alt: `${business.name} — your local gentle dentist in St Kilda East`,
 } as const
 
 /** Pull a plain URL string out of the several shapes `alternates.canonical` allows. */
@@ -41,14 +40,9 @@ export function withSocial(meta: Metadata): Metadata {
   const description = typeof meta.description === 'string' ? meta.description : undefined
   const url = canonicalUrl(meta)
 
-  // Indexing is decided by the environment, never per page. Anything that is
-  // not the production deployment emits noindex, nofollow — a robots.txt
-  // disallow alone does not reliably keep staging out of the index, because a
-  // blocked URL can still be indexed if something links to it. On production a
-  // page may still opt itself out by passing its own `robots`.
-  const robots: Metadata['robots'] = isProduction
-    ? meta.robots ?? { index: true, follow: true }
-    : { index: false, follow: false }
+  // Every page is indexable on every deployment and branch. A page may still
+  // opt itself out by passing its own `robots`.
+  const robots: Metadata['robots'] = meta.robots ?? { index: true, follow: true }
 
   return {
     ...meta,

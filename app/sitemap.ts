@@ -4,6 +4,9 @@ import { services } from '@/data/services'
 import { publishedArticles } from '@/data/articles'
 import { populatedTopics } from '@/data/topics'
 import { suburbs, suburbPath } from '@/data/suburbs'
+import { CONTENT_UPDATED } from '@/lib/content-dates'
+import { STATIC_PAGES } from '@/lib/site-pages'
+import { publishedPractitioners } from '@/data/practitioners'
 
 /**
  * Every indexable route, as an absolute production URL.
@@ -11,44 +14,13 @@ import { suburbs, suburbPath } from '@/data/suburbs'
  * URLs are always built from SITE_URL, so a preview deployment still lists the
  * production host rather than advertising itself.
  *
- * Deliberately excluded, and why each one stays out:
- *   /home                  — redirects permanently to /, so it is not a page
- *   /book                  — redirects to /online-booking
- *   /comprehensive-care-visit — redirects to /new-patient-comprehensive-care-visit
- *   /services/check-up-clean  — redirects to /services/check-ups
- *   /areas/<slug>          — redirect to /dentist-<slug>
- *   /api/*                 — the contact endpoint, not content
- *   /robots.txt, /sitemap.xml — not content
- *
- * The rule behind that list: a redirect source never belongs in a sitemap.
- * Listing one asks Google to crawl a URL we have already told it has moved,
- * which wastes crawl budget and muddies the canonical signal. Every source in
- * next.config.ts's redirects() must therefore stay out of STATIC_PATHS.
+ * The fixed pages, and the list of redirect sources that must never appear
+ * here, live in lib/site-pages.ts — shared with app/llms.txt/route.ts so the
+ * two files can never list different pages.
  */
-const STATIC_PATHS = [
-  '/',
-  '/about',
-  '/about/our-story',
-  '/about/our-team',
-  '/about/why-were-different',
-  '/areas-we-serve',
-  '/online-booking',
-  '/new-patient-comprehensive-care-visit',
-  '/contact',
-  '/emergency-dentist',
-  '/fees',
-  '/learn',
-  '/nervous-patients',
-  '/our-work',
-  '/privacy',
-  '/services',
-  '/terms',
-  '/using-your-super',
-]
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
-    ...STATIC_PATHS,
+    ...STATIC_PAGES.map((p) => p.path),
     ...services.map((s) => `/services/${s.slug}`),
     // Published guides only — Google is never invited to crawl a draft.
     ...publishedArticles.map((a) => `/learn/${a.slug}`),
@@ -57,10 +29,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Suburb landing pages. Adding an entry to data/suburbs.ts (and its stub
     // route) is all it takes for a new suburb page to appear here.
     ...suburbs.map((s) => suburbPath(s.slug)),
+    // Practitioner profiles, once published. An unfinished profile is noindex
+    // and stays out of here until data/practitioners.ts marks it published.
+    ...publishedPractitioners.map((p) => `/about/${p.slug}`),
   ]
 
-  // No lastModified: we have no real per-page modification date, and stamping
-  // every URL with the build time would tell Google the whole site changed on
-  // every deploy.
-  return paths.map((path) => ({ url: `${SITE_URL}${path}` }))
+  // lastModified only where a page has a real content date (lib/content-dates.ts).
+  // Stamping every URL with the build time would tell Google the whole site
+  // changed on every deploy.
+  return paths.map((path) => ({
+    url: `${SITE_URL}${path}`,
+    ...(CONTENT_UPDATED[path] ? { lastModified: CONTENT_UPDATED[path].iso } : {}),
+  }))
 }

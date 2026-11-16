@@ -4,6 +4,7 @@ import Link from 'next/link'
 import CarePoints from '@/components/CarePoints'
 import CarouselNav from '@/components/CarouselNav'
 import Photo from '@/components/Photo'
+import { practitionerPath } from '@/data/practitioners'
 import GetInTouch from '@/components/GetInTouch'
 import HealthFundLogos from '@/components/HealthFundLogos'
 import HeroVideoBg from '@/components/HeroVideoBg'
@@ -11,8 +12,9 @@ import HomeOffers from '@/components/HomeOffers'
 import MapEmbed from '@/components/MapEmbed'
 import ReviewMarquee from '@/components/ReviewMarquee'
 import { suburbs, suburbPath } from '@/data/suburbs'
-import { SCHEMA_ID, SITE_URL, areasServed, business, clinicianId, clinicians, comprehensiveCareVisit, fullAddress, openingHours, socialProfiles, telHref } from '@/lib/business'
+import { GOOGLE_REVIEWS_URL, SCHEMA_ID, SITE_URL, areasServed, business, clinicianId, clinicians, comprehensiveCareVisit, fullAddress, openingHours, socialProfiles, telHref } from '@/lib/business'
 import { withSocial } from '@/lib/seo'
+import { contactPointNode } from '@/lib/schema'
 
 export const metadata = withSocial({
   title: 'East St Kilda Dental | Gentle Family & Emergency Dentist',
@@ -21,10 +23,12 @@ export const metadata = withSocial({
   alternates: { canonical: `${SITE_URL}/` },
 })
 
-// The five questions in the "Things you might be wondering" section. Both the
-// visible <details> list and the FAQPage node below are rendered from this one
-// array, so the markup can never drift from the words on the page — a hard
-// requirement for FAQ rich results.
+// The five questions in the "Things you might be wondering" section.
+//
+// That section is commented out further down, so this page publishes no
+// FAQPage node: FAQ structured data may only describe questions a reader can
+// see on the page. If the section comes back, restore a FAQPage node built
+// from this array alongside it. The full question library is /dental-faqs.
 const faqs = [
   {
     q: "It's been years since I went. Will you judge me?",
@@ -98,13 +102,27 @@ const statText = (count: number, decimals = 0, suffix = '') =>
 // The six services in the "Care for every stage of life" grid. Each photo is
 // the same one the service's own page leads with, so the card and the page it
 // opens show the reader the same picture.
-const homeServices = [
+//
+// `phoneHidden` drops a card below 600px, where the grid runs two-up: the last
+// two would sit alone on a third row and push the section past a full screen,
+// so the phone shows the four everyday reasons someone looks for a dentist and
+// leaves implants and cosmetic work to "See all services" underneath. The card
+// is hidden in CSS rather than dropped from the array, so the markup — and the
+// links crawlers follow — stay the same at every width.
+const homeServices: {
+  href: string
+  title: string
+  blurb: string
+  src: string
+  alt: string
+  phoneHidden?: boolean
+}[] = [
   {
     href: '/services/check-ups',
     title: 'Check-ups & cleans',
     blurb: 'Gentle, thorough preventive care to keep small things small.',
-    src: '/assets/services/checkup-hero.webp',
-    alt: 'A gentle dentist examining a young patient wearing protective glasses in the treatment chair',
+    src: '/assets/services/check-ups-hero.webp',
+    alt: "A dentist checking a smiling young boy's teeth as he hugs a toy bunny in the chair, his X-rays on the screen behind",
   },
   {
     href: '/emergency-dentist',
@@ -133,6 +151,7 @@ const homeServices = [
     blurb: 'Replacing missing teeth so you can eat and smile with ease.',
     src: '/assets/services/single-implant.webp',
     alt: "Close-up of a patient's smile as a dentist matches the shade of a replacement tooth against the front teeth",
+    phoneHidden: true,
   },
   {
     href: '/services/smile-design',
@@ -140,6 +159,7 @@ const homeServices = [
     blurb: "Subtle, natural improvements when you're ready, never pushed.",
     src: '/assets/services/smile-design.webp',
     alt: 'A smiling patient having her teeth examined with a dental mirror during a smile design consultation',
+    phoneHidden: true,
   },
 ]
 
@@ -152,7 +172,7 @@ const summarySentence =
   `Gentle, thorough dental care for individuals and families, from regular check-ups to emergencies and comprehensive dental care.`
 
 // One connected JSON-LD @graph for the home page: the practice, the four named
-// clinicians, the FAQ, and the website. Every fact comes from lib/business.ts.
+// clinicians and the website. Every fact comes from lib/business.ts.
 //
 // No Review or aggregateRating markup here, deliberately, per the AHPRA
 // advertising guidance.
@@ -163,10 +183,14 @@ const homeSchema = {
       '@type': 'Dentist',
       '@id': SCHEMA_ID.practice,
       name: business.name,
+      description: business.description,
       url: business.url,
       image: `${SITE_URL}/assets/shared/meet-our-team.webp`,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/assets/brand/eskd-logo.png` },
+      foundingDate: String(business.foundedYear),
       telephone: business.telephone,
       email: business.email,
+      contactPoint: contactPointNode(),
       currenciesAccepted: business.currenciesAccepted,
       address: { '@type': 'PostalAddress', ...business.address },
       geo: { '@type': 'GeoCoordinates', ...business.geo },
@@ -190,15 +214,6 @@ const homeSchema = {
       worksFor: { '@id': SCHEMA_ID.practice },
     })),
     {
-      '@type': 'FAQPage',
-      '@id': SCHEMA_ID.faq,
-      mainEntity: faqs.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    },
-    {
       '@type': 'WebSite',
       '@id': SCHEMA_ID.website,
       url: business.url,
@@ -216,8 +231,11 @@ export default function Home() {
        this class, so neither the desktop layout nor any other page moves. */
     <main className="home">
       {/* The hero poster is a CSS background, so it isn't discoverable until the
-          stylesheet parses. Preloading it keeps it the LCP candidate. */}
-      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster.webp" fetchPriority="high" />
+          stylesheet parses. Preloading it keeps it the LCP candidate. One
+          preload per breakpoint, matching the background-image swap in
+          globals.css, so each device fetches only the poster it paints. */}
+      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster-mobile.webp" media="(max-width: 600px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/assets/video/hero-clinic-poster-1080.webp" media="(min-width: 601px)" fetchPriority="high" />
       <JsonLd data={homeSchema} />
 
       {/* HERO — full-bleed video frame, with the proof points along its foot */}
@@ -293,15 +311,19 @@ export default function Home() {
             </p>
           </div>
           <div className="svc-grid-v2">
-            {homeServices.map(({ href, title, blurb, src, alt }) => (
-              <Link href={href} className="svc-item reveal" key={href}>
+            {homeServices.map(({ href, title, blurb, src, alt, phoneHidden }) => (
+              <Link
+                href={href}
+                className={`svc-item reveal${phoneHidden ? ' svc-item-phone-hide' : ''}`}
+                key={href}
+              >
                 <Photo
                   src={src}
                   alt={alt}
                   sizes="(max-width: 820px) 100vw, 33vw"
                 />
                 <div className="svc-item-body">
-                  <h4 style={{ fontWeight: 600 }}>{title}</h4>
+                  <h3 style={{ fontWeight: 600 }}>{title}</h3>
                   <p>{blurb}</p>
                   {/* The arrow is drawn by .svc-item-more::after, so it can
                       slide on hover without the label moving with it. */}
@@ -333,7 +355,7 @@ export default function Home() {
         <div className="container">
           <div className="gscore reveal">
             Rated <b>5.0 on Google</b> by our local patients &middot;{' '}
-            <a href="https://share.google/M1ZtOT5z13fj2mhWf" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
+            <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--sage-deep)', fontWeight: 600 }}>
               Read all reviews
             </a>
           </div>
@@ -355,7 +377,7 @@ export default function Home() {
               <Link href="/online-booking" className="btn">Book an appointment</Link>
               <a href={telHref} className="btn btn-ghost ctaband-ghost">Call {business.telephoneDisplay}</a>
             </div>
-            <p style={{ margin: '24px 0 0', fontSize: '15.5px' }}>{fullAddress}</p>
+            <p style={{ margin: '24px auto 0', fontSize: '15.5px' }}>{fullAddress}</p>
           </div>
         </div>
       </section>
@@ -444,7 +466,7 @@ export default function Home() {
           <Photo
             tall
             className="reveal"
-            src="/assets/unused/south-yarra.webp"
+            src="/assets/home/nervous-patients-band.webp"
             alt="A relaxed patient smiling warmly in the dental chair"
           />
           <div className="reveal">
@@ -483,7 +505,7 @@ export default function Home() {
                 objectPosition="center 60%"
                 sizes="(max-width: 900px) 100vw, 34vw"
               />
-              <h4>Our team</h4>
+              <h3>Our team</h3>
               <span>Caring for St Kilda East since 1980</span>
             </div>
             {/* display:contents above 600px, so these four stay direct grid
@@ -497,7 +519,8 @@ export default function Home() {
                 objectPosition="center top"
                 sizes="(max-width: 900px) 50vw, 198px"
               />
-              <h4>Dr Anbar Ganatra</h4>
+              {/* Linked once her profile page is published; plain text until then. */}
+              <h4>{practitionerPath('anbar-ganatra') ? <Link className="name-link" href={practitionerPath('anbar-ganatra')!}>Dr Anbar Ganatra</Link> : 'Dr Anbar Ganatra'}</h4>
               <span>Cosmetic &amp; General Dentist</span>
             </div>
             <div className="team-member">
@@ -648,19 +671,19 @@ export default function Home() {
           <div className="edu-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-1.webp" alt="Before and after of a gentle smile refresh at East St Kilda Dental" hint="Before / after (understated)" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Gentle smile refresh</h4>
+              <h3>Gentle smile refresh</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-2.webp" alt="Before and after of a damaged tooth restored with a crown" hint="Real smile, real patient" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Restoring a damaged tooth</h4>
+              <h3>Restoring a damaged tooth</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-3.webp" alt="Before and after of a missing tooth replaced with a single implant" hint="Subtle, natural result" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>Replacing a missing tooth</h4>
+              <h3>Replacing a missing tooth</h3>
             </div>
             <div className="svc reveal">
               <Photo src="/assets/gallery/smile-4.webp" alt="A once-nervous patient smiling comfortably after treatment" hint="Everyday result" sizes="(max-width: 820px) 100vw, 50vw" style={{ height: '140px', marginBottom: '12px' }} />
-              <h4>A nervous patient's journey</h4>
+              <h3>A nervous patient's journey</h3>
             </div>
           </div>
           <div style={{ textAlign: 'center', marginTop: '32px' }} className="reveal">
@@ -698,7 +721,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Nervous patients
               </span>
-              <h4>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h4>
+              <h3>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h3>
               <p>A calm, step-by-step walk-through for an easier return.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
@@ -719,7 +742,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Gum health
               </span>
-              <h4>Why are my gums bleeding?</h4>
+              <h3>Why are my gums bleeding?</h3>
               <p>What bleeding gums are trying to tell you, and when to act.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
@@ -740,7 +763,7 @@ export default function Home() {
               <span style={{ fontSize: '12.5px', color: 'var(--clay-deep)', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' }}>
                 Prevention
               </span>
-              <h4>How Often Should You Really See the Dentist?</h4>
+              <h3>How Often Should You Really See the Dentist?</h3>
               <p>What actually determines your ideal check-up schedule.</p>
               <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
                 Read article &rarr;
@@ -864,9 +887,7 @@ export default function Home() {
       </section>
 
       {/* GET IN TOUCH */}
-      {/* compactMobile — the phone layout holds this form in a narrow column;
-          see the prop's note in components/GetInTouch.tsx. */}
-      <GetInTouch variant="default" id="contact" compactMobile />
+      <GetInTouch variant="default" id="contact" />
     </main>
   )
 }

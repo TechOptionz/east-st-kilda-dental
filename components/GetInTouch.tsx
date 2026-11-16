@@ -10,16 +10,6 @@ interface GetInTouchProps {
   variant?: GetInTouchVariant
   id?: string
   /**
-   * Collapses the form's three choice fields into native dropdowns at phone
-   * width, and lets the CSS hide the field headings there.
-   *
-   * Only the home page passes it: that page's phone layout holds the form in
-   * a column barely 200px wide, where two segmented radio pairs and a panel of
-   * nine checkboxes cost most of a screen. Everywhere else the section keeps
-   * the controls it has always had at every width.
-   */
-  compactMobile?: boolean
-  /**
    * Overrides the heading above the contact details.
    *
    * Suburb pages pass "Make us your [suburb] dentist" so the one section of
@@ -32,7 +22,6 @@ export default function GetInTouch({
   variant = 'default',
   id = 'contact',
   heading = 'We’re here whenever you’re ready',
-  compactMobile = false,
 }: GetInTouchProps) {
   const copy = getInTouchCopy[variant]
   const [submitted, setSubmitted] = useState(false)
@@ -47,17 +36,20 @@ export default function GetInTouch({
      width. */
   const [treatOpen, setTreatOpen] = useState(false)
   const [treatSel, setTreatSel] = useState<string[]>([])
-  /* Matches the 600px breakpoint the phone rules in globals.css use. */
+  /* At phone width the three choice fields collapse into native dropdowns and
+     the CSS hides the field headings — two segmented radio pairs and a panel of
+     nine checkboxes cost most of a screen there. Matches the 600px breakpoint
+     the phone rules in globals.css use. Before hydration this is false, so a
+     phone briefly gets the chips behind the disclosure toggle below. */
   const [isPhone, setIsPhone] = useState(false)
   useEffect(() => {
-    if (!compactMobile) return
     const mq = window.matchMedia('(max-width:600px)')
     const sync = () => setIsPhone(mq.matches)
     sync()
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
-  }, [compactMobile])
-  const compact = compactMobile && isPhone
+  }, [])
+  const compact = isPhone
 
   /* Read back off the DOM rather than controlling nine checkboxes: change
      events bubble, so one handler on the panel keeps the summary in step. */
@@ -109,14 +101,9 @@ export default function GetInTouch({
       }
 
       /* Only after the API accepts it — see the same note in CallbackForm.
-         patient_type and form_intent ride along so GA4 can separate a new
-         patient's enquiry from an existing one's admin question. */
-      track('generate_lead', {
-        form_name: 'get-in-touch',
-        form_intent: String(fd.get('intent') ?? ''),
-        patient_type: String(fd.get('patienttype') ?? ''),
-        page_path: window.location.pathname,
-      })
+         Nothing the patient entered or chose goes with it: this is a
+         healthcare form, and the event says only that it was sent, and where. */
+      track('form_submit', { form_name: 'get-in-touch' })
 
       setSentName(String(fd.get('firstName') ?? '').trim())
       form.reset()
@@ -224,7 +211,7 @@ export default function GetInTouch({
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} data-analytics-form="get-in-touch">
               <div className="gt-row2">
                 <div>
                   <span className="gt-label">I&apos;m a&hellip;</span>

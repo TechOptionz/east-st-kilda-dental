@@ -2,8 +2,14 @@
 
 import { Suspense, useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { track } from '@/lib/analytics'
-import { BOOKING_HOST } from '@/lib/business'
+import {
+  landingPage,
+  resetBookingStart,
+  takeUnfinishedForms,
+  track,
+  trackBookingStart,
+} from '@/lib/analytics'
+import { BOOKING_HOST, EXTERNAL_BOOKING_PROVIDERS } from '@/lib/business'
 
 /**
  * Site-wide event tracking. Rendered once, in the root layout.
@@ -21,8 +27,11 @@ import { BOOKING_HOST } from '@/lib/business'
  *      links that do not exist yet as readily as the ones that do, so a new page
  *      is tracked the moment it ships and nobody has to remember an onClick.
  *
+ *   3. How long each page is actually looked at, and whether a form that was
+ *      started ever got sent. See EngagementTracking below.
+ *
  * A phone call is this practice's conversion — most visitors ring rather than
- * fill in a form — so call_click is the number that matters most here.
+ * fill in a form — so phone_click is the number that matters most here.
  */
 
 /** Where on the page a link was, for the link_location parameter. */
@@ -38,6 +47,13 @@ function locationOf(el: Element): string {
   return 'page'
 }
 
+const BOOKING_PATH = '/online-booking'
+
+/** True for the domain itself and any subdomain of it, and nothing that merely contains it. */
+function hostMatches(hostname: string, domain: string): boolean {
+  return hostname === domain || hostname.endsWith(`.${domain}`)
+}
+
 function ClickTracking() {
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -50,13 +66,13 @@ function ClickTracking() {
       const href = link.getAttribute('href') ?? ''
       const shared = {
         link_url: href,
-        link_text: (link.textContent ?? '').trim().slice(0, 80),
+        link_text: (link.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 80),
         link_location: locationOf(link),
-        page_path: window.location.pathname,
       }
 
+      // Each click is exactly one event: the first rule that matches wins.
       if (href.startsWith('tel:')) {
-        track('call_click', shared)
+        track('phone_click', shared)
         return
       }
 
@@ -65,8 +81,23 @@ function ClickTracking() {
         return
       }
 
-      if (href.includes(BOOKING_HOST)) {
-        track('booking_widget_open', shared)
+      // The booking system itself, opened in its own tab.
+      if (hostMatches(link.hostname, BOOKING_HOST)) {
+        trackBookingStart('new_tab', shared)
+        return
+      }
+
+      const provider = Object.entries(EXTERNAL_BOOKING_PROVIDERS).find(([host]) =>
+        hostMatches(link.hostname, host),
+      )?.[1]
+      if (provider) {
+        track('external_booking_click', { ...shared, provider })
+        return
+      }
+
+      // Every "Book online" / "Book your visit" button on the site is a link here.
+      if (link.origin === window.location.origin && link.pathname === BOOKING_PATH) {
+        track('booking_click', shared)
       }
     }
 
@@ -98,10 +129,13 @@ function PageViewTracking() {
   useEffect(() => {
     if (lastUrl.current === null) {
       lastUrl.current = url
+      // Records the landing page now, before any event needs it.
+      landingPage()
       return
     }
     if (lastUrl.current === url) return
     lastUrl.current = url
+    resetBookingStart()
 
     // After the paint, by which point React has swapped in the new <title>.
     const frame = requestAnimationFrame(() => {
@@ -117,10 +151,107 @@ function PageViewTracking() {
   return null
 }
 
+/**
+ * Vercel's dashboard counts property values rather than averaging them, so
+ * time on page is reported as a range. The exact seconds go to GTM too.
+ */
+function timeBucket(seconds: number): string {
+  if (seconds < 10) return '0-10s'
+  if (seconds < 30) return '10-30s'
+  if (seconds < 60) return '30-60s'
+  if (seconds < 180) return '1-3m'
+  if (seconds < 600) return '3-10m'
+  return '10m+'
+}
+
+/**
+ * One page_engagement per page view, plus form_start and form_abandon.
+ *
+ * Only visible time counts: a page left open in a background tab is not being
+ * read. The page view is reported the first time the visitor leaves it — a
+ * route change, or the tab being hidden. Hidden is the last moment a mobile
+ * browser reliably lets a page send anything, so a visitor who switches away
+ * and comes back is counted up to the switch, never twice.
+ *
+ * form_abandon is stricter: it waits for a real exit (route change or
+ * pagehide), because switching to the calendar mid-form and coming back to
+ * finish it is not abandoning it. Where a browser kills the page without a
+ * pagehide, the abandon is lost — form_start against form_submit remains the
+ * exact completion rate.
+ */
+function EngagementTracking() {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const path = pathname
+    const started = new Set<string>()
+    let visibleMs = 0
+    let visibleSince: number | null = document.visibilityState === 'visible' ? performance.now() : null
+    let reported = false
+
+    function reportEngagement() {
+      if (reported) return
+      reported = true
+      if (visibleSince !== null) visibleMs += performance.now() - visibleSince
+      visibleSince = null
+      const seconds = Math.round(visibleMs / 1000)
+      track('page_engagement', {
+        page_path: path,
+        engaged_seconds: seconds,
+        time_on_page: timeBucket(seconds),
+      })
+    }
+
+    function reportAbandons() {
+      for (const form_name of takeUnfinishedForms()) {
+        track('form_abandon', { form_name, page_path: path })
+      }
+    }
+
+    function onVisibility() {
+      if (document.visibilityState === 'hidden') reportEngagement()
+      else if (!reported) visibleSince = performance.now()
+    }
+
+    function onPageHide() {
+      reportEngagement()
+      reportAbandons()
+    }
+
+    // The first field focused in each form, once per page view.
+    function onFocusIn(e: FocusEvent) {
+      const target = e.target
+      if (!(target instanceof Element)) return
+      const form = target.closest<HTMLFormElement>('form')
+      if (!form) return
+      const form_name = form.dataset.analyticsForm ?? locationOf(form)
+      if (started.has(form_name)) return
+      started.add(form_name)
+      track('form_start', { form_name, page_path: path })
+    }
+
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', onPageHide)
+    document.addEventListener('focusin', onFocusIn)
+
+    // Runs when the route changes: the page being left is reported under its own path.
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', onPageHide)
+      document.removeEventListener('focusin', onFocusIn)
+      reportEngagement()
+      reportAbandons()
+    }
+  }, [pathname])
+
+  return null
+}
+
 export default function AnalyticsEvents() {
   return (
     <>
       <ClickTracking />
+      <EngagementTracking />
       {/* useSearchParams needs a Suspense boundary, or every page opts out of
           static rendering. */}
       <Suspense fallback={null}>

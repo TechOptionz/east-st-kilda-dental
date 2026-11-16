@@ -1,18 +1,6 @@
 import type { NextConfig } from 'next'
 import { suburbs, suburbPath } from './data/suburbs'
 
-// Vercel sets VERCEL_ENV automatically:
-//   "production"  → main production deployment
-//   "preview"     → all staging / preview deployments
-//   "development" → local dev (next dev)
-// This repeats lib/env.ts's expression inline, because the Next config is
-// loaded before the "@/" path alias exists and so cannot import that file.
-// The two must stay in step — including the NEXT_PUBLIC_SITE_ENV fallback,
-// without which a non-Vercel production host would noindex itself.
-const isProduction =
-  process.env.VERCEL_ENV === 'production' ||
-  process.env.NEXT_PUBLIC_SITE_ENV === 'production'
-
 /**
  * Every URL this site has served that no longer exists, and where it goes now.
  *
@@ -53,6 +41,18 @@ const LEGACY_PATHS: Record<string, string> = {
   '/booking': '/online-booking',
   '/offer': '/new-patient-comprehensive-care-visit',
 
+  // /book was the live booking URL before /online-booking, so it is linked
+  // from outside the site and indexed.
+  '/book': '/online-booking',
+
+  // The first-visit page under the offer's earlier name. It was linked from the
+  // header and the utility bar, and indexed.
+  '/comprehensive-care-visit': '/new-patient-comprehensive-care-visit',
+
+  // A legacy duplicate of /services/check-ups and /services/cleans-and-hygiene
+  // — the same treatment on a third URL. The page is gone from data/services.ts.
+  '/services/check-up-clean': '/services/check-ups',
+
   // /home was a second copy of the home page, kept alive as a redirect route
   // that called next/navigation's redirect() — which issues a 307 Temporary.
   // A temporary redirect tells Google the old URL is coming back, so it stays
@@ -70,7 +70,89 @@ const LEGACY_PATHS: Record<string, string> = {
   // page covers the same ground, so it takes both this URL and the older
   // /first-visit that used to redirect here.
   '/your-first-visit': '/new-patient-comprehensive-care-visit',
+
+  // The WordPress site this one replaced. Every URL in its last Yoast sitemap
+  // (page-sitemap.xml and post-sitemap.xml, December 2025), plus the older
+  // pages still showing up in Google's sitelinks. WordPress served them all
+  // with a trailing slash; Next strips that with its own 308 first, so
+  // /home/about/ reaches this table as /home/about.
+  // (Its /dentist-near-<suburb> pages are generated from data/suburbs.ts in
+  // LEGACY_REDIRECTS below, so every suburb is covered, not only the ones the
+  // old site happened to have.)
+  '/home/about': '/about',
+  '/home/how-we-work': '/nervous-patients', // "Gentle dentist in inner Melbourne"
+  '/home/foreign-languages': '/about/why-were-different', // the languages the team speaks
+  '/home/languages': '/about/why-were-different',
+  '/home/services': '/services',
+  '/home/services/crowns-bridges': '/services/crowns-and-bridges',
+  '/home/services/dental-implant-surgery': '/services/dental-implants',
+  '/home/services/emergencies': '/emergency-dentist',
+  '/home/services/gentle-dentistry': '/nervous-patients',
+  '/home/services/how-we-work': '/nervous-patients',
+  '/home/services/invisalign': '/services/invisalign',
+  '/home/services/teeth-whitening': '/services/teeth-whitening',
+  '/home/services/veneers': '/services/veneers',
+  '/home/services/wisdom-teeth-extraction-surgical-extraction': '/services/extractions-wisdom-teeth',
+  '/home/services-4': '/learn/prevention', // "How should I look after my teeth?"
+  '/home/services-4/faqs': '/dental-faqs',
+  '/contact-us': '/contact',
+  // A malformed internal link on the old site, with a space for the hyphen.
+  // Crawlers request it percent-encoded.
+  '/contact%20us': '/contact',
+  // WordPress's own site-wide RSS feeds. The posts they carried live in /learn.
+  '/feed': '/learn',
+  '/comments/feed': '/learn',
+  '/gentle-dentistry': '/nervous-patients',
+  '/info-centre': '/learn',
+  '/terms-conditions': '/terms',
+  '/privacy-policy': '/privacy',
+  '/249-clean-up': '/services/cleans-and-hygiene', // a scale-and-clean offer no longer running
+  '/blog': '/learn',
+  '/blog/back-to-the-dentist-st-kilda': '/learn/havent-been-to-the-dentist-in-years',
+  '/blog/dental-cleaning-melbourne-gentle-guide': '/services/cleans-and-hygiene',
+  '/blog/emergency-dentist-melbourne-inner-south': '/emergency-dentist', // "Dental Emergency St Kilda"
+  '/blog/happy-gas-dental-anxiety-st-kilda': '/nervous-patients',
+  '/category/working-with-your-dentist': '/learn',
+  '/working-with-your-dentist/questions': '/dental-faqs',
+  '/working-with-your-dentist/gum-disease-why-its-more-serious-than-you-think': '/learn/bleeding-gums',
+  '/working-with-your-dentist/why-a-6-monthly-dental-cleanup-saves-you-money-and-protects-your-health':
+    '/learn/how-often-should-you-see-the-dentist',
+  '/working-with-your-dentist/why-living-in-st-kilda-means-regular-dental-check-ups-are-more-important-than-ever':
+    '/learn/how-often-should-you-see-the-dentist',
 }
+
+/**
+ * WordPress gave every page, post and category its own RSS feed at <url>/feed/,
+ * and linked it from the page's <head>, so crawlers found and indexed them —
+ * /home/services/feed/, /category/working-with-your-dentist/feed/ and the rest
+ * show up in Ahrefs' 403 report from the old host. Each one goes to wherever
+ * its page went, in one hop.
+ */
+const LEGACY_FEEDS: [source: string, destination: string][] = Object.entries(LEGACY_PATHS)
+  .filter(([source]) => !source.endsWith('/feed') && !source.includes('%20'))
+  .map(([source, destination]) => [`${source}/feed`, destination])
+
+/**
+ * Every legacy path and its destination, in one list: the table above, the
+ * feed of each, the old site's /dentist-near-<suburb> pages, and this site's own retired
+ * /areas/<slug> pages — a second, generated copy of each suburb page that
+ * competed with /dentist-<slug> for the same searches.
+ *
+ * `npm run check:redirects` reads this list back out of the build and tests
+ * every entry against the running site.
+ */
+const LEGACY_REDIRECTS: [source: string, destination: string][] = [
+  ...Object.entries(LEGACY_PATHS),
+  ...LEGACY_FEEDS,
+  ...suburbs.flatMap((s): [string, string][] => [
+    [`/dentist-near-${s.slug}`, suburbPath(s.slug)],
+    [`/areas/${s.slug}`, suburbPath(s.slug)],
+  ]),
+]
+
+/** The preferred domain. The www host redirects here. */
+const CANONICAL_ORIGIN = 'https://eaststkildadental.com.au'
+const WWW_HOST = { type: 'host' as const, value: 'www.eaststkildadental.com.au' }
 
 const nextConfig: NextConfig = {
   images: {
@@ -78,87 +160,49 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   /**
-   * The suburb landing pages used to live at two URLs: /areas/<slug> (generated
-   * from data/suburbs.ts) and /dentist-<slug> (hand-written). That was duplicate
-   * content competing for the same searches. /dentist-<slug> is now the only
-   * one, so the old /areas/<slug> URLs redirect permanently rather than 404.
+   * Next normally strips a trailing slash itself, with a 308, before the
+   * redirect table is consulted. The WordPress site served every URL with a
+   * trailing slash, so each legacy URL would have cost two hops — a 308 to the
+   * slashless form, then the real redirect. With that turned off, redirects()
+   * below answers both forms directly, and its last rule takes over the
+   * slash-stripping for every other URL.
    */
+  skipTrailingSlashRedirect: true,
   async redirects() {
+    /*
+     * statusCode: 301 rather than permanent: true, which would send a 308.
+     * Google treats the two alike, but 301 is what SEO audits and crawl tools
+     * expect to see for a moved page. Every redirect on this site uses the one
+     * status code; switch the whole table together, or not at all.
+     */
     return [
       /*
-       * permanent: true is a 308, which is the modern permanent redirect and
-       * what Google treats as equivalent to a 301 for ranking purposes. The
-       * only difference from a 301 is that 308 preserves the request method,
-       * which is irrelevant for page URLs a crawler only ever GETs. Every
-       * redirect on this site uses the one status code; switch the whole table
-       * together, or not at all.
+       * www → non-www. Every request on the www host goes straight to its
+       * final URL on the bare domain in one hop: a legacy path to its current
+       * page, a trailing-slash URL to the slashless form, anything else to the
+       * same path. Query strings carry over untouched. These come first and
+       * only match the www host, so the bare-domain rules below are unchanged.
        */
-      ...Object.entries(LEGACY_PATHS).map(([source, destination]) => ({
+      ...LEGACY_REDIRECTS.map(([source, destination]) => ({
+        source,
+        has: [WWW_HOST],
+        destination: `${CANONICAL_ORIGIN}${destination}`,
+        statusCode: 301 as const,
+      })),
+      { source: '/:path+/', has: [WWW_HOST], destination: `${CANONICAL_ORIGIN}/:path+`, statusCode: 301 as const },
+      { source: '/:path*', has: [WWW_HOST], destination: `${CANONICAL_ORIGIN}/:path*`, statusCode: 301 as const },
+
+      // A source matches with or without its trailing slash.
+      ...LEGACY_REDIRECTS.map(([source, destination]) => ({
         source,
         destination,
-        permanent: true,
+        statusCode: 301 as const,
       })),
-      ...suburbs.map((s) => ({
-        source: `/areas/${s.slug}`,
-        destination: suburbPath(s.slug),
-        permanent: true,
-      })),
-      /**
-       * The booking page moved from /book to /online-booking. /book was the
-       * live URL, so it is linked from outside the site and indexed; this
-       * keeps those hits landing on the page rather than a 404.
-       */
-      {
-        source: '/book',
-        destination: '/online-booking',
-        permanent: true,
-      },
-      /**
-       * /services/check-up-clean was a legacy duplicate of /services/check-ups
-       * and /services/cleans-and-hygiene — the same treatment on a third URL,
-       * competing with both and linked from nowhere on the site. The page is
-       * gone from data/services.ts; this keeps any existing inbound link or
-       * indexed result landing on the page that replaced it.
-       */
-      {
-        source: '/services/check-up-clean',
-        destination: '/services/check-ups',
-        permanent: true,
-      },
-      /**
-       * The first-visit page moved from /comprehensive-care-visit to
-       * /new-patient-comprehensive-care-visit when the offer was renamed, so
-       * the URL says who the visit is for. The old path was live, linked from
-       * the header and the utility bar, and indexed; this keeps those hits and
-       * any outside link landing on the page rather than a 404.
-       */
-      {
-        source: '/comprehensive-care-visit',
-        destination: '/new-patient-comprehensive-care-visit',
-        permanent: true,
-      },
-    ]
-  },
-  /**
-   * The belt to robots.txt's braces. A disallow only asks a crawler not to
-   * fetch; a URL it never fetched can still be indexed from an inbound link.
-   * X-Robots-Tag travels with the response itself, so a staging URL that is
-   * fetched anyway still carries noindex.
-   */
-  async headers() {
-    if (isProduction) return []
-
-    return [
-      {
-        // Noindex every route on staging / preview deployments
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
-        ],
-      },
+      // The feed of any other old URL goes to the page it belonged to, which the
+      // rules above then send on if that page moved too.
+      { source: '/:path+/feed', destination: '/:path+', statusCode: 301 as const },
+      // Any other URL requested with a trailing slash goes to the form without.
+      { source: '/:path+/', destination: '/:path+', statusCode: 301 as const },
     ]
   },
 }

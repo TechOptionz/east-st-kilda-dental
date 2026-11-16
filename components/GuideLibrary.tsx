@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import GuideGrid, { type GuideCard } from '@/components/GuideGrid'
 
 export interface LibraryTopic {
@@ -17,15 +18,16 @@ const sortOptions: { value: SortOrder; label: string }[] = [
 ]
 
 /**
- * The Learn hub's library: the topic chips and the grid they filter.
+ * The Learn hub's library: the topic chips, the sort control and the grid.
  *
- * The two live in one component because the chips filter the grid in place
- * rather than navigating — pick "Gum health" and the cards below narrow, with
- * no page load and no scroll position lost. Both sections are rendered here so
- * the selection can be shared between them.
+ * Each topic chip is a real link to that topic's hub page (/learn/<slug>), so
+ * the hierarchy Learn → topic → guide is crawlable from plain HTML. They used
+ * to be buttons that filtered this grid in place, which no crawler could
+ * follow; the topic pages now do that job, each with its own URL. "All guides"
+ * is this page, marked as current.
  *
  * Only topics that already have a published guide are passed in, so no chip
- * can ever filter the grid down to nothing.
+ * can ever link to an empty page.
  */
 export default function GuideLibrary({
   guides,
@@ -37,14 +39,11 @@ export default function GuideLibrary({
   /** Titles we intend to write. Plain text under the grid, never links. */
   upcoming?: string[]
 }) {
-  /** null = no filter, show the whole library. */
-  const [active, setActive] = useState<string | null>(null)
   const [sort, setSort] = useState<SortOrder>('latest')
 
-  const filtered = active ? guides.filter((guide) => guide.topics?.includes(active)) : guides
   // Dates are ISO strings, so they sort as text. A copy, because sort mutates
   // and the prop array is shared with every other order.
-  const shown = [...filtered].sort((a, b) => {
+  const shown = [...guides].sort((a, b) => {
     if (sort === 'az') return a.title.localeCompare(b.title)
     const oldestFirst = a.date.localeCompare(b.date)
     return sort === 'oldest' ? oldestFirst : -oldestFirst
@@ -59,27 +58,16 @@ export default function GuideLibrary({
           <h2>What would you like to understand?</h2>
           {/* Chips left, sort right — one control row under the heading. */}
           <div className="library-controls">
-            <div className="topic-tags" role="group" aria-label="Filter guides by topic">
-              <button
-                type="button"
-                className={active === null ? 'topic-tag on' : 'topic-tag'}
-                aria-pressed={active === null}
-                onClick={() => setActive(null)}
-              >
+            <nav className="topic-tags" aria-label="Guide topics">
+              <Link href="/learn" className="topic-tag on" aria-current="page">
                 All guides
-              </button>
+              </Link>
               {topics.map((topic) => (
-                <button
-                  key={topic.slug}
-                  type="button"
-                  className={active === topic.slug ? 'topic-tag on' : 'topic-tag'}
-                  aria-pressed={active === topic.slug}
-                  onClick={() => setActive(topic.slug)}
-                >
+                <Link key={topic.slug} href={`/learn/${topic.slug}`} className="topic-tag">
                   {topic.label}
-                </button>
+                </Link>
               ))}
-            </div>
+            </nav>
 
             <div className="library-sort">
               <label htmlFor="guide-sort">Sort by</label>
@@ -110,7 +98,7 @@ export default function GuideLibrary({
             </p>
           </div> */}
 
-          {/* One grid, not one per topic: the chips above narrow it in place. */}
+          {/* The whole library; each topic's own page narrows it. */}
           <GuideGrid guides={shown} />
 
           {/* Plain text, never links: these guides do not exist yet. */}

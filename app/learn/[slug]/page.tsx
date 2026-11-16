@@ -11,6 +11,7 @@ import { learnArticleTrail } from '@/components/Breadcrumb'
 import Photo from '@/components/Photo'
 import TopicView from '@/components/TopicView'
 import { getPopulatedTopic, populatedTopics } from '@/data/topics'
+import { practitionerPath } from '@/data/practitioners'
 import { withSocial } from '@/lib/seo'
 import { SCHEMA_ID, SITE_URL, business, clinicianId, clinicians, telHref } from '@/lib/business'
 
@@ -32,7 +33,13 @@ const practiceRef = { '@type': 'Dentist', '@id': SCHEMA_ID.practice, name: busin
 function byline(author: string | undefined) {
   const clinician = clinicians.find(c => c.name === author)
   if (!clinician) return practiceRef
-  return { '@type': 'Person', '@id': clinicianId(clinician.slug), name: clinician.name }
+  const profile = practitionerPath(clinician.slug)
+  return {
+    '@type': 'Person',
+    '@id': clinicianId(clinician.slug),
+    name: clinician.name,
+    ...(profile ? { url: `${SITE_URL}${profile}` } : {}),
+  }
 }
 
 /**
@@ -144,6 +151,10 @@ export default async function LearnEntryPage({ params }: Props) {
   // Topic chips in the aside. These are the article's own topics, resolved
   // against the populated list so a chip can never point at an empty page.
   const topicChips = populatedTopics.filter(t => article.topics?.includes(t.slug))
+  // The breadcrumb's middle step: the first topic the article lists that has a
+  // live page. Taken in the article's own order, so its lead topic wins.
+  const primaryTopic = article.topics?.map(getPopulatedTopic).find(t => t !== undefined)
+  const authorPath = practitionerPath(article.author)
   const readMore = readMoreGuides(article)
   const videos = articleVideos(article)
 
@@ -213,9 +224,27 @@ export default async function LearnEntryPage({ params }: Props) {
       }
     : null
 
+  // The guide itself, as the Article the page carries. The page node above
+  // describes the URL; this describes the writing on it, with the same byline,
+  // dates and image, so the two cannot disagree.
+  const articleNode = {
+    '@type': 'Article',
+    '@id': `${url}#article`,
+    headline: article.title,
+    description: article.meta.description,
+    ...(article.image ? { image: `${SITE_URL}${article.image}` } : {}),
+    author: byline(article.author),
+    publisher: { ...practiceRef, logo: `${SITE_URL}/assets/brand/eskd-logo.png` },
+    datePublished: article.date,
+    dateModified: article.date,
+    inLanguage: 'en-AU',
+    mainEntityOfPage: { '@id': `${url}#webpage` },
+    isPartOf: { '@id': `${url}#webpage` },
+  }
+
   const schema = {
     '@context': 'https://schema.org',
-    '@graph': [webPage, ...(faqNode ? [faqNode] : []), ...videoNodes],
+    '@graph': [webPage, articleNode, ...(faqNode ? [faqNode] : []), ...videoNodes],
   }
 
   return (
@@ -223,7 +252,7 @@ export default async function LearnEntryPage({ params }: Props) {
       <JsonLd data={schema} />
 
       {/* ── BREADCRUMB ───────────────────────────────────── */}
-      <BreadcrumbBar trail={learnArticleTrail(article.title)} id={`${url}#breadcrumb`} />
+      <BreadcrumbBar trail={learnArticleTrail(article.title, primaryTopic)} id={`${url}#breadcrumb`} />
 
       <div className="container">
         <article className="post">
@@ -238,7 +267,11 @@ export default async function LearnEntryPage({ params }: Props) {
               {/* Byline */}
               {article.author && (
                 <div className="byline">
-                  Reviewed by {article.author} &middot; {article.readTime}
+                  {/* A clinician with a live profile page is linked from every
+                      guide they review; anyone else stays plain text. */}
+                  Reviewed by{' '}
+                  {authorPath ? <Link href={authorPath}>{article.author}</Link> : article.author}{' '}
+                  &middot; {article.readTime}
                 </div>
               )}
               {!article.author && (

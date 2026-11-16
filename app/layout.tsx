@@ -7,6 +7,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Analytics, { AnalyticsNoScript } from '@/components/Analytics'
 import AnalyticsEvents from '@/components/AnalyticsEvents'
+import { Analytics as VercelAnalytics } from '@vercel/analytics/next'
 import { SITE_URL, business } from '@/lib/business'
 import { SHARE_IMAGE } from '@/lib/seo'
 
@@ -116,6 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         {children}
         <Footer />
+        <VercelAnalytics />
       </body>
     </html>
   )

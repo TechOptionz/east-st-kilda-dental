@@ -104,11 +104,7 @@ export default function CallbackForm({
 
       /* Fired only once the API has accepted it, so the conversion count is
          enquiries that actually reached the front desk — not submit clicks. */
-      track('generate_lead', {
-        form_name: 'callback',
-        form_intent: 'book',
-        page_path: window.location.pathname,
-      })
+      track('form_submit', { form_name: 'callback' })
 
       form.reset()
       setSubmitted(true)
@@ -141,7 +137,7 @@ export default function CallbackForm({
   }
 
   return (
-    <form className={className} onSubmit={handleSubmit}>
+    <form className={className} onSubmit={handleSubmit} data-analytics-form="callback">
       <input
         type="text"
         name="name"

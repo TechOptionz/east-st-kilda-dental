@@ -4,7 +4,7 @@ import { business, emailHref, fullAddress, SITE_URL, telHref } from '@/lib/busin
 
 export const metadata: Metadata = withSocial({
   title: 'Privacy Policy | East St Kilda Dental',
-  description: 'East St Kilda Dental\'s privacy policy — how we collect, use, and protect your personal information.',
+  description: 'East St Kilda Dental\'s privacy policy: how we collect, use, store and protect your personal and health information, and how to access or correct it.',
   alternates: { canonical: `${SITE_URL}/privacy` },
 })
 

@@ -10,6 +10,8 @@
  * they match the canonical URL.
  */
 
+import { publishedPractitioners } from '@/data/practitioners'
+
 /**
  * The production origin, and the bare domain rather than www on purpose.
  *
@@ -61,10 +63,13 @@ export const business = {
   telephone: '+61395273678',
   /** Human-readable, for visible copy. */
   telephoneDisplay: '(03) 9527 3678',
-  email: 'hello@eaststkildadental.com.au',
+  email: 'reception@eaststkildadental.com.au',
   currenciesAccepted: 'AUD',
   /** The practice has cared for the neighbourhood since around 1980. */
   foundedYear: 1980,
+  /** One-sentence description of the practice, for the Organization/Dentist node. */
+  description:
+    'Gentle, judgement-free family dental practice in St Kilda East, Melbourne, caring for the local community since 1980 — check-ups, nervous patients, cosmetic, implants and emergency dentistry.',
   /** The catchment, as we describe it in prose. */
   serviceRegion: "Melbourne's inner south-east",
   address: {
@@ -88,6 +93,18 @@ export const business = {
 } as const
 
 /**
+ * Where "Read all reviews" links: the practice's Google Maps listing, which
+ * opens on the reviews.
+ *
+ * A Maps search URL (Google's documented Maps URLs format) rather than a
+ * share.google or maps.app.goo.gl short link: those answer with a 302 to a
+ * second Google URL, so every page linking to them was reported by the SEO
+ * crawl as linking to a redirect. This one serves a 200 directly.
+ */
+export const GOOGLE_REVIEWS_URL =
+  'https://www.google.com/maps/search/?api=1&query=East+St+Kilda+Dental%2C+364+Dandenong+Rd%2C+St+Kilda+East+VIC+3183'
+
+/**
  * Ready-made strings for visible copy and href attributes.
  *
  * Import these rather than retyping the address or phone number. A stray
@@ -103,11 +120,22 @@ export const emailHref = `mailto:${business.email}`
  *
  * It is a different domain, so nothing after the click is visible to our
  * analytics — a completed booking is counted in the practice software, not
- * here. BOOKING_HOST exists so the click itself can be recognised as an
- * outbound conversion wherever it appears; see components/AnalyticsEvents.tsx.
+ * here. BOOKING_HOST exists so a link that opens it can be recognised as a
+ * booking_start wherever it appears; see components/AnalyticsEvents.tsx.
  */
 export const BOOKING_HOST = 'centaurportal.com'
 export const BOOKING_URL = `https://www.${BOOKING_HOST}/d4w/org-1240/extended_search`
+
+/**
+ * Third-party platforms a patient can book the practice through instead of
+ * this site, keyed by domain. A link to any of them is tracked as an
+ * external_booking_click carrying the value as `provider`, so patients who
+ * start here and book elsewhere are still counted. The site links to none of
+ * them today; add the domain here on the commit that adds the first link.
+ */
+export const EXTERNAL_BOOKING_PROVIDERS: Record<string, string> = {
+  'healthengine.com.au': 'healthengine',
+}
 
 /** "364 Dandenong Rd" */
 export const streetAddress = business.address.streetAddress
@@ -173,7 +201,26 @@ export const clinicians = [
   { slug: 'michelle-callaghan', name: 'Michelle Callaghan', jobTitle: 'Dental Hygienist' },
 ] as const
 
-export const clinicianId = (slug: string) => `${SITE_URL}/about/our-team#${slug}`
+/**
+ * The one Person @id for a clinician, used by every page that names them.
+ *
+ * A clinician with a published profile is identified by that page
+ * (/about/<profile>#person), which is where the entity is described in full;
+ * everyone else by their card on the team page. Because every node goes
+ * through this, publishing a profile moves the home page, team page, landing
+ * pages and article bylines onto the new @id together — there is never a
+ * second Person for the same clinician.
+ */
+export const clinicianId = (slug: string) => {
+  const profile = publishedPractitioners.find(p => p.clinicianSlug === slug)
+  return profile ? `${SITE_URL}/about/${profile.slug}#person` : `${SITE_URL}/about/our-team#${slug}`
+}
+
+/** The URL a clinician's Person node publishes: their profile once live, else their team card. */
+export const clinicianUrl = (slug: string) => {
+  const profile = publishedPractitioners.find(p => p.clinicianSlug === slug)
+  return profile ? `${SITE_URL}/about/${profile.slug}` : `${SITE_URL}/about/our-team#${slug}`
+}
 
 /**
  * The jobTitle to publish for a clinician, where the entity graph pins one.
