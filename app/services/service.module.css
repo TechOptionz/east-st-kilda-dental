@@ -36,13 +36,13 @@
 
 /* The all-caps kicker above each heading. The global .eyebrow draws a rule
    before the text, which fights the centred layouts here, so this page uses its
-   own plain version — but at the site's own 13px / 600 / .18em, not the design
-   file's 11.5px / 700 / .22em. */
+   own plain version — at the global .eyebrow's 12.5px / 700 / .2em, so a label
+   reads the same here as on every other page. */
 .kicker {
   font-family: var(--body);
-  font-size: 13px;
-  letter-spacing: 0.18em;
-  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--clay-deep);
   margin: 0;
@@ -196,11 +196,16 @@
 
 .heroMedia { position: relative; }
 
+/* The profile's hero: the photo on a tinted block offset down and right, with
+   a card floated over its corner (here, the price badge). The block is a
+   second, unblurred shadow because the frame clips its children; the margin
+   keeps the room it takes inside the column. */
 .heroFrame {
   position: relative;
-  border-radius: 22px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
-  box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22);
+  margin: 0 24px 24px 0;
+  box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22), 24px 24px 0 var(--clay-soft);
 }
 
 /* Photo renders a .ph div; give the frame its height through that child so the
@@ -218,9 +223,10 @@
   left: -38px;
   bottom: 44px;
   background: var(--paper);
-  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
   padding: 20px 24px;
-  box-shadow: 0 18px 40px rgba(44, 42, 38, 0.16);
+  box-shadow: var(--shadow-lg);
   animation: floatBadge 7s ease-in-out infinite;
 }
 
@@ -1042,6 +1048,11 @@
 
 @media (max-width: 720px) {
   .heroMedia { order: -1; }
+
+  .heroFrame {
+    margin: 0 14px 14px 0;
+    box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22), 14px 14px 0 var(--clay-soft);
+  }
 
   .priceBadge {
     left: auto;

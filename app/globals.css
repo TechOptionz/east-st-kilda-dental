@@ -2180,6 +2180,14 @@ body{overflow-x:hidden;max-width:100%;}
 .sec-head p{font-size:17.5px;line-height:1.7;}
 .alt{background:var(--paper);}
 .sage-bg{background:var(--sage-darker);color:var(--cream);}
+/* The soft clay glow in the corner of the practitioner profile's green band,
+   on every green band, so none of them is a flat block of colour. A background
+   layer rather than a pseudo-element: nothing in the band needs lifting above
+   it. The profile's own band draws the same glow itself and is left out, or it
+   would carry it twice. */
+.sage-bg:not([class*="_featureSec__"]){
+  background:radial-gradient(640px 360px at 92% 8%,rgba(188,122,78,.16),transparent 62%),var(--sage-darker);
+}
 .sage-bg h2,.sage-bg h3{color:var(--cream);}
 /* clay-deep (the light-background accent) is unreadable on the deep green */
 .sage-bg h2 em,.sage-bg h3 em{color:var(--clay-soft);}
@@ -2604,6 +2612,8 @@ body{overflow-x:hidden;max-width:100%;}
   .nervous-grid>.ph{margin:0 0 22px 22px;box-shadow:-22px 22px 0 rgba(255,255,255,.09);}
   .npv .know-grid>.ph{margin:0 22px 22px 0;box-shadow:22px 22px 0 rgba(255,255,255,.09);}
   .story-grid>.ph{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--sage-soft);}
+  .fees-grid>.ph{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--clay-soft);}
+  .post-head-grid>.post-hero{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--clay-soft);}
 }
 /* Visually hidden, still read by screen readers and kept in the outline. */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;}
@@ -2966,6 +2976,11 @@ body{overflow-x:hidden;max-width:100%;}
 
 /* CTA band */
 .ctaband{background:var(--sage-deep);border-radius:var(--radius-panel);padding:60px 44px;text-align:center;}
+/* The warm light across the top of the profile's closing band. That band
+   (.cta in PractitionerProfile.module.css) draws its own and is left out. */
+.ctaband:not([class*="_cta__"]){
+  background:radial-gradient(520px 300px at 50% 0%,rgba(239,217,197,.14),transparent 70%),var(--sage-deep);
+}
 .ctaband h3{font-family:var(--display);font-size:clamp(28px,3.2vw,38px);line-height:1.15;margin:0 0 16px;color:var(--cream);}
 .ctaband p{margin:0 auto 20px;max-width:44em;color:rgba(255,255,255,.92);font-size:17px;line-height:1.7;}
 .ctaband .btn-ghost-light{color:var(--cream);border-color:rgba(255,255,255,.5);}
@@ -3050,7 +3065,7 @@ body{overflow-x:hidden;max-width:100%;}
    = 1.35 is the ratio that lands it on exactly their height — landscape, so the
    photograph is not cropped to a portrait it was never shot for. */
 .team-row-people{display:contents;}
-.team-row-group .ph{min-height:0;aspect-ratio:27/20;margin-bottom:20px;border-radius:var(--radius-card);}
+.team-row-group .ph{min-height:0;aspect-ratio:27/20;margin-bottom:20px;border-radius:var(--radius-card);box-shadow:var(--shadow-card);}
 
 @media(min-width:1180px){
   /* Wider than its parent and still centred: 100% is the container's content
@@ -3314,7 +3329,7 @@ body{overflow-x:hidden;max-width:100%;}
    the two columns off: stretched, the details column's own list stretched with
    it and the hours drifted away from the address they belong to. */
 .loc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr);gap:44px;align-items:start;}
-.loc-grid .ph{min-height:460px;border-radius:var(--radius-card);}
+.loc-grid .ph{min-height:460px;border-radius:var(--radius-panel);box-shadow:var(--shadow-md);}
 /* The home page's four transport facts as their own rows with an icon each,
    for the phone layout at the foot of this file. Hidden everywhere else, where
    the sentence in app/page.tsx says the same thing in one line of prose. */
@@ -3945,10 +3960,10 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .post-cat{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:10px;}
 .byline{font-size:14px;color:var(--ink-faint);margin:10px 0 28px;}
 .answer{font-size:19px;line-height:1.7;color:var(--ink);background:var(--sage-tint);border-radius:14px;padding:24px 28px;margin:24px 0 32px;border-left:4px solid var(--sage);}
-.post-hero{width:100%;min-height:300px;margin:0;border-radius:18px;}
+.post-hero{width:100%;min-height:300px;margin:0;border-radius:var(--radius-panel);box-shadow:var(--shadow-md);}
 .post-body h2{font-size:clamp(20px,2.5vw,26px);font-family:var(--display);margin:40px 0 14px;color:var(--ink);}
 .post-body p{font-size:17px;line-height:1.75;color:var(--ink-soft);margin:0 0 20px;}
-.post-cta{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:18px;padding:36px;text-align:center;margin:44px 0;}
+.post-cta{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--radius-panel);padding:36px;text-align:center;margin:44px 0;}
 .post-cta h3{font-family:var(--display);font-size:26px;color:var(--sage-deep);margin:0 0 10px;}
 .post-cta p{font-size:16px;color:var(--ink-soft);margin:0 0 22px;}
 .post-cta-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
@@ -3964,21 +3979,33 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   color:var(--ink-faint);margin:0 0 12px;
 }
 .post-toc ol{list-style:none;margin:0;padding:0;}
-.post-toc li{border-left:2px solid var(--line);}
+/* The contents list takes the profile's row treatment: the rule down the
+     left edge turns clay and the row tints as its heading is pointed at. */
+.post-toc li{border-left:2px solid var(--line);transition:border-color .25s ease,background-color .25s ease;border-radius:0 10px 10px 0;}
 .post-toc a{
-  display:block;padding:8px 0 8px 14px;
+  display:block;padding:8px 10px 8px 14px;
   font-size:14.5px;line-height:1.45;color:var(--ink-soft);text-decoration:none;
-  transition:color .18s ease;
+  transition:color .25s ease;
 }
 .post-toc a:hover{color:var(--sage-deep);}
-.post-toc li:hover{border-left-color:var(--sage);}
+.post-toc li:hover{border-left-color:var(--clay);background:var(--sage-tint);}
 .post-aside .topic-tags{justify-content:flex-start;margin-top:0;}
 .post-aside-links{list-style:none;margin:0;padding:0;}
 .post-aside-links a{
-  display:block;padding:6px 0;font-size:14.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 0;font-size:14.5px;font-weight:600;
   color:var(--sage-deep);text-decoration:none;
+  border-bottom:1px solid var(--line-soft);
+  transition:color .25s ease;
 }
-.post-aside-links a:hover{color:var(--clay-deep);text-decoration:underline;text-underline-offset:2px;}
+/* The arrow that steps forward on the profile's linked rows. */
+.post-aside-links a::after{content:"\2192";color:var(--clay-deep);transition:transform .25s ease;}
+.post-aside-links a:hover{color:var(--clay-deep);}
+.post-aside-links a:hover::after{transform:translateX(4px);}
+@media(prefers-reduced-motion:reduce){
+  .post-toc li,.post-toc a,.post-aside-links a,.post-aside-links a::after{transition:none;}
+  .post-aside-links a:hover::after{transform:none;}
+}
 /* Anchored headings clear the fixed header when jumped to. */
 .post-body h2,.post-summary h2,.post-faq h2{scroll-margin-top:110px;}
 
@@ -3989,8 +4016,9 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .post-video{margin:34px 0;}
 .post-video-frame{
   position:relative;aspect-ratio:16/9;
-  border-radius:18px;overflow:hidden;
+  border-radius:var(--radius-panel);overflow:hidden;
   background:var(--sage-darker);border:1px solid var(--line-soft);
+  box-shadow:var(--shadow-md);
 }
 .post-video-frame iframe,.post-video-frame video{
   position:absolute;inset:0;width:100%;height:100%;
@@ -4004,8 +4032,9 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* The wrap-up above the CTA. Quieter than .ansbox at the top, so a reader
    scrolling to the end lands on a conclusion rather than a second callout. */
 .post-summary{
-  margin:48px 0 0;background:var(--cream-2);
-  border-radius:18px;padding:30px 34px;
+  margin:48px 0 0;background:var(--paper);
+  border:1px solid var(--line);border-left:4px solid var(--clay);
+  border-radius:var(--radius-card);box-shadow:var(--shadow-card);padding:30px 34px;
 }
 .post-summary h2{font-family:var(--display);font-size:24px;color:var(--sage-deep);margin:0 0 12px;}
 .post-summary p{font-size:16.5px;line-height:1.72;color:var(--ink-soft);margin:0;}
@@ -4021,7 +4050,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 }
 
 /* ── Short answer box (article-bleeding-gums style) ─────── */
-.ansbox{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:14px;padding:24px 28px;margin:28px 0;}
+.ansbox{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--radius-card);padding:24px 28px;margin:28px 0;}
 .ansbox .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sage);margin-bottom:8px;}
 .ansbox p{font-size:17px;line-height:1.7;color:var(--ink);margin:0;}
 
@@ -5496,7 +5525,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .faqs figure{margin:24px 0 8px;}
 .faqs figcaption{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--ink-faint);}
 .faqs figcaption a{color:var(--sage-deep);font-weight:600;}
-.faqs .faqs-photo .ph{aspect-ratio:16/7;max-width:100%;border-radius:var(--radius-card);}
+.faqs .faqs-photo .ph{aspect-ratio:16/7;max-width:100%;border-radius:var(--radius-card);box-shadow:var(--shadow-card);}
 
 .faqs .faqs-urgency-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 .faqs .faqs-tier{
@@ -5634,7 +5663,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* Emergency appointment steps — .npv-who cards, numbered. */
 .emg .emg-steps{counter-reset:none;}
 .emg .emg-step-n{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:2px;}
-.emg .emg-steps li{background:var(--paper);}
+.emg .emg-steps li{background:var(--paper);box-shadow:var(--shadow-card);}
 
 /* Gentle reassurance */
 .emg .emg-gentle{text-align:center;max-width:48em;margin-inline:auto;}

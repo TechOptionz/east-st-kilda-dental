@@ -53,7 +53,7 @@
 /* Same deep green as the home page's .sage-bg, so every full-bleed dark band
    on the site is one colour. */
 .sageBg {
-  background: var(--sage-darker);
+  background: radial-gradient(640px 360px at 92% 8%, rgba(188, 122, 78, 0.16), transparent 62%), var(--sage-darker);
   color: var(--cream);
 }
 .sageBg h2 {
