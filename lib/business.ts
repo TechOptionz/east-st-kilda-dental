@@ -80,13 +80,13 @@ export const business = {
     addressCountry: 'AU',
   },
   /**
-   * TODO Confirm against the Google Business Profile listing before sign-off.
-   * These are the coordinates supplied in the SEO recommendation, not verified
-   * from the live GBP entry.
+   * The pin of the practice's own Google Maps listing — the same coordinates
+   * that appear in GOOGLE_MAPS_LISTING_URL below. Numbers, not strings, as
+   * schema.org's GeoCoordinates expects.
    */
   geo: {
-    latitude: '-37.8684',
-    longitude: '145.0060',
+    latitude: -37.8606393,
+    longitude: 145.0101836,
   },
   hasMap:
     'https://www.google.com/maps?q=East+St+Kilda+Dental,+364+Dandenong+Rd,+St+Kilda+East+VIC+3183',
@@ -183,8 +183,11 @@ export const areasServed = [
  * Placeholders are deliberately not shipped as dummy strings.
  */
 export const socialProfiles: string[] = [
-  // Google Business Profile share link (same link used in ContactSection).
-  'https://maps.app.goo.gl/7e4dRpEyETE8K18s5',
+  // The practice's exact Google Maps listing (place ID and pin included), not
+  // a search URL or a maps.app.goo.gl short link: a search can resolve to a
+  // different result and a short link answers with a redirect, while this
+  // names the one listing outright.
+  'https://www.google.com/maps/place/East+St+Kilda+Dental/@-37.8606393,145.0101836,17z/data=!3m1!4b1!4m6!3m5!1s0x6ad669cc1b29e941:0x1cb70d4af9479413!8m2!3d-37.8606393!4d145.0101836!16s%2Fg%2F11b6j6cwpt',
 ]
 
 /**

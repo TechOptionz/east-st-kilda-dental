@@ -18,9 +18,9 @@ import { withSocial } from '@/lib/seo'
 import { contactPointNode } from '@/lib/schema'
 
 export const metadata = withSocial({
-  title: 'East St Kilda Dental | Gentle Family & Emergency Dentist',
+  title: 'Dentist St Kilda | Trusted Family Dental Care | East St Kilda Dental',
   description:
-    'Gentle, judgement-free dentist in St Kilda East. Caring for local families since 1980 — check-ups, nervous-patient care, kids and emergencies. Book today.',
+    'Experienced dentists in St Kilda, trusted by local families since 1980. Gentle, judgement-free care for check-ups, emergencies and cosmetic dentistry. Book today.',
   alternates: { canonical: `${SITE_URL}/` },
 })
 
@@ -308,7 +308,17 @@ export default function Home() {
                 emphasis within one. */}
             <h2 style={{ fontSize: 'clamp(34px, 4.4vw, 52px)' }}>Care for every stage of life</h2>
             <p style={{ marginTop: '18px', fontSize: '17.5px', maxWidth: '42em', marginLeft: 'auto', marginRight: 'auto' }}>
-              From routine check-ups and emergency dentistry to fillings, crowns, implants and cosmetic care, here is how we look after St Kilda East and the surrounding suburbs.
+              {/* Only the standalone "St Kilda" is linked, to its suburb page —
+                  not the "St Kilda" inside "St Kilda East". Styled like the
+                  page's other in-copy links (.pathlink a). */}
+              From routine check-ups and emergency dentistry to implants and cosmetic care, our experienced dentists look after families across St Kilda East,{' '}
+              <Link
+                href={suburbPath('st-kilda')}
+                style={{ color: 'var(--sage-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '2px' }}
+              >
+                St Kilda
+              </Link>{' '}
+              and surrounding suburbs.
             </p>
           </div>
           <div className="svc-grid-v2">
@@ -321,7 +331,8 @@ export default function Home() {
                 <Photo
                   src={src}
                   alt={alt}
-                  sizes="(max-width: 820px) 100vw, 33vw"
+                  // Two-up below 600px, one column to 820px, three-up above.
+                  sizes="(max-width: 600px) 50vw, (max-width: 820px) 100vw, 33vw"
                 />
                 <div className="svc-item-body">
                   <h3 style={{ fontWeight: 600 }}>{title}</h3>
@@ -453,7 +464,7 @@ export default function Home() {
               className="offer-photo"
               src="/assets/home/comprehensive2.webp"
               alt="A dentist talking with a seated patient during a comprehensive care consultation"
-     
+              sizes="(max-width: 900px) 100vw, 50vw"
             />
           </div>
         </div>
@@ -469,6 +480,7 @@ export default function Home() {
             className="reveal"
             src="/assets/home/nervous-patients-band.webp"
             alt="A relaxed patient smiling warmly in the dental chair"
+            sizes="(max-width: 900px) 100vw, 50vw"
           />
           <div className="reveal">
             <div className="eyebrow">Nervous and anxious patients</div>
@@ -640,6 +652,7 @@ export default function Home() {
             className="reveal"
             src="/assets/home/honest-about-cost.webp"
             alt="A friendly receptionist smiling while helping a patient at the front desk"
+            sizes="(max-width: 900px) 100vw, 50vw"
           />
         </div>
       </section>
