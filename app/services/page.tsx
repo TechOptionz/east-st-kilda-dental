@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import CardMore from '@/components/CardMore'
 import GetInTouch from '@/components/GetInTouch'
 import Photo from '@/components/Photo'
 import { withSocial } from '@/lib/seo'
@@ -55,7 +56,7 @@ function ServiceGrid({ items }: { items: { h4: string; p: string; href: string }
         <Link key={item.href} href={item.href} className="svc" style={{ textDecoration: 'none' }}>
           <h4>{item.h4}</h4>
           <p>{item.p}</p>
-          <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px' }}>Learn more &rarr;</span>
+          <CardMore>Learn more</CardMore>
         </Link>
       ))}
     </div>
@@ -171,7 +172,7 @@ export default function ServicesPage() {
             <Link href="/emergency-dentist" className="svc" style={{ textDecoration: 'none' }}>
               <h4>Emergency Dentistry</h4>
               <p>Same-day help when it hurts</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px' }}>Learn more &rarr;</span>
+              <CardMore>Learn more</CardMore>
             </Link>
           </div>
         </div>
