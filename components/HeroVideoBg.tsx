@@ -25,13 +25,30 @@ export default function HeroVideoBg() {
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
     if (conn?.saveData) return
 
-    const start = () => setSrc(window.matchMedia(MOBILE_QUERY).matches ? MOBILE_SRC : DESKTOP_SRC)
-    if (document.readyState === 'complete') {
-      start()
-      return
+    // Not on `load` itself: on a phone the page is still hydrating then, and a
+    // 0.75MB download plus video decode starting in that window competes with
+    // it for the main thread. Waiting for the browser to go idle (2s at most)
+    // keeps the clip clear of everything the first paint depends on.
+    let idleId: number | undefined
+    let timerId: number | undefined
+    const mount = () => setSrc(window.matchMedia(MOBILE_QUERY).matches ? MOBILE_SRC : DESKTOP_SRC)
+    const start = () => {
+      // Safari has no requestIdleCallback, so it gets a short fixed delay.
+      if (typeof window.requestIdleCallback === 'function') {
+        idleId = window.requestIdleCallback(mount, { timeout: 2000 })
+      } else {
+        timerId = setTimeout(mount, 600) as unknown as number
+      }
     }
-    window.addEventListener('load', start, { once: true })
-    return () => window.removeEventListener('load', start)
+
+    if (document.readyState === 'complete') start()
+    else window.addEventListener('load', start, { once: true })
+
+    return () => {
+      window.removeEventListener('load', start)
+      if (idleId !== undefined) window.cancelIdleCallback(idleId)
+      if (timerId !== undefined) window.clearTimeout(timerId)
+    }
   }, [])
 
   if (!src) return null

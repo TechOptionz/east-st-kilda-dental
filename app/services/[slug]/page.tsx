@@ -506,15 +506,14 @@ export default async function ServicePage({ params }: Props) {
           </div>
 
           {/* <details> rather than a scripted accordion: it opens without JS,
-              and screen readers get the expand/collapse state for free. */}
-          <div className={`${s.faqList} reveal`} style={{ transitionDelay: '.14s' }}>
+              and screen readers get the expand/collapse state for free. The
+              card, its plus mark and the fold are the site's shared .faq
+              accordion (globals.css, components/DetailsMotion.tsx). */}
+          <div className={`faq ${s.faqList} reveal`} style={{ transitionDelay: '.14s' }}>
             {service.faq.map((item, i) => (
-              <details key={i} className={s.faqItem}>
-                <summary className={s.faqSummary}>
-                  {item.q}
-                  <span className={s.faqIcon} aria-hidden="true">+</span>
-                </summary>
-                <p className={s.faqAnswer}>{item.a}</p>
+              <details key={i}>
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
               </details>
             ))}
           </div>
@@ -539,7 +538,14 @@ export default async function ServicePage({ params }: Props) {
               >
                 <div className={s.relatedTitle}>{rel.label}</div>
                 <div className={s.relatedSub}>{relatedSub(rel.href)}</div>
-                <div className={s.relatedMore}>Learn more &rarr;</div>
+                <div className={s.relatedMore}>
+                  <span>Learn more</span>
+                  <span className={s.relatedGo} aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </div>
               </Link>
             ))}
           </div>

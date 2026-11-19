@@ -36,13 +36,13 @@
 
 /* The all-caps kicker above each heading. The global .eyebrow draws a rule
    before the text, which fights the centred layouts here, so this page uses its
-   own plain version — but at the site's own 13px / 600 / .18em, not the design
-   file's 11.5px / 700 / .22em. */
+   own plain version — at the global .eyebrow's 12.5px / 700 / .2em, so a label
+   reads the same here as on every other page. */
 .kicker {
   font-family: var(--body);
-  font-size: 13px;
-  letter-spacing: 0.18em;
-  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--clay-deep);
   margin: 0;
@@ -196,11 +196,16 @@
 
 .heroMedia { position: relative; }
 
+/* The profile's hero: the photo on a tinted block offset down and right, with
+   a card floated over its corner (here, the price badge). The block is a
+   second, unblurred shadow because the frame clips its children; the margin
+   keeps the room it takes inside the column. */
 .heroFrame {
   position: relative;
-  border-radius: 22px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
-  box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22);
+  margin: 0 24px 24px 0;
+  box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22), 24px 24px 0 var(--clay-soft);
 }
 
 /* Photo renders a .ph div; give the frame its height through that child so the
@@ -218,9 +223,10 @@
   left: -38px;
   bottom: 44px;
   background: var(--paper);
-  border-radius: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
   padding: 20px 24px;
-  box-shadow: 0 18px 40px rgba(44, 42, 38, 0.16);
+  box-shadow: var(--shadow-lg);
   animation: floatBadge 7s ease-in-out infinite;
 }
 
@@ -286,24 +292,31 @@
   text-wrap: pretty;
 }
 
+/* One panel, as the practitioner profile's "at a glance" facts are: the cells
+   are flex items on a hairline-coloured ground with a 1px gap, so the gaps draw
+   the dividers at every width and a wrapped row stretches to fill. */
 .scopeRow {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
   margin-top: clamp(38px, 5vw, 66px);
 }
 
 .scopeItem {
-  padding: 30px 28px 4px;
-  border-left: 1px solid var(--line);
+  flex: 1 1 220px;
+  padding: 26px 26px 28px;
+  background: var(--paper);
+  transition: background-color 0.25s ease;
 }
 
-.scopeItem:first-child {
-  padding-left: 0;
-  border-left: 0;
+@media (hover: hover) {
+  .scopeItem:hover { background: var(--sage-tint); }
 }
-
-.scopeItem:last-child { padding-right: 0; }
 
 .scopeTerm {
   font-family: var(--display);
@@ -362,32 +375,41 @@
   margin-top: clamp(38px, 5vw, 64px);
 }
 
+/* Glass on the deep green, as the profile's question cards are there. The
+   transition list names opacity as well, because the card also carries .reveal
+   and this rule replaces that one's list rather than adding to it. */
 .whyCard {
-  background: rgba(252, 250, 245, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 18px;
-  padding: 34px 30px 38px;
-  transition: transform 0.4s ease, background 0.4s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-card);
+  padding: 30px 30px 34px;
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .whyCard:hover {
-  transform: translateY(-6px);
-  background: rgba(252, 250, 245, 0.1);
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* The small tracked index the profile's numbered cards carry. */
 .whyNum {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 15px;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 12px;
   color: var(--clay-soft);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
 }
 
 .whyTitle {
   font-family: var(--display);
   font-size: clamp(23px, 2.2vw, 27px);
   color: var(--paper);
-  margin: 26px 0 0;
+  margin: 18px 0 0;
   font-weight: 500;
 }
 
@@ -410,17 +432,37 @@
 }
 
 .whoRow {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 20px 8px;
+  padding: 20px 14px;
   border-bottom: 1px solid var(--line);
-  transition: padding-left 0.35s ease, background 0.35s ease;
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease;
+}
+
+/* The clay rule the profile's areas-of-care rows draw down their left edge. */
+.whoRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--clay);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
 }
 
 .whoRow:hover {
-  padding-left: 20px;
-  background: rgba(188, 122, 78, 0.05);
+  background: var(--cream);
+}
+
+.whoRow:hover::before {
+  transform: scaleY(1);
 }
 
 .whoDot {
@@ -430,6 +472,11 @@
   background: var(--clay);
   flex: none;
   display: block;
+  transition: transform 0.25s ease;
+}
+
+.whoRow:hover .whoDot {
+  transform: scale(1.35);
 }
 
 .whoText {
@@ -499,20 +546,38 @@
 
 .step { text-align: center; }
 
+/* The profile's step badge: a light disc with a soft shadow that fills with
+   the deep green and lifts as its step is pointed at. Opaque, so the rule the
+   discs sit on never shows through one. */
 .stepNum {
   width: 62px;
   height: 62px;
   border-radius: 50%;
-  background: var(--sage-deep);
-  color: var(--clay-soft);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--sage-deep);
   font-family: var(--display);
   font-weight: 500;
-  font-size: 23px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  box-shadow: 0 8px 20px rgba(55, 80, 63, 0.22);
+  box-shadow: var(--shadow-card);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.step:hover .stepNum {
+  background: var(--sage-deep);
+  border-color: var(--sage-deep);
+  color: var(--cream);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .stepTitle {
@@ -652,10 +717,10 @@
   gap: clamp(28px, 4vw, 56px);
   align-items: center;
   background: var(--paper);
-  border: 1px solid rgba(44, 42, 38, 0.1);
-  border-radius: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
   padding: clamp(32px, 4vw, 54px) clamp(26px, 4vw, 56px);
-  box-shadow: 0 20px 46px rgba(44, 42, 38, 0.07);
+  box-shadow: var(--shadow-md);
   margin-top: 46px;
 }
 
@@ -716,52 +781,11 @@
 
 /* ---------- 10. FAQ ---------- */
 
-.faqList {
-  border-top: 1px solid var(--line);
-  margin-top: 52px;
-}
-
-.faqItem {
-  border-bottom: 1px solid var(--line);
-}
-
-.faqSummary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 26px 4px;
-  cursor: pointer;
-  list-style: none;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(19px, 2vw, 23px);
-  color: var(--ink);
-}
-
-/* Kill both the WebKit and the standard disclosure marker — the design uses a
-   clay +/− on the right instead. */
-.faqSummary::-webkit-details-marker { display: none; }
-.faqSummary::marker { content: ''; }
-
-.faqIcon {
-  font-size: 24px;
-  color: var(--clay-deep);
-  line-height: 1;
-  flex: none;
-  transition: transform 0.35s ease;
-}
-
-.faqItem[open] .faqIcon {
-  transform: rotate(45deg);
-}
-
-.faqAnswer {
-  font-size: clamp(16px, 1.5vw, 17.5px);
-  line-height: 1.7;
-  color: var(--ink-soft);
-  margin: 0 0 28px;
-  max-width: 720px;
+/* The questions are the site's shared .faq accordion (globals.css): the same
+   cards, plus mark and fold as every other FAQ. Only the gap under this page's
+   own heading is set here. */
+.faqList.faqList {
+  margin-top: 46px;
 }
 
 /* ---------- 11. Related care ---------- */
@@ -773,25 +797,45 @@
   margin-top: 44px;
 }
 
+/* The profile's card and its round arrow button: the card lifts onto the
+   raised shadow with a sage edge, and the arrow's disc fills clay. Opacity is
+   in the transition list because the card also carries .reveal. */
 .relatedCard {
-  display: block;
+  display: flex;
+  flex-direction: column;
   background: var(--paper);
-  border: 1px solid rgba(44, 42, 38, 0.1);
-  border-radius: 18px;
-  padding: 32px 30px 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 30px 30px 26px;
+  box-shadow: var(--shadow-card);
   text-decoration: none;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .relatedCard:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 44px rgba(44, 42, 38, 0.1);
+  transform: translateY(-4px);
+  border-color: var(--sage-soft);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.relatedCard:focus-visible {
+  outline: 2px solid var(--sage-deep);
+  outline-offset: 3px;
 }
 
 .relatedTitle {
   font-family: var(--display);
   font-weight: 500;
   font-size: clamp(21px, 2.2vw, 25px);
+  color: var(--ink);
+  transition: color 0.25s ease;
+}
+
+.relatedCard:hover .relatedTitle {
   color: var(--sage-deep);
 }
 
@@ -801,11 +845,45 @@
   margin-top: 10px;
 }
 
+/* Pinned to the foot of the card, so the three line up whatever the blurb. */
 .relatedMore {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 22px;
   font-size: 15px;
   font-weight: 600;
   color: var(--clay-deep);
-  margin-top: 24px;
+}
+
+.relatedGo {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--clay-deep);
+  display: grid;
+  place-items: center;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.relatedGo svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.25s ease;
+}
+
+.relatedCard:hover .relatedGo {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: #fff;
+}
+
+.relatedCard:hover .relatedGo svg {
+  transform: translateX(2px);
 }
 
 .areasNote {
@@ -829,9 +907,23 @@
  */
 .frame {
   position: relative;
-  border-radius: 20px;
+  border-radius: var(--radius-panel);
   overflow: hidden;
   box-shadow: 0 24px 56px rgba(44, 42, 38, 0.14);
+}
+
+/* The two photos that sit beside a list or a quote take the profile's layered
+   frame: a tinted block offset down and outward, drawn as a second, unblurred
+   shadow because the frame clips its own children. The margin keeps the room
+   the block needs inside the column. */
+.whoMedia,
+.quoteMedia {
+  margin: 0 0 20px 20px;
+  box-shadow: 0 24px 56px rgba(44, 42, 38, 0.14), -20px 20px 0 var(--sage-soft);
+}
+
+.quoteMedia {
+  box-shadow: 0 24px 56px rgba(44, 42, 38, 0.14), -20px 20px 0 var(--clay-soft);
 }
 
 .frame > :global(.ph) {
@@ -945,23 +1037,22 @@
     gap: 40px 28px;
   }
 
-  .scopeRow { grid-template-columns: repeat(2, 1fr); }
+  .scopeItem { flex-basis: 40%; }
 
-  .scopeItem:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .scopeItem:nth-child(-n + 2) { padding-top: 24px; }
-
-  .scopeItem:nth-child(n + 3) {
-    border-top: 1px solid var(--line);
-    margin-top: 8px;
+  .whoMedia,
+  .quoteMedia {
+    margin: 0 14px 14px 0;
+    box-shadow: 0 24px 56px rgba(44, 42, 38, 0.14), 14px 14px 0 var(--sage-soft);
   }
 }
 
 @media (max-width: 720px) {
   .heroMedia { order: -1; }
+
+  .heroFrame {
+    margin: 0 14px 14px 0;
+    box-shadow: 0 30px 70px rgba(55, 80, 63, 0.22), 14px 14px 0 var(--clay-soft);
+  }
 
   .priceBadge {
     left: auto;
@@ -981,16 +1072,10 @@
     gap: 30px;
   }
 
-  .scopeRow { grid-template-columns: 1fr; }
-
   .scopeItem {
-    padding: 22px 0 4px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-    margin-top: 0;
+    flex-basis: 100%;
+    padding: 20px 20px 22px;
   }
-
-  .scopeItem:first-child { border-top: 0; }
 
   .heroCta .btnSolid,
   .heroCta .btnOutline,
@@ -1007,14 +1092,22 @@
 
   .whyCard,
   .relatedCard,
+  .relatedGo,
+  .relatedGo svg,
   .whoRow,
-  .stepsTrackFill,
-  .faqIcon {
+  .whoRow::before,
+  .whoDot,
+  .stepNum,
+  .scopeItem,
+  .stepsTrackFill {
     transition: none;
   }
 
   .whyCard:hover,
-  .relatedCard:hover {
+  .relatedCard:hover,
+  .step:hover .stepNum,
+  .whoRow:hover .whoDot,
+  .relatedCard:hover .relatedGo svg {
     transform: none;
   }
 }
