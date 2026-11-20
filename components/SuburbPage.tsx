@@ -289,7 +289,14 @@ export default function SuburbPage({ slug }: { slug: string }) {
                 {/* The whole card is the link, so this is an affordance rather
                     than a second target — hidden from screen readers, which
                     already announce the card's own text as the link. */}
-                <span className={styles.svcMore} aria-hidden="true">Learn more &rarr;</span>
+                <span className={styles.svcMore} aria-hidden="true">
+                  Learn more
+                  <span className={styles.svcGo}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </span>
               </Link>
             ))}
           </div>
@@ -383,9 +390,10 @@ export default function SuburbPage({ slug }: { slug: string }) {
             <div className="eyebrow">{s.name} questions</div>
             <h2>Good to <em>ask</em></h2>
           </div>
-          <div className={`${styles.faq} reveal`}>
+          {/* The site's shared .faq accordion (globals.css), not a copy of it. */}
+          <div className="faq reveal">
             {s.faqs.map(({ q, a }, i) => (
-              <details key={q} className={styles.qa} open={i === 0}>
+              <details key={q} open={i === 0}>
                 <summary>{q}</summary>
                 <p>{a}</p>
               </details>
