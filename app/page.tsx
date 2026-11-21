@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import JsonLd from '@/components/JsonLd'
 import Link from 'next/link'
+import CardMore from '@/components/CardMore'
 import CarePoints from '@/components/CarePoints'
 import CarouselNav from '@/components/CarouselNav'
 import Photo from '@/components/Photo'
@@ -738,9 +739,7 @@ export default function Home() {
               </span>
               <h3>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h3>
               <p>A calm, step-by-step walk-through for an easier return.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
             <Link
               href="/learn/bleeding-gums"
@@ -759,9 +758,7 @@ export default function Home() {
               </span>
               <h3>Why are my gums bleeding?</h3>
               <p>What bleeding gums are trying to tell you, and when to act.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
             <Link
               href="/learn/how-often-should-you-see-the-dentist"
@@ -780,9 +777,7 @@ export default function Home() {
               </span>
               <h3>How Often Should You Really See the Dentist?</h3>
               <p>What actually determines your ideal check-up schedule.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
           </div>
           {/* Phone only — display:none from 601px up. */}
