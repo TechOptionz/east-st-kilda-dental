@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import CardMore from '@/components/CardMore'
 import GetInTouch from '@/components/GetInTouch'
 import JsonLd from '@/components/JsonLd'
 import Photo from '@/components/Photo'
@@ -113,7 +114,7 @@ export default function AreasWeServePage() {
               <Link key={a.href} href={a.href} className="svc" style={{ textDecoration: 'none' }}>
                 <h4>{a.name}</h4>
                 <p>{a.blurb}</p>
-                <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '14px' }}>{a.cta} &rarr;</span>
+                <CardMore>{a.cta}</CardMore>
               </Link>
             ))}
           </div>
