@@ -18,7 +18,7 @@ import { withSocial } from '@/lib/seo'
 import { contactPointNode } from '@/lib/schema'
 
 export const metadata = withSocial({
-  title: 'Dentist St Kilda | Trusted Family Dental Care | East St Kilda Dental',
+  title: 'Dentist St Kilda | Best Dentist Near Me | Dental Clinic St Kilda East',
   description:
     'Experienced dentists in St Kilda, trusted by local families since 1980. Gentle, judgement-free care for check-ups, emergencies and cosmetic dentistry. Book today.',
   alternates: { canonical: `${SITE_URL}/` },
