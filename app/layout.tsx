@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Hanken_Grotesk } from 'next/font/google'
 import './globals.css'
 import ScrollEffects from '@/components/ScrollEffects'
+import DetailsMotion from '@/components/DetailsMotion'
 import UtilityBar from '@/components/UtilityBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -113,6 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AnalyticsNoScript />
         <AnalyticsEvents />
         <ScrollEffects />
+        <DetailsMotion />
         <UtilityBar />
         <Header />
         {children}

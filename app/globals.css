@@ -80,6 +80,10 @@
   --shadow-card:0 1px 2px rgba(44,42,38,.04),0 6px 18px rgba(44,42,38,.05);
   --shadow-card-hover:0 2px 4px rgba(44,42,38,.05),0 18px 40px rgba(44,42,38,.10);
 
+  /* The one easing every fold, lift and reveal settles on — the curve the
+     scroll reveal and the practitioner profile's question cards already used. */
+  --ease-out:cubic-bezier(.22,1,.36,1);
+
   /* Legacy aliases — referenced by older page styles that pre-date the V2
      token names. Without these the declarations using them were invalid and
      silently dropped. */
@@ -1121,10 +1125,9 @@ section.section{
   background:rgba(255,255,255,.03);
   transition:border-color .3s,background .3s;
 }
-.pillar:hover{
-  border-color:rgba(184,137,90,.45);
-  background:rgba(255,255,255,.05);
-}
+/* (The dark-theme .pillar:hover that lived here outranked the V2 card's
+   background and turned a white pillar see-through under the cursor. The V2
+   .pillar further down carries its own hover.) */
 .pillar .num{
   font-family:var(--display);
   font-size:54px;line-height:1;
@@ -2177,6 +2180,14 @@ body{overflow-x:hidden;max-width:100%;}
 .sec-head p{font-size:17.5px;line-height:1.7;}
 .alt{background:var(--paper);}
 .sage-bg{background:var(--sage-darker);color:var(--cream);}
+/* The soft clay glow in the corner of the practitioner profile's green band,
+   on every green band, so none of them is a flat block of colour. A background
+   layer rather than a pseudo-element: nothing in the band needs lifting above
+   it. The profile's own band draws the same glow itself and is left out, or it
+   would carry it twice. */
+.sage-bg:not([class*="_featureSec__"]){
+  background:radial-gradient(640px 360px at 92% 8%,rgba(188,122,78,.16),transparent 62%),var(--sage-darker);
+}
 .sage-bg h2,.sage-bg h3{color:var(--cream);}
 /* clay-deep (the light-background accent) is unreadable on the deep green */
 .sage-bg h2 em,.sage-bg h3 em{color:var(--clay-soft);}
@@ -2197,17 +2208,25 @@ body{overflow-x:hidden;max-width:100%;}
 /* Cards go glass rather than staying white: a white card on the deep green
    reads as a hole punched in the band, and its own text would inherit the
    band's cream and disappear. */
-.sage-bg .svc{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);}
-.sage-bg .svc:hover{border-color:rgba(255,255,255,.42);transform:translateY(-3px);}
+.sage-bg .svc{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);box-shadow:none;}
+.sage-bg .svc:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);box-shadow:none;transform:translateY(-3px);}
+.sage-bg a.svc:hover h3,.sage-bg a.svc:hover h4{color:var(--cream);}
 .sage-bg .svc h3,.sage-bg .svc h4{color:var(--cream);}
 .sage-bg .svc p{color:rgba(255,255,255,.8);}
 /* Accordions: the summary and its + marker both key off light-background inks. */
-.sage-bg .faq details{border-bottom-color:rgba(255,255,255,.18);}
-.sage-bg .faq summary{color:var(--cream);}
-.sage-bg .faq summary::after{color:var(--clay-soft);}
+/* Glass cards, as the profile's questions are on its green band. */
+.sage-bg .faq details{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);box-shadow:none;}
+.sage-bg .faq details:hover,.sage-bg .faq details[open]{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);box-shadow:none;}
+.sage-bg .faq summary,.sage-bg .faq summary:hover,.sage-bg .faq details[open]>summary{color:var(--cream);}
+.sage-bg .faq summary::after{
+  background-color:transparent;border-color:rgba(255,255,255,.3);
+  background-image:linear-gradient(var(--clay-soft),var(--clay-soft)),linear-gradient(var(--clay-soft),var(--clay-soft));
+}
+.sage-bg .faq summary:focus-visible{outline-color:var(--clay-soft);}
 .sage-bg .faq details p{color:rgba(255,255,255,.8);}
 /* Stats row (about pages). */
-.sage-bg .st{border-right-color:rgba(255,255,255,.18);}
+.sage-bg .stats{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.16);box-shadow:none;}
+.sage-bg .st,.sage-bg .st:hover{background:#26382F;}
 .sage-bg .st .n{color:var(--cream);}
 .sage-bg .st .l{color:rgba(255,255,255,.7);}
 
@@ -2569,12 +2588,41 @@ body{overflow-x:hidden;max-width:100%;}
 .ph{position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,var(--sage-soft),var(--clay-soft));display:flex;align-items:flex-end;min-height:240px;border:1px solid var(--line-soft);}
 .ph span{font-family:var(--body);font-style:italic;font-size:13.5px;color:var(--sage-deep);background:rgba(252,250,245,.78);padding:8px 13px;border-radius:8px;margin:14px;line-height:1.4;max-width:88%;}
 .ph.tall{min-height:420px;}
+
+/* The layered photo frame from the practitioner profile's hero: the picture
+   on a tinted block offset down and to one side. .ph clips its own children,
+   so the block is a second, unblurred box-shadow rather than a pseudo-element,
+   and the margin reserves the room it takes — the tint never reaches into the
+   gutter, and nothing beside the photo moves.
+
+   Heroes at every width (a shallower step once they stack); the split bands
+   only while they are two columns, because several of them re-lay their photo
+   as the top of a card on a phone. */
+.hero-v2-grid>.ph{
+  border-radius:var(--radius-panel);
+  margin:0 24px 24px 0;
+  box-shadow:var(--shadow-md),24px 24px 0 var(--clay-soft);
+}
+@media(max-width:860px){
+  .hero-v2-grid>.ph{margin:0 14px 14px 0;box-shadow:var(--shadow-md),14px 14px 0 var(--clay-soft);}
+}
+@media(min-width:821px){
+  .nervous-grid>.ph,
+  .npv .know-grid>.ph{border-radius:var(--radius-panel);}
+  .nervous-grid>.ph{margin:0 0 22px 22px;box-shadow:-22px 22px 0 rgba(255,255,255,.09);}
+  .npv .know-grid>.ph{margin:0 22px 22px 0;box-shadow:22px 22px 0 rgba(255,255,255,.09);}
+  .story-grid>.ph{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--sage-soft);}
+  .fees-grid>.ph{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--clay-soft);}
+  .post-head-grid>.post-hero{border-radius:var(--radius-panel);margin:0 22px 22px 0;box-shadow:var(--shadow-md),22px 22px 0 var(--clay-soft);}
+}
 /* Visually hidden, still read by screen readers and kept in the outline. */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0;}
 
 /* Pillars */
 .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;}
-.pillar{background:var(--paper);border:1px solid var(--line-soft);border-radius:18px;padding:34px 30px;}
+.pillar{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);padding:34px 30px;box-shadow:var(--shadow-card);transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease;}
+@media(hover:hover){.pillar:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);transform:translateY(-3px);}}
+@media(prefers-reduced-motion:reduce){.pillar{transition:none;}.pillar:hover{transform:none;}}
 .pillar .n{font-family:var(--display);font-size:30px;color:var(--clay);font-weight:500;}
 .pillar h3{font-size:23px;margin:14px 0 10px;color:var(--ink);}
 .pillar p{font-size:15px;line-height:1.6;color:var(--ink-soft);}
@@ -2602,7 +2650,12 @@ body{overflow-x:hidden;max-width:100%;}
   padding:24px 26px;
   line-height:1.6;
   box-shadow:var(--shadow-card);
+  transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease;
 }
+@media(hover:hover) and (min-width:601px){
+  .care-points li:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);transform:translateY(-2px);}
+}
+@media(prefers-reduced-motion:reduce){.care-points li{transition:none;}.care-points li:hover{transform:none;}}
 .care-points h3{display:inline;font-size:19px;color:var(--clay-deep);}
 .care-points p{display:inline;font-size:15.5px;color:var(--ink-soft);}
 /* components/CarePoints.tsx wraps each name in a button and ships an icon and a
@@ -2923,6 +2976,11 @@ body{overflow-x:hidden;max-width:100%;}
 
 /* CTA band */
 .ctaband{background:var(--sage-deep);border-radius:var(--radius-panel);padding:60px 44px;text-align:center;}
+/* The warm light across the top of the profile's closing band. That band
+   (.cta in PractitionerProfile.module.css) draws its own and is left out. */
+.ctaband:not([class*="_cta__"]){
+  background:radial-gradient(520px 300px at 50% 0%,rgba(239,217,197,.14),transparent 70%),var(--sage-deep);
+}
 .ctaband h3{font-family:var(--display);font-size:clamp(28px,3.2vw,38px);line-height:1.15;margin:0 0 16px;color:var(--cream);}
 .ctaband p{margin:0 auto 20px;max-width:44em;color:rgba(255,255,255,.92);font-size:17px;line-height:1.7;}
 .ctaband .btn-ghost-light{color:var(--cream);border-color:rgba(255,255,255,.5);}
@@ -2966,7 +3024,17 @@ body{overflow-x:hidden;max-width:100%;}
 /* Every clinician is framed 3:4 and cropped `cover` by Photo, so the heads sit
    at the same scale across all four regardless of the source file. Per-person
    framing is set with objectPosition in app/page.tsx, never by changing this. */
-.team-member .ph{min-height:0;aspect-ratio:3/4;margin-bottom:20px;border-radius:var(--radius-card);}
+.team-member .ph{min-height:0;aspect-ratio:3/4;margin-bottom:20px;border-radius:var(--radius-card);box-shadow:var(--shadow-card);transition:box-shadow .35s ease,transform .35s var(--ease-out);}
+/* The portrait eases forward inside its frame, and the frame lifts. */
+.team-member .ph img{transition:transform .7s var(--ease-out);}
+@media(hover:hover){
+  .team-member:hover .ph{box-shadow:var(--shadow-card-hover);transform:translateY(-4px);}
+  .team-member:hover .ph img{transform:scale(1.045);}
+}
+@media(prefers-reduced-motion:reduce){
+  .team-member .ph,.team-member .ph img{transition:none;}
+  .team-member:hover .ph,.team-member:hover .ph img{transform:none;}
+}
 .team-member h4,.team-row-group h4,.team-row-group h3{font-size:22px;line-height:1.25;margin-bottom:5px;}
 .team-member span,.team-row-group span{font-size:15px;color:var(--clay-deep);font-weight:600;letter-spacing:.01em;}
 .lang-band{margin-top:30px;background:var(--sage-tint);border-radius:var(--radius-card);padding:22px 26px;font-size:15px;}
@@ -2997,7 +3065,7 @@ body{overflow-x:hidden;max-width:100%;}
    = 1.35 is the ratio that lands it on exactly their height — landscape, so the
    photograph is not cropped to a portrait it was never shot for. */
 .team-row-people{display:contents;}
-.team-row-group .ph{min-height:0;aspect-ratio:27/20;margin-bottom:20px;border-radius:var(--radius-card);}
+.team-row-group .ph{min-height:0;aspect-ratio:27/20;margin-bottom:20px;border-radius:var(--radius-card);box-shadow:var(--shadow-card);}
 
 @media(min-width:1180px){
   /* Wider than its parent and still centred: 100% is the container's content
@@ -3119,7 +3187,9 @@ body{overflow-x:hidden;max-width:100%;}
    Every tile is the same height and the row's gap is generous, so the marks
    read as one standardised set rather than a scatter of supplied artwork. */
 .ins-logos{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;margin-top:40px;}
-.ins-logos .lg{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);height:78px;min-width:148px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--ink-faint);font-size:14px;padding:0 30px;}
+.ins-logos .lg{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);height:78px;min-width:148px;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--ink-faint);font-size:14px;padding:0 30px;box-shadow:var(--shadow-card);transition:transform .25s ease,box-shadow .25s ease;}
+@media(hover:hover){.ins-logos .lg:hover{transform:translateY(-3px);box-shadow:var(--shadow-card-hover);}}
+@media(prefers-reduced-motion:reduce){.ins-logos .lg{transition:none;}.ins-logos .lg:hover{transform:none;}}
 /* Logos are sized by HEIGHT, never width — their aspect ratios run from 1:1
    (Bupa) to 3.6:1 (Australian Unity), so matching widths would make some
    enormous and others unreadable. Height 34px is the row default; a mark that
@@ -3259,7 +3329,7 @@ body{overflow-x:hidden;max-width:100%;}
    the two columns off: stretched, the details column's own list stretched with
    it and the hours drifted away from the address they belong to. */
 .loc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr);gap:44px;align-items:start;}
-.loc-grid .ph{min-height:460px;border-radius:var(--radius-card);}
+.loc-grid .ph{min-height:460px;border-radius:var(--radius-panel);box-shadow:var(--shadow-md);}
 /* The home page's four transport facts as their own rows with an icon each,
    for the phone layout at the foot of this file. Hidden everywhere else, where
    the sentence in app/page.tsx says the same thing in one line of prose. */
@@ -3276,7 +3346,7 @@ body{overflow-x:hidden;max-width:100%;}
 }
 
 /* Booking page */
-.embed-card{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--paper);margin-top:32px;}
+.embed-card{border-radius:var(--radius-panel);overflow:hidden;border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow-md);margin-top:32px;}
 .embed-frame{display:block;width:100%;height:680px;border:none;}
 .book-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
 .book-col h3{font-size:24px;margin:14px 0 10px;}
@@ -3497,8 +3567,58 @@ body{overflow-x:hidden;max-width:100%;}
 
 /* ── Service page: card grid ─────────────────────────────── */
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.svc{background:var(--paper);border:1px solid var(--line-soft);border-radius:16px;padding:28px;transition:.25s;}
-.svc:hover{border-color:var(--sage);transform:translateY(-3px);}
+/* The site's general-purpose card, in the practitioner profile's card
+   treatment: the shared radius, a visible hairline and the soft card shadow at
+   rest, then the same shadow raised and a sage edge as it lifts. Pointer
+   devices only — a :hover lift sticks after a tap on a touch screen. */
+.svc{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-card);
+  padding:28px;
+  box-shadow:var(--shadow-card);
+  transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease,background-color .25s ease;
+}
+@media(hover:hover){
+  .svc:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);transform:translateY(-3px);}
+}
+a.svc:focus-visible{outline:2px solid var(--sage-deep);outline-offset:3px;}
+/* A card that is itself a link closes on components/CardMore.tsx: its label
+   and the profile's round arrow button, pinned to the card foot so a row of
+   cards lines its arrows up however long each blurb ran. The disc fills clay
+   as the card is pointed at. */
+a.svc{display:flex;flex-direction:column;}
+.card-more{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-top:auto;padding-top:16px;
+  font-size:14px;font-weight:600;color:var(--clay-deep);
+}
+.card-go{
+  width:36px;height:36px;flex:none;
+  border-radius:50%;
+  border:1px solid var(--line);
+  color:var(--clay-deep);
+  display:grid;place-items:center;
+  transition:background-color .25s ease,border-color .25s ease,color .25s ease;
+}
+.card-go svg{width:16px;height:16px;transition:transform .25s ease;}
+a:hover>.card-more .card-go,a:focus-visible>.card-more .card-go{background:var(--clay);border-color:var(--clay);color:#fff;}
+a:hover>.card-more .card-go svg{transform:translateX(2px);}
+.sage-bg .card-more{color:var(--clay-soft);}
+.sage-bg .card-go{border-color:rgba(255,255,255,.3);color:var(--clay-soft);}
+@media(hover:hover){
+  a.svc:hover h3,a.svc:hover h4{color:var(--sage-deep);}
+}
+.svc h3,.svc h4{transition:color .25s ease;}
+/* A card that also carries .reveal (the home page's article row): one
+   transition list has to serve both the scroll reveal and the hover, or the
+   later rule simply replaces the earlier and the fade is lost. */
+.svc.reveal{transition:opacity .95s var(--ease-out),transform .5s var(--ease-out),border-color .25s ease,box-shadow .25s ease,background-color .25s ease;}
+@media(prefers-reduced-motion:reduce){
+  .svc,.svc h3,.svc h4,.card-go,.card-go svg{transition:none;}
+  .svc:hover{transform:none;}
+  a:hover>.card-more .card-go svg{transform:none;}
+}
 /* h3 as well as h4: cards whose heading is a real question use h3 so the page
    keeps a clean outline under the section's h2. */
 .svc h4,.svc h3{font-size:21px;margin-bottom:8px;}
@@ -3512,6 +3632,11 @@ body{overflow-x:hidden;max-width:100%;}
 .svc p.related a{display:inline;margin:0;font-size:13.5px;color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
 .svc p.related a:hover{color:var(--clay-deep);}
 .svc a{display:inline-block;margin-top:14px;color:var(--sage-deep);font-weight:600;font-size:14px;}
+/* …but a link inside a sentence is part of the sentence. As an inline-block
+   with a 14px top margin it made its line of text taller than the lines around
+   it, so every paragraph with a link in it broke into uneven rows (the first
+   aid cards on /emergency-dentist). */
+.svc p a{display:inline;margin:0;font-size:inherit;}
 @media(max-width:820px){.svc-grid{grid-template-columns:1fr;}}
 
 /* ── Service page: who-it's-for checklist ────────────────── */
@@ -3567,13 +3692,86 @@ body{overflow-x:hidden;max-width:100%;}
 }
 
 /* ── Service page: FAQ ──────────────────────────────────── */
-.faq{max-width:820px;margin:0 auto;}
-.faq details{border-bottom:1px solid var(--line);padding:6px 0;}
-.faq summary{cursor:pointer;list-style:none;font-family:var(--display);font-size:21px;font-weight:500;color:var(--ink);padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+/* The site's one accordion, in the practitioner profile's question-card
+   treatment: each question is a card that lifts as it is pointed at, with a
+   round plus that turns to a minus on the clay as the answer opens.
+
+   Still a native <details>, so it opens without JavaScript, the answers stay in
+   the server HTML, and find-in-page and /dental-faqs#question links keep
+   working. components/DetailsMotion.tsx opens a card when a mouse rests on it and
+   folds it away again when the mouse leaves, as the profile's cards do, and
+   animates the fold; a tap or a keypress toggles it. Without the script the
+   card simply opens on a click.
+
+   The padding lives on the summary and on the answer, never on the card, so
+   the whole of a closed card is the click target and its closed height is
+   exactly its summary's — which is what DetailsMotion animates to. */
+.faq{max-width:820px;margin:0 auto;display:grid;gap:14px;}
+.faq details{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card);
+  transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease;
+}
+.faq details[open]{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);}
+.faq summary{
+  cursor:pointer;list-style:none;
+  font-family:var(--display);font-size:21px;font-weight:500;line-height:1.28;color:var(--ink);
+  padding:22px 26px;
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+  border-radius:var(--radius-card);
+  transition:color .25s ease;
+}
 .faq summary::-webkit-details-marker{display:none;}
-.faq summary::after{content:"+";font-family:var(--body);font-weight:400;font-size:28px;color:var(--clay);flex-shrink:0;transition:transform .2s;}
-.faq details[open] summary::after{transform:rotate(45deg);}
-.faq details p{padding:0 0 22px;font-size:16px;max-width:60em;color:var(--ink-soft);}
+.faq summary::marker{content:"";}
+.faq summary:focus-visible{outline:2px solid var(--sage-deep);outline-offset:-4px;}
+.faq details[open]>summary{color:var(--sage-deep);}
+/* The mark. One pseudo-element: the disc is its background colour and the two
+   bars of the plus are two gradient layers over it, so the vertical bar can be
+   drawn down to nothing as the card opens. */
+.faq summary::after{
+  content:"";
+  flex:none;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);
+  background-color:var(--cream);
+  background-image:linear-gradient(var(--clay-deep),var(--clay-deep)),linear-gradient(var(--clay-deep),var(--clay-deep));
+  background-size:11px 1.5px,1.5px 11px;
+  background-position:center;background-repeat:no-repeat;
+  transition:background-color .25s ease,border-color .25s ease,background-size .3s ease,transform .4s var(--ease-out);
+}
+/* :not([data-closing]) — DetailsMotion keeps `open` set until the close has
+   finished animating, so the mark turns back as the card starts to fold rather
+   than after it. */
+.faq details[open]:not([data-closing])>summary::after{
+  background-color:var(--clay);border-color:var(--clay);
+  background-image:linear-gradient(#fff,#fff),linear-gradient(#fff,#fff);
+  background-size:11px 1.5px,1.5px 0;
+  transform:rotate(180deg);
+}
+.faq details p{padding:0 26px 24px;font-size:16px;line-height:1.75;max-width:60em;color:var(--ink-soft);}
+/* An answer in a wrapper of its own (several paragraphs, inline links) rather
+   than a single <p>: the wrapper carries the card's side padding. */
+.faq details>div{padding:0 26px 2px;}
+.faq details>div p{padding:0;}
+/* The answer eases in under the question as the card opens. */
+@keyframes faq-answer-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.faq details[open]>:not(summary){animation:faq-answer-in .42s var(--ease-out) both;}
+.faq details[data-closing]>:not(summary){opacity:0;transition:opacity .18s ease;}
+@media(hover:hover){
+  .faq details:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);}
+  /* Lifted for as long as it is pointed at, open or not: it opens under the
+     cursor a moment after it lifts, and dropping back at that instant would
+     read as a flinch. */
+  .faq details:hover{transform:translateY(-2px);}
+  .faq summary:hover{color:var(--sage-deep);}
+  .faq details:not([open]) summary:hover::after{border-color:var(--clay);}
+}
+@media(prefers-reduced-motion:reduce){
+  .faq details,.faq summary,.faq summary::after{transition:none;}
+  .faq details:hover{transform:none;}
+  .faq details[open]>:not(summary){animation:none;}
+}
 
 /* ── Service page: nervous & cost bands ─────────────────── */
 .svc-nervous-band{text-align:center;max-width:46em;margin-left:auto;margin-right:auto;}
@@ -3650,7 +3848,9 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
    push the second guide off the fold entirely. */
 @media(max-width:900px){.guide-grid{grid-template-columns:1fr 1fr;gap:18px;}}
 .guide-card{display:flex;flex-direction:column;text-decoration:none;color:inherit;}
-.guide-card-media{position:relative;border-radius:16px;overflow:hidden;}
+.guide-card-media{position:relative;border-radius:var(--radius-card);overflow:hidden;box-shadow:var(--shadow-card);transition:box-shadow .35s ease,transform .35s var(--ease-out);}
+@media(hover:hover){.guide-card:hover .guide-card-media{box-shadow:var(--shadow-card-hover);transform:translateY(-4px);}}
+@media(prefers-reduced-motion:reduce){.guide-card-media{transition:none;}.guide-card:hover .guide-card-media{transform:none;}}
 /* The cover fills the frame; .ph's own hero styling would fight it. The
    portrait ratio is the frame, not the source: article covers are landscape,
    so they are cropped to it from the centre. */
@@ -3760,10 +3960,10 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .post-cat{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:10px;}
 .byline{font-size:14px;color:var(--ink-faint);margin:10px 0 28px;}
 .answer{font-size:19px;line-height:1.7;color:var(--ink);background:var(--sage-tint);border-radius:14px;padding:24px 28px;margin:24px 0 32px;border-left:4px solid var(--sage);}
-.post-hero{width:100%;min-height:300px;margin:0;border-radius:18px;}
+.post-hero{width:100%;min-height:300px;margin:0;border-radius:var(--radius-panel);box-shadow:var(--shadow-md);}
 .post-body h2{font-size:clamp(20px,2.5vw,26px);font-family:var(--display);margin:40px 0 14px;color:var(--ink);}
 .post-body p{font-size:17px;line-height:1.75;color:var(--ink-soft);margin:0 0 20px;}
-.post-cta{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:18px;padding:36px;text-align:center;margin:44px 0;}
+.post-cta{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--radius-panel);padding:36px;text-align:center;margin:44px 0;}
 .post-cta h3{font-family:var(--display);font-size:26px;color:var(--sage-deep);margin:0 0 10px;}
 .post-cta p{font-size:16px;color:var(--ink-soft);margin:0 0 22px;}
 .post-cta-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
@@ -3779,21 +3979,33 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   color:var(--ink-faint);margin:0 0 12px;
 }
 .post-toc ol{list-style:none;margin:0;padding:0;}
-.post-toc li{border-left:2px solid var(--line);}
+/* The contents list takes the profile's row treatment: the rule down the
+     left edge turns clay and the row tints as its heading is pointed at. */
+.post-toc li{border-left:2px solid var(--line);transition:border-color .25s ease,background-color .25s ease;border-radius:0 10px 10px 0;}
 .post-toc a{
-  display:block;padding:8px 0 8px 14px;
+  display:block;padding:8px 10px 8px 14px;
   font-size:14.5px;line-height:1.45;color:var(--ink-soft);text-decoration:none;
-  transition:color .18s ease;
+  transition:color .25s ease;
 }
 .post-toc a:hover{color:var(--sage-deep);}
-.post-toc li:hover{border-left-color:var(--sage);}
+.post-toc li:hover{border-left-color:var(--clay);background:var(--sage-tint);}
 .post-aside .topic-tags{justify-content:flex-start;margin-top:0;}
 .post-aside-links{list-style:none;margin:0;padding:0;}
 .post-aside-links a{
-  display:block;padding:6px 0;font-size:14.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 0;font-size:14.5px;font-weight:600;
   color:var(--sage-deep);text-decoration:none;
+  border-bottom:1px solid var(--line-soft);
+  transition:color .25s ease;
 }
-.post-aside-links a:hover{color:var(--clay-deep);text-decoration:underline;text-underline-offset:2px;}
+/* The arrow that steps forward on the profile's linked rows. */
+.post-aside-links a::after{content:"\2192";color:var(--clay-deep);transition:transform .25s ease;}
+.post-aside-links a:hover{color:var(--clay-deep);}
+.post-aside-links a:hover::after{transform:translateX(4px);}
+@media(prefers-reduced-motion:reduce){
+  .post-toc li,.post-toc a,.post-aside-links a,.post-aside-links a::after{transition:none;}
+  .post-aside-links a:hover::after{transform:none;}
+}
 /* Anchored headings clear the fixed header when jumped to. */
 .post-body h2,.post-summary h2,.post-faq h2{scroll-margin-top:110px;}
 
@@ -3804,8 +4016,9 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .post-video{margin:34px 0;}
 .post-video-frame{
   position:relative;aspect-ratio:16/9;
-  border-radius:18px;overflow:hidden;
+  border-radius:var(--radius-panel);overflow:hidden;
   background:var(--sage-darker);border:1px solid var(--line-soft);
+  box-shadow:var(--shadow-md);
 }
 .post-video-frame iframe,.post-video-frame video{
   position:absolute;inset:0;width:100%;height:100%;
@@ -3819,8 +4032,9 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* The wrap-up above the CTA. Quieter than .ansbox at the top, so a reader
    scrolling to the end lands on a conclusion rather than a second callout. */
 .post-summary{
-  margin:48px 0 0;background:var(--cream-2);
-  border-radius:18px;padding:30px 34px;
+  margin:48px 0 0;background:var(--paper);
+  border:1px solid var(--line);border-left:4px solid var(--clay);
+  border-radius:var(--radius-card);box-shadow:var(--shadow-card);padding:30px 34px;
 }
 .post-summary h2{font-family:var(--display);font-size:24px;color:var(--sage-deep);margin:0 0 12px;}
 .post-summary p{font-size:16.5px;line-height:1.72;color:var(--ink-soft);margin:0;}
@@ -3828,7 +4042,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* The article's own FAQ block: left-aligned with the body it belongs to,
    rather than centred like the standalone FAQ sections elsewhere. */
 .post-faq{margin-top:48px;max-width:none;}
-.post-faq h2{font-family:var(--display);font-size:clamp(22px,2.5vw,28px);color:var(--ink);margin:0 0 6px;}
+.post-faq h2{font-family:var(--display);font-size:clamp(22px,2.5vw,28px);color:var(--ink);margin:0 0 8px;}
 
 @media(max-width:980px){
   .post-layout{grid-template-columns:1fr;gap:34px;}
@@ -3836,7 +4050,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 }
 
 /* ── Short answer box (article-bleeding-gums style) ─────── */
-.ansbox{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:14px;padding:24px 28px;margin:28px 0;}
+.ansbox{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--radius-card);padding:24px 28px;margin:28px 0;}
 .ansbox .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sage);margin-bottom:8px;}
 .ansbox p{font-size:17px;line-height:1.7;color:var(--ink);margin:0;}
 
@@ -3858,13 +4072,14 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .fears span{background:var(--cream);border:1px solid var(--cream-2);color:var(--ink-soft);padding:7px 16px;border-radius:999px;font-size:14.5px;}
 
 /* Terms band */
-.terms-band{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:20px;padding:40px;text-align:center;margin-top:28px;}
+.terms-band{background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--radius-panel);padding:40px;text-align:center;margin-top:28px;}
 .terms-band p{font-family:var(--display);font-size:clamp(22px,3vw,30px);color:var(--sage-deep);margin:0 0 12px;line-height:1.35;}
 .terms-band span{font-size:16px;color:var(--ink-soft);}
 
 /* Stories grid (testimonials on light bg) */
 .stories-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;}
-.nervous-proof.light{background:var(--paper);border:1px solid var(--line-soft);border-radius:16px;padding:28px 30px;margin:0;border-left:none;color:var(--ink);font-family:var(--display);font-style:italic;}
+.nervous-proof.light{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:var(--shadow-card);padding:28px 30px;margin:0;color:var(--ink);font-family:var(--display);font-style:italic;transition:border-color .25s ease,box-shadow .25s ease;}
+.nervous-proof.light:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);}
 .nervous-proof.light p{font-size:19px;line-height:1.55;color:var(--ink);margin:0 0 14px;}
 .nervous-proof.light cite{display:block;font-style:normal;font-size:13px;color:var(--ink-faint);font-weight:500;font-family:var(--body);}
 @media(max-width:700px){.stories-grid{grid-template-columns:1fr;}}
@@ -3885,10 +4100,31 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .band{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;}
 .band.rev{direction:rtl;}
 .band.rev>*{direction:ltr;}
+/* The photo sits on a tinted block offset down and outward — the layered frame
+   the practitioner profile gives its portrait and its clinic photo. Drawn as a
+   second, unblurred box-shadow rather than a pseudo-element, because .ph clips
+   its own children; the margin reserves the room the block takes, so the tint
+   never reaches into the gutter or under the copy. */
+.band>.ph{
+  border-radius:var(--radius-panel);
+  margin:0 0 22px 22px;
+  box-shadow:var(--shadow-md),-22px 22px 0 var(--sage-soft);
+}
+.band.rev>.ph{
+  margin:0 22px 22px 0;
+  box-shadow:var(--shadow-md),22px 22px 0 var(--clay-soft);
+}
+.sage-bg .band>.ph{box-shadow:var(--shadow-md),-22px 22px 0 rgba(255,255,255,.1);}
+.sage-bg .band.rev>.ph{box-shadow:var(--shadow-md),22px 22px 0 rgba(255,255,255,.1);}
 .bandtext .eyebrow{margin-bottom:6px;}
 .bandtext h2{margin:0 0 14px;}
 .bandtext p{font-size:17px;line-height:1.75;color:var(--ink-soft);margin-top:10px;}
-@media(max-width:820px){.band{grid-template-columns:1fr;gap:28px;}.band.rev{direction:ltr;}}
+@media(max-width:820px){
+  .band{grid-template-columns:1fr;gap:28px;}
+  .band.rev{direction:ltr;}
+  /* Stacked, both photos take the same side, and a shallower step. */
+  .band>.ph,.band.rev>.ph{margin:0 14px 14px 0;box-shadow:var(--shadow-md),14px 14px 0 var(--sage-soft);}
+}
 
 /* ── About pages: pull quote ─────────────────────────────── */
 /* Set on ONE line at every width. .pqfit is a query container, so 1cqw is a
@@ -3903,15 +4139,39 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .mk{color:var(--clay);opacity:.7;font-size:1.2em;}
 
 /* ── About pages: stats row ──────────────────────────────── */
-.stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;}
-.st{text-align:center;padding:28px 40px;border-right:1px solid var(--line-soft);}
-.st:last-child{border-right:none;}
+/* One panel, as the profile's "at a glance" facts are: the cells sit on a
+   hairline-coloured ground with a 1px gap, so the gaps draw the dividers and a
+   wrapped last row stretches to fill rather than leaving a hole. */
+.stats{
+  display:flex;flex-wrap:wrap;gap:1px;justify-content:center;
+  max-width:940px;margin:0 auto;
+  background:var(--line);
+  border:1px solid var(--line);
+  border-radius:var(--radius-panel);
+  overflow:hidden;
+  box-shadow:var(--shadow-md);
+}
+.st{flex:1 1 220px;text-align:center;padding:34px 28px;background:var(--paper);transition:background-color .25s ease;}
+@media(hover:hover){.st:hover{background:var(--sage-tint);}}
 .st .n{font-family:var(--display);font-size:clamp(34px,4.5vw,52px);color:var(--sage-deep);font-weight:500;line-height:1;}
 .st .l{font-size:14px;color:var(--ink-faint);margin-top:6px;letter-spacing:.02em;}
-@media(max-width:640px){.stats{flex-direction:column;}.st{border-right:none;border-bottom:1px solid var(--line-soft);padding:20px 0;}.st:last-child{border-bottom:none;}}
+@media(max-width:640px){.st{flex-basis:100%;padding:22px 18px;}}
 
 /* ── About pages: 4-col team grid ───────────────────────── */
 .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+/* Each profile card lifts off the page as it is pointed at. */
+.team-grid .ph{
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card);
+  transition:transform .35s var(--ease-out),box-shadow .35s ease;
+}
+@media(hover:hover){
+  .team-grid>div:hover .ph{transform:translateY(-5px);box-shadow:var(--shadow-card-hover);}
+}
+@media(prefers-reduced-motion:reduce){
+  .team-grid .ph{transition:none;}
+  .team-grid>div:hover .ph{transform:none;}
+}
 @media(max-width:900px){.team-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:580px){.team-grid{grid-template-columns:1fr;}}
 
@@ -3993,7 +4253,12 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .foot-grid{gap:28px;}
 
   /* FAQ */
-  .faq summary{font-size:18px;padding:16px 0;}
+  .faq{gap:10px;}
+  .faq summary{font-size:18px;padding:17px 18px;gap:14px;}
+  .faq summary::after{width:28px;height:28px;}
+  .faq details p{padding:0 18px 18px;}
+  .faq details>div{padding:0 18px 2px;}
+  .faq details>div p{padding:0;}
 
   /* Service cards */
   .svc{padding:22px 18px;}
@@ -4873,10 +5138,21 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   border-radius:50%;
   background:var(--sage-tint);color:var(--clay-deep);
   display:grid;place-items:center;
+  transition:background-color .25s ease,color .25s ease;
 }
 .npv .pillars-ico .pillar-ico svg{width:20px;height:20px;}
+/* The badge fills as its card is pointed at — the profile's areas-of-care
+   rows do the same. One rule for every icon badge on the landing pages. */
+@media(hover:hover){
+  .npv .pillar:hover .pillar-ico,
+  .npv .npv-who li:hover .npv-who-ico,
+  .npv .book-card:hover .book-ico,
+  .npv .altpath:hover .altpath-ico,
+  .faqs .faqs-cat-head:hover .faqs-cat-ico{background:var(--sage-deep);color:var(--cream);}
+  .npv .pillar:hover h3,.npv .npv-who li:hover h3{color:var(--sage-deep);}
+}
 .npv .pillars-ico .pillar-body{grid-column:2;}
-.npv .pillars-ico .pillar h3{margin:0 0 6px;font-size:18.5px;line-height:1.25;}
+.npv .pillars-ico .pillar h3{margin:0 0 6px;font-size:18.5px;line-height:1.25;transition:color .25s ease;}
 .npv .pillars-ico .pillar p{font-size:14px;line-height:1.55;}
 
 /* ── Why this visit is different ─────────────────────────
@@ -4908,8 +5184,12 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
   color:var(--clay-soft);
   display:grid;place-items:center;
+  transition:background-color .25s ease,border-color .25s ease,color .25s ease,transform .25s ease;
 }
 .npv .know-ico svg{width:19px;height:19px;}
+@media(hover:hover){
+  .npv .know-list li:hover .know-ico{background:var(--clay-soft);border-color:var(--clay-soft);color:var(--sage-darker);transform:translateY(-2px);}
+}
 .npv .know-list b{color:var(--cream);font-weight:600;}
 /* The band's photo is sized by the row beside it, not by the .tall hero
    height it would otherwise take. */
@@ -4941,7 +5221,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   background:var(--paper);
   border:1px solid var(--line);border-left:4px solid var(--clay);
   border-radius:var(--radius-card);
-  box-shadow:var(--shadow-card);
+  box-shadow:var(--shadow-md);
   padding:28px 34px;
 }
 .npv .npv-answer-card h2{margin:0 0 10px;font-size:clamp(22px,2.4vw,28px);line-height:1.2;color:var(--sage-deep);}
@@ -4956,16 +5236,21 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 }
 .npv .npv-who li{
   display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;
-  background:var(--cream);border:1px solid var(--line-soft);
+  background:var(--cream);border:1px solid var(--line);
   border-radius:var(--radius-card);padding:20px 22px;
+  transition:background-color .25s ease,border-color .25s ease,box-shadow .25s ease,transform .25s ease;
+}
+@media(hover:hover){
+  .npv .npv-who li:hover{background:var(--paper);border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);transform:translateY(-3px);}
 }
 .npv .npv-who-ico{
   width:40px;height:40px;flex:none;border-radius:50%;
   background:var(--sage-tint);color:var(--clay-deep);
   display:grid;place-items:center;
+  transition:background-color .25s ease,color .25s ease;
 }
 .npv .npv-who-ico svg{width:20px;height:20px;}
-.npv .npv-who h3{margin:2px 0 6px;font-size:18px;line-height:1.25;}
+.npv .npv-who h3{margin:2px 0 6px;font-size:18px;line-height:1.25;transition:color .25s ease;}
 .npv .npv-who p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-soft);}
 
 /* ── Cost and health funds ───────────────────────────── */
@@ -5056,7 +5341,11 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-card);
   padding:24px 22px;
+  transition:border-color .25s ease,box-shadow .25s ease;
 }
+/* No lift: the card holds a form, and a field should not move under the
+   cursor on its way to being clicked. The edge and the shadow still answer. */
+.npv .book-card:hover,.npv .book-card:focus-within{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);}
 /* Full width of the card, matching "Request my callback" beside it. text-align
    because .btn is an inline-block whose label would otherwise sit left once the
    box is stretched. */
@@ -5067,6 +5356,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   border-radius:12px;
   background:var(--sage-tint);color:var(--sage-deep);
   display:grid;place-items:center;
+  transition:background-color .25s ease,color .25s ease;
 }
 .npv .book-ico svg{width:21px;height:21px;}
 .npv .book-card h3{margin:0;font-family:var(--display);font-size:22px;color:var(--ink);}
@@ -5117,20 +5407,27 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   display:grid;grid-template-columns:auto minmax(0,1fr);
   gap:12px;align-items:center;
   background:var(--paper);border:1px solid var(--line);
-  border-radius:12px;padding:12px 16px;
-  text-decoration:none;transition:.2s;
+  border-radius:14px;padding:12px 16px;
+  box-shadow:var(--shadow-card);
+  text-decoration:none;
+  transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease;
 }
-.npv .altpath:hover{border-color:var(--sage);transform:translateY(-2px);}
+.npv .altpath:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-card-hover);transform:translateY(-2px);}
+.npv .altpath:focus-visible{outline:2px solid var(--sage-deep);outline-offset:3px;}
 .npv .altpath-ico{
   width:34px;height:34px;flex:none;
   border-radius:50%;
   background:var(--sage-tint);color:var(--clay-deep);
   display:grid;place-items:center;
+  transition:background-color .25s ease,color .25s ease;
 }
 .npv .altpath-ico svg{width:17px;height:17px;}
 .npv .altpath-kicker{display:block;font-size:12px;color:var(--ink-faint);line-height:1.3;}
 .npv .altpath-label{display:block;font-size:14px;font-weight:600;color:var(--sage-deep);line-height:1.3;}
-@media(prefers-reduced-motion:reduce){.npv .altpath:hover{transform:none;}}
+@media(prefers-reduced-motion:reduce){
+  .npv .altpath,.npv .npv-who li,.npv .know-ico{transition:none;}
+  .npv .altpath:hover,.npv .npv-who li:hover,.npv .know-list li:hover .know-ico{transform:none;}
+}
 
 /* ── Trusted locally ─────────────────────────────────── */
 .npv-trust{padding:56px 0;}
@@ -5209,13 +5506,16 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   width:42px;height:42px;border-radius:50%;
   background:var(--sage-tint);color:var(--clay-deep);
   display:grid;place-items:center;
+  transition:background-color .25s ease,color .25s ease;
 }
 .faqs .faqs-cat-ico svg{width:21px;height:21px;}
 .faqs .faqs-cat-head h2{margin:0;font-size:clamp(24px,2.6vw,32px);line-height:1.2;}
 .faqs .faqs-cat-count{font-size:13px;font-weight:600;color:var(--ink-faint);white-space:nowrap;}
 .faqs .faqs-cat .faq{max-width:none;}
 .faqs .faqs-cat .faq details{scroll-margin-top:96px;}
-.faqs .faqs-cat .faq summary{font-size:19.5px;padding:18px 0;}
+.faqs .faqs-cat .faq{margin-top:20px;gap:12px;}
+.faqs .faqs-cat .faq summary{font-size:19.5px;padding:18px 22px;}
+.faqs .faqs-cat .faq details>div{padding-inline:22px;}
 .faqs .faqs-answer p{padding:0;margin:0 0 12px;max-width:46em;}
 .faqs .faqs-answer p:last-child{margin-bottom:22px;}
 .faqs .faqs-answer a{color:var(--sage-deep);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
@@ -5225,13 +5525,17 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .faqs figure{margin:24px 0 8px;}
 .faqs figcaption{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--ink-faint);}
 .faqs figcaption a{color:var(--sage-deep);font-weight:600;}
-.faqs .faqs-photo .ph{aspect-ratio:16/7;max-width:100%;border-radius:var(--radius-card);}
+.faqs .faqs-photo .ph{aspect-ratio:16/7;max-width:100%;border-radius:var(--radius-card);box-shadow:var(--shadow-card);}
 
 .faqs .faqs-urgency-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 .faqs .faqs-tier{
   border-radius:var(--radius-card);border:1px solid var(--line);border-top-width:4px;
   background:var(--paper);padding:16px 18px;
+  box-shadow:var(--shadow-card);
+  transition:box-shadow .25s ease,transform .25s ease;
 }
+@media(hover:hover){.faqs .faqs-tier:hover{box-shadow:var(--shadow-card-hover);transform:translateY(-3px);}}
+@media(prefers-reduced-motion:reduce){.faqs .faqs-tier{transition:none;}.faqs .faqs-tier:hover{transform:none;}}
 .faqs .faqs-tier-label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;}
 .faqs .faqs-tier b{display:block;margin:4px 0 10px;font-family:var(--display);font-size:20px;font-weight:600;color:var(--ink);line-height:1.2;}
 .faqs .faqs-tier ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5;color:var(--ink-soft);}
@@ -5298,7 +5602,8 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
   .faqs .faqs-cat+.faqs-cat{margin-top:44px;}
   .faqs .faqs-cat-head{grid-template-columns:auto minmax(0,1fr);}
   .faqs .faqs-cat-count{display:none;}
-  .faqs .faqs-cat .faq summary{font-size:17.5px;}
+  .faqs .faqs-cat .faq summary{font-size:17.5px;padding:16px 18px;}
+  .faqs .faqs-cat .faq details>div{padding-inline:18px;}
   .faqs .faqs-photo .ph{aspect-ratio:4/3;}
 }
 
@@ -5348,7 +5653,8 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 .emg .emg-hospital{
   max-width:820px;margin:0 auto;
   background:#FBEDE4;border:1px solid var(--clay);border-left:5px solid var(--clay-deep);
-  border-radius:14px;padding:30px 32px;
+  border-radius:var(--radius-card);padding:30px 32px;
+  box-shadow:var(--shadow-card);
 }
 .emg .emg-hospital h2{margin:0 0 12px;font-size:clamp(22px,2.6vw,26px);line-height:1.25;color:var(--clay-deep);}
 .emg .emg-hospital p{margin:0 0 14px;}
@@ -5357,7 +5663,7 @@ button.topic-tag{font-family:var(--body);line-height:inherit;cursor:pointer;}
 /* Emergency appointment steps — .npv-who cards, numbered. */
 .emg .emg-steps{counter-reset:none;}
 .emg .emg-step-n{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:2px;}
-.emg .emg-steps li{background:var(--paper);}
+.emg .emg-steps li{background:var(--paper);box-shadow:var(--shadow-card);}
 
 /* Gentle reassurance */
 .emg .emg-gentle{text-align:center;max-width:48em;margin-inline:auto;}

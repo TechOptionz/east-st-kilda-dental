@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import JsonLd from '@/components/JsonLd'
 import Link from 'next/link'
+import CardMore from '@/components/CardMore'
 import CarePoints from '@/components/CarePoints'
 import CarouselNav from '@/components/CarouselNav'
 import Photo from '@/components/Photo'
@@ -17,9 +18,9 @@ import { withSocial } from '@/lib/seo'
 import { contactPointNode } from '@/lib/schema'
 
 export const metadata = withSocial({
-  title: 'East St Kilda Dental | Gentle Family & Emergency Dentist',
+  title: 'Dentist St Kilda | Best Dentist Near Me | Dental Clinic St Kilda East',
   description:
-    'Gentle, judgement-free dentist in St Kilda East. Caring for local families since 1980 — check-ups, nervous-patient care, kids and emergencies. Book today.',
+    'Experienced dentists in St Kilda, trusted by local families since 1980. Gentle, judgement-free care for check-ups, emergencies and cosmetic dentistry. Book today.',
   alternates: { canonical: `${SITE_URL}/` },
 })
 
@@ -298,7 +299,9 @@ export default function Home() {
           being asked to trust us or to book. */}
       <section className="sec">
         <div className="container">
-          <div className="sec-head center reveal">
+          {/* Wider than the 46em .sec-head cap: the intro below has to sit on two
+              lines, and at 46em it needs a third. */}
+          <div className="sec-head center reveal" style={{ maxWidth: '920px' }}>
             <div className="eyebrow">How we can help</div>
             {/* A step above `.sec h2` because this is the page's main "can we
                 help you?" beat, but brought in from clamp(38px,4.8vw,62px):
@@ -306,8 +309,18 @@ export default function Home() {
                 container, 62px was a different type system rather than an
                 emphasis within one. */}
             <h2 style={{ fontSize: 'clamp(34px, 4.4vw, 52px)' }}>Care for every stage of life</h2>
-            <p style={{ marginTop: '18px', fontSize: '17.5px', maxWidth: '42em', marginLeft: 'auto', marginRight: 'auto' }}>
-              From routine check-ups and emergency dentistry to fillings, crowns, implants and cosmetic care, here is how we look after St Kilda East and the surrounding suburbs.
+            <p style={{ marginTop: '18px', fontSize: '17.5px', maxWidth: '920px', marginLeft: 'auto', marginRight: 'auto', textWrap: 'balance' }}>
+              {/* Only the standalone "St Kilda" is linked, to its suburb page —
+                  not the "St Kilda" inside "St Kilda East". Styled like the
+                  page's other in-copy links (.pathlink a). */}
+              From routine check-ups and emergency dentistry to implants and cosmetic care, our experienced dentists look after families across St Kilda East,{' '}
+              <Link
+                href={suburbPath('st-kilda')}
+                style={{ color: 'var(--sage-deep)', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '2px' }}
+              >
+                St Kilda
+              </Link>{' '}
+              and surrounding suburbs.
             </p>
           </div>
           <div className="svc-grid-v2">
@@ -320,7 +333,8 @@ export default function Home() {
                 <Photo
                   src={src}
                   alt={alt}
-                  sizes="(max-width: 820px) 100vw, 33vw"
+                  // Two-up below 600px, one column to 820px, three-up above.
+                  sizes="(max-width: 600px) 50vw, (max-width: 820px) 100vw, 33vw"
                 />
                 <div className="svc-item-body">
                   <h3 style={{ fontWeight: 600 }}>{title}</h3>
@@ -452,7 +466,7 @@ export default function Home() {
               className="offer-photo"
               src="/assets/home/comprehensive2.webp"
               alt="A dentist talking with a seated patient during a comprehensive care consultation"
-     
+              sizes="(max-width: 900px) 100vw, 50vw"
             />
           </div>
         </div>
@@ -468,6 +482,7 @@ export default function Home() {
             className="reveal"
             src="/assets/home/nervous-patients-band.webp"
             alt="A relaxed patient smiling warmly in the dental chair"
+            sizes="(max-width: 900px) 100vw, 50vw"
           />
           <div className="reveal">
             <div className="eyebrow">Nervous and anxious patients</div>
@@ -639,6 +654,7 @@ export default function Home() {
             className="reveal"
             src="/assets/home/honest-about-cost.webp"
             alt="A friendly receptionist smiling while helping a patient at the front desk"
+            sizes="(max-width: 900px) 100vw, 50vw"
           />
         </div>
       </section>
@@ -723,9 +739,7 @@ export default function Home() {
               </span>
               <h3>Haven&apos;t been in years? Here&apos;s exactly what to expect.</h3>
               <p>A calm, step-by-step walk-through for an easier return.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
             <Link
               href="/learn/bleeding-gums"
@@ -744,9 +758,7 @@ export default function Home() {
               </span>
               <h3>Why are my gums bleeding?</h3>
               <p>What bleeding gums are trying to tell you, and when to act.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
             <Link
               href="/learn/how-often-should-you-see-the-dentist"
@@ -765,9 +777,7 @@ export default function Home() {
               </span>
               <h3>How Often Should You Really See the Dentist?</h3>
               <p>What actually determines your ideal check-up schedule.</p>
-              <span style={{ color: 'var(--clay)', fontWeight: 600, fontSize: '15px' }}>
-                Read article &rarr;
-              </span>
+              <CardMore>Read article</CardMore>
             </Link>
           </div>
           {/* Phone only — display:none from 601px up. */}
